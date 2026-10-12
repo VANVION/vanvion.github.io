@@ -2865,9 +2865,8 @@ function sendChatText(text) {
     CHAT_MSGS.push({ role: 'bot', text: pm.text, models: pm.models });
     CHAT_BUSY = false;
     renderChat();
-  }).catch(err => {
-    const diag = err && err.message ? ' [' + err.message + ']' : '';
-    CHAT_MSGS.push({ role: 'bot', text: 'Извините, не получилось ответить. Напишите менеджеру в WhatsApp/Telegram/MAX — кнопки в контактах.' + diag });
+  }).catch(() => {
+    CHAT_MSGS.push({ role: 'bot', text: 'Извините, не получилось ответить. Напишите менеджеру в WhatsApp/Telegram/MAX — кнопки в контактах.' });
     CHAT_BUSY = false; renderChat();
   });
 }
