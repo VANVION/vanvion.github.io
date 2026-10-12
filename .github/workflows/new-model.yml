@@ -1,0 +1,206 @@
+name: Announce new models
+
+# Когда в каталог добавляется новая модель с меткой «НОВИНКА» (isnew: true),
+# этот workflow сам: 1) добавляет её в ленту «Новинки» (news.json),
+# 2) шлёт пуш подписчикам (OneSignal), 3) постит в Telegram-канал (если настроен).
+# Повторно одну и ту же модель не постит — список уже объявленных хранится
+# в .github/announced_models.json.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/products.json'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: announce-new-models
+  cancel-in-progress: false
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect new models and build payload
+        id: detect
+        run: |
+          python3 - <<'PY'
+          import json, os, datetime
+
+          SITE = "https://vanvion.github.io"
+
+          def load(path, default):
+              try:
+                  with open(path, encoding="utf-8") as f:
+                      return json.load(f)
+              except Exception:
+                  return default
+
+          products = load("data/products.json", [])
+          announced = load(".github/announced_models.json", [])
+          if not isinstance(announced, list):
+              announced = []
+          news = load("news.json", [])
+          if not isinstance(news, list):
+              news = []
+
+          # модели с меткой НОВИНКА, которые ещё не объявляли
+          by_model = {}
+          order = []
+          for p in products:
+              if not p.get("isnew"):
+                  continue
+              m = (p.get("model") or "").strip()
+              if not m:
+                  continue
+              if m not in by_model:
+                  by_model[m] = []
+                  order.append(m)
+              by_model[m].append(p)
+
+          new_models = [m for m in order if m not in announced]
+
+          def plural(n, one, few, many):
+              m10, m100 = n % 10, n % 100
+              if m10 == 1 and m100 != 11: return one
+              if 2 <= m10 <= 4 and not (12 <= m100 <= 14): return few
+              return many
+
+          today = datetime.date.today().isoformat()
+          push_lines = []
+          tg_items = []
+          for m in new_models:
+              items = by_model[m]
+              n = len(items)
+              comp = (items[0].get("comp_ru") or "").strip()
+              img = (items[0].get("image") or "").strip()
+              cols = n if n else 1
+              colword = plural(cols, "расцветка", "расцветки", "расцветок")
+              text = "Добавили новую модель %s" % m
+              if comp:
+                  text += ": %s" % comp
+              text += ". %d %s. Смотрите в каталоге с меткой «НОВИНКА»." % (cols, colword)
+              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": text})
+              push_lines.append(m)
+              tg_items.append({
+                  "model": m, "text": text,
+                  "image": (SITE + "/" + img) if img else "",
+              })
+              announced.append(m)
+
+          news = news[:30]
+
+          # записываем обновления
+          with open("news.json", "w", encoding="utf-8") as f:
+              json.dump(news, f, ensure_ascii=False, indent=2)
+          with open(".github/announced_models.json", "w", encoding="utf-8") as f:
+              json.dump(announced, f, ensure_ascii=False, indent=2)
+
+          # пуш-текст
+          if len(push_lines) == 1:
+              push_title = "Новинка в VANVION"
+              push_body = "Новая модель %s уже в каталоге" % push_lines[0]
+          elif len(push_lines) > 1:
+              push_title = "Новинки в VANVION"
+              push_body = "Новые модели: %s" % ", ".join(push_lines)
+          else:
+              push_title = push_body = ""
+
+          # первая картинка для пуша/телеграма
+          first_img = next((it["image"] for it in tg_items if it["image"]), "")
+
+          out = {
+              "count": len(new_models),
+              "push_title": push_title,
+              "push_body": push_body,
+              "push_image": first_img,
+              "tg_items": tg_items,
+          }
+          with open("/tmp/announce.json", "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False)
+
+          gh = os.environ["GITHUB_OUTPUT"]
+          with open(gh, "a") as f:
+              f.write("count=%d\n" % len(new_models))
+          print("New models:", new_models or "none")
+          PY
+
+      - name: Commit news & state
+        if: steps.detect.outputs.count != '0'
+        run: |
+          git config user.name "VANVION"
+          git config user.email "vanvion@yandex.com"
+          git add news.json .github/announced_models.json
+          git commit -m "Auto: announce new model(s)" || { echo "nothing to commit"; exit 0; }
+          git push
+
+      - name: Send push (OneSignal)
+        if: steps.detect.outputs.count != '0'
+        env:
+          ONESIGNAL_REST_KEY: ${{ secrets.ONESIGNAL_REST_KEY }}
+          ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+        run: |
+          if [ -z "$ONESIGNAL_REST_KEY" ]; then echo "OneSignal secret not set — skip push"; exit 0; fi
+          APP_ID="${ONESIGNAL_APP_ID:-27f0d856-c109-4904-ba79-2491fcebdc06}"
+          python3 - <<'PY'
+          import json, os, urllib.request
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          if not data.get("push_title"):
+              print("nothing to push"); raise SystemExit
+          app_id = os.environ.get("ONESIGNAL_APP_ID") or "27f0d856-c109-4904-ba79-2491fcebdc06"
+          body = {
+              "app_id": app_id,
+              "included_segments": ["Subscribed Users"],
+              "headings": {"en": data["push_title"], "ru": data["push_title"]},
+              "contents": {"en": data["push_body"], "ru": data["push_body"]},
+              "url": "https://vanvion.github.io/",
+          }
+          if data.get("push_image"):
+              body["chrome_web_image"] = data["push_image"]
+          req = urllib.request.Request(
+              "https://onesignal.com/api/v1/notifications",
+              data=json.dumps(body).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json; charset=utf-8",
+                  "Authorization": "Basic " + os.environ["ONESIGNAL_REST_KEY"],
+              }, method="POST")
+          try:
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  print("OneSignal:", r.status, r.read().decode("utf-8")[:300])
+          except Exception as e:
+              print("OneSignal error:", e)
+          PY
+
+      - name: Post to Telegram channel
+        if: steps.detect.outputs.count != '0'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
+          base = "https://api.telegram.org/bot" + token
+          def call(method, payload):
+              req = urllib.request.Request(base + "/" + method,
+                  data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      print(method, r.status)
+              except Exception as e:
+                  print(method, "error:", e)
+          for it in data["tg_items"]:
+              caption = "🆕 %s\n\n%s\n\nhttps://vanvion.github.io/" % (it["model"], it["text"])
+              if it.get("image"):
+                  call("sendPhoto", {"chat_id": chat, "photo": it["image"], "caption": caption})
+              else:
+                  call("sendMessage", {"chat_id": chat, "text": caption})
+          PY
