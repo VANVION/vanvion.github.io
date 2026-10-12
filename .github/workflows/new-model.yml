@@ -148,7 +148,7 @@ jobs:
           if [ -z "$ONESIGNAL_REST_KEY" ]; then echo "OneSignal secret not set — skip push"; exit 0; fi
           APP_ID="${ONESIGNAL_APP_ID:-27f0d856-c109-4904-ba79-2491fcebdc06}"
           python3 - <<'PY'
-          import json, os, urllib.request
+          import json, os, urllib.request, urllib.error
           data = json.load(open("/tmp/announce.json", encoding="utf-8"))
           if not data.get("push_title"):
               print("nothing to push"); raise SystemExit
@@ -162,18 +162,29 @@ jobs:
           }
           if data.get("push_image"):
               body["chrome_web_image"] = data["push_image"]
-          req = urllib.request.Request(
-              "https://onesignal.com/api/v1/notifications",
-              data=json.dumps(body).encode("utf-8"),
-              headers={
-                  "Content-Type": "application/json; charset=utf-8",
-                  "Authorization": "Basic " + os.environ["ONESIGNAL_REST_KEY"],
-              }, method="POST")
-          try:
-              with urllib.request.urlopen(req, timeout=30) as r:
-                  print("OneSignal:", r.status, r.read().decode("utf-8")[:300])
-          except Exception as e:
-              print("OneSignal error:", e)
+          key = os.environ["ONESIGNAL_REST_KEY"]
+          payload = json.dumps(body).encode("utf-8")
+          # новый формат ключей (os_v2_...) требует схему "Key"; старые — "Basic".
+          schemes = ["Key ", "Basic "] if key.startswith("os_v2_") else ["Basic ", "Key "]
+          for scheme in schemes:
+              req = urllib.request.Request(
+                  "https://onesignal.com/api/v1/notifications",
+                  data=payload,
+                  headers={
+                      "Content-Type": "application/json; charset=utf-8",
+                      "Authorization": scheme + key,
+                  }, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      print("OneSignal OK (%s):" % scheme.strip(), r.status, r.read().decode("utf-8")[:300])
+                      break
+              except urllib.error.HTTPError as e:
+                  msg = e.read().decode("utf-8")[:300]
+                  print("OneSignal HTTP %s (%s): %s" % (e.code, scheme.strip(), msg))
+                  if e.code not in (400, 401, 403):
+                      break
+              except Exception as e:
+                  print("OneSignal error (%s): %s" % (scheme.strip(), e)); break
           PY
 
       - name: Post to Telegram channel
