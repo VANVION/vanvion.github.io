@@ -456,6 +456,8 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
 }
 .ln.active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 .ln:active { transform: scale(0.95); }
+.fabric-bar { display: flex; gap: 8px; align-items: center; padding: 10px 16px 2px; position: relative; z-index: 1; flex-wrap: wrap; }
+.fabric-bar:empty { display: none; }
 .cf {
   display: flex;
   align-items: center;
@@ -1464,6 +1466,19 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
+<!-- Yandex.Metrika: впиши номер счётчика в YM_ID (сейчас 0 — счётчик выключен) -->
+<script type="text/javascript">
+(function(){
+  var YM_ID = 0; /* ← ЗАМЕНИ 0 на номер счётчика из Яндекс.Метрики */
+  if (!YM_ID) return;
+  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+  m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}
+  k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+  ym(YM_ID, "init", { clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true });
+  window.__YM_ID = YM_ID;
+})();
+</script>
 </head>
 <body>
 <canvas id="auroraCanvas"></canvas>
@@ -1493,6 +1508,7 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
     </div>
     <div class="tabs" id="tabs"></div>
     <div class="lining-bar" id="liningBar"></div>
+    <div class="fabric-bar" id="fabricBar"></div>
     <div class="color-bar" id="colorBar"></div>
   </aside>
 </div>
@@ -1691,6 +1707,7 @@ let LANG = 'ru';
 let CAT = (function(){ try { return localStorage.getItem('vv-cat') || 'all'; } catch(e){ return 'all'; } })();
 let QUERY = '';
 let COLOR = '';
+let FABRIC = ''; // '', 'len', 'hlopok', 'sherst', 'poli' — основная ткань
 let LINING = ''; // '', 'lined', 'nolining' — подклад (только для пиджаков)
 let PRODUCTS = [];
 
@@ -1779,9 +1796,26 @@ function byCatAndQuery() {
   });
 }
 
+/* основная (доминирующая) ткань модели — по первому слову состава */
+const FABRICS = {
+  len:    { key: ['ЛЁН', 'ЛЕН'], ru: 'ЛЁН', en: 'LINEN' },
+  hlopok: { key: ['ХЛОПОК'],     ru: 'ХЛОПОК', en: 'COTTON' },
+  sherst: { key: ['ШЕРСТЬ'],     ru: 'ШЕРСТЬ', en: 'WOOL' },
+  poli:   { key: ['ПОЛИЭСТЕР'],  ru: 'ПОЛИЭСТЕР', en: 'POLYESTER' },
+};
+function fabricOf(p) {
+  const comp = ((p.comp_ru || '') + '').toUpperCase();
+  if (!comp) return '';
+  for (const k in FABRICS) {
+    if (FABRICS[k].key.some(w => comp.startsWith(w))) return k;
+  }
+  return '';
+}
+
 function filtered() {
   return byCatAndQuery().filter(p => {
     if (COLOR && familyOf(p) !== COLOR) return false;
+    if (FABRIC && fabricOf(p) !== FABRIC) return false;
     if (CAT === 'pidzhaki' && LINING) {
       if (LINING === 'lined' && p.lined === false) return false;
       if (LINING === 'nolining' && p.lined !== false) return false;
@@ -1860,6 +1894,7 @@ function render() {
   $('langBtn').textContent = LANG === 'ru' ? 'EN' : 'RU';
   renderTabs();
   renderLiningBar();
+  renderFabricBar();
   renderColorBar();
 
   const items = filtered();
@@ -2116,6 +2151,24 @@ function renderLiningBar() {
   ).join('');
   bar.querySelectorAll('.ln').forEach(el => {
     el.onclick = () => { haptic('light'); LINING = el.getAttribute('data-ln'); render(); };
+  });
+}
+
+function renderFabricBar() {
+  const bar = $('fabricBar');
+  if (!bar) return;
+  /* какие ткани реально есть в текущей категории (с учётом поиска) */
+  const present = new Set();
+  byCatAndQuery().forEach(p => { const f = fabricOf(p); if (f) present.add(f); });
+  if (FABRIC && !present.has(FABRIC)) FABRIC = '';
+  const list = Object.keys(FABRICS).filter(f => present.has(f));
+  if (list.length < 2) { bar.innerHTML = ''; return; }
+  const all = LANG === 'ru' ? 'ВСЕ ТКАНИ' : 'ALL FABRICS';
+  bar.innerHTML = '<button class="ln' + (FABRIC === '' ? ' active' : '') + '" data-fab="">' + all + '</button>' +
+    list.map(f => '<button class="ln' + (FABRIC === f ? ' active' : '') + '" data-fab="' + f + '">' +
+      esc(FABRICS[f][LANG]) + '</button>').join('');
+  bar.querySelectorAll('.ln').forEach(el => {
+    el.onclick = () => { haptic('light'); FABRIC = el.getAttribute('data-fab'); render(); };
   });
 }
 
@@ -2779,6 +2832,7 @@ function openChat() {
   }
   renderChat();
   $('chat').classList.add('show');
+  ymGoal('chat_open');
 }
 function closeChat() { $('chat').classList.remove('show'); }
 function chatChips() {
@@ -2944,7 +2998,7 @@ function cartAdd(id, type, qty) {
   qty = Math.max(1, qty | 0);
   const e = CART.find(i => i.id === id && i.type === type);
   if (e) e.qty += qty; else CART.push({ id: id, type: type, qty: qty });
-  saveCart(); renderCartFab();
+  saveCart(); renderCartFab(); ymGoal('add_to_cart');
 }
 function cartSet(id, type, qty) {
   const idx = CART.findIndex(i => i.id === id && i.type === type); if (idx < 0) return;
@@ -3090,6 +3144,7 @@ function copyText(txt) {
 function sendCart(channel) {
   if (!CART.length) return;
   haptic('medium');
+  ymGoal('order_sent_' + channel);
   const msg = cartMessage();
   copyText(msg);
   if (channel === 'wa') {
@@ -3100,6 +3155,10 @@ function sendCart(channel) {
   toast(LANG === 'ru' ? 'Заказ скопирован — вставьте в чат' : 'Order copied — paste it in the chat');
   const url = channel === 'tg' ? ('https://t.me/+' + CONTACTS.tg) : CONTACTS.max;
   setTimeout(() => window.open(url, '_blank'), 800);
+}
+/* цель Яндекс.Метрики (работает только когда счётчик включён) */
+function ymGoal(name) {
+  try { if (window.__YM_ID && window.ym) window.ym(window.__YM_ID, 'reachGoal', name); } catch (e) {}
 }
 let TOAST_T;
 function toast(msg) {
@@ -3210,19 +3269,22 @@ function renderNews() {
 async function shareProduct(p) {
   const text = 'VANVION · ' + p.id + ' · ' + getName(p);
   const url = location.href;
-  try {
-    if (navigator.share) {
-      await navigator.share({ title: 'VANVION', text: text, url: url });
-      return;
-    }
-  } catch (e) { return; }
+  if (navigator.share) {
+    try { await navigator.share({ title: 'VANVION', text: text, url: url }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; /* пользователь отменил */ }
+  }
   if (tg && tg.openLink) {
     try {
       tg.openLink('https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text));
       return;
     } catch (e) {}
   }
-  try { await navigator.clipboard.writeText(text + ' ' + url); } catch (e) {}
+  try {
+    await navigator.clipboard.writeText(url);
+    toast(LANG === 'ru' ? 'Ссылка на модель скопирована' : 'Model link copied');
+  } catch (e) {
+    toast(LANG === 'ru' ? 'Не удалось скопировать ссылку' : 'Could not copy link');
+  }
 }
 
 $('langBtn').onclick = () => { haptic('light'); LANG = LANG === 'ru' ? 'en' : 'ru'; render(); };
