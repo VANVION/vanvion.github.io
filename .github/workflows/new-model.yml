@@ -81,10 +81,14 @@ jobs:
               img = (items[0].get("image") or "").strip()
               cols = n if n else 1
               colword = plural(cols, "расцветка", "расцветки", "расцветок")
+              sizes = (items[0].get("sizes") or "").strip()
               text = "Добавили новую модель %s" % m
               if comp:
                   text += ": %s" % comp
-              text += ". %d %s. Смотрите в каталоге с меткой «НОВИНКА»." % (cols, colword)
+              text += ". %d %s." % (cols, colword)
+              if sizes:
+                  text += " Размерные сетки в наличии: %s." % sizes
+              text += " Смотрите в каталоге с меткой «НОВИНКА»."
               news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": text})
               push_lines.append(m)
               tg_items.append({
