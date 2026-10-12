@@ -30,7 +30,7 @@ jobs:
         id: detect
         run: |
           python3 - <<'PY'
-          import json, os, datetime
+          import json, os, datetime, re
 
           SITE = "https://vanvion.github.io"
 
@@ -71,6 +71,29 @@ jobs:
               if 2 <= m10 <= 4 and not (12 <= m100 <= 14): return few
               return many
 
+          # карта цветов (slug -> русское название), синхронна с PALETTE на сайте
+          COLOR_RU = {
+            "charcoal":"УГОЛЬНЫЙ","navy":"ТЁМНО-СИНИЙ","black":"ЧЁРНЫЙ","camel":"КЭМЕЛ",
+            "beige":"БЕЖЕВЫЙ","grey":"СЕРЫЙ","brown":"КОРИЧНЕВЫЙ","green":"ЗЕЛЁНЫЙ",
+            "lightgrey":"СВЕТЛО-СЕРЫЙ","burgundy":"БОРДОВЫЙ","sand":"ПЕСОЧНЫЙ","slate":"СЛАНЦЕВЫЙ",
+            "taba":"ТАБА","kiremit":"КИРПИЧНЫЙ","kkiremit":"Т.КИРПИЧНЫЙ","kahve":"КОФЕ",
+            "antrasit":"АНТРАЦИТ","yesil":"ЗЕЛЁНЫЙ","murdum":"СЛИВОВЫЙ","laci":"СИНИЙ",
+            "klaci":"ТЁМНО-СИНИЙ","siyah":"ЧЁРНЫЙ","haki":"ХАКИ","alaci":"СВЕТЛО-СИНИЙ",
+            "c295":"СЕРЫЙ","c671":"ГОЛУБОЙ","abej":"СВЕТЛО-БЕЖЕВЫЙ","bej":"БЕЖЕВЫЙ",
+            "ekru":"ЭКРЮ","beyaz":"БЕЛЫЙ","vizon":"ВИЗОН","gri":"СЕРЫЙ",
+          }
+          def color_name(p):
+              slug = (p.get("colors") or "").split(",")[0].strip().lower()
+              return COLOR_RU.get(slug, "")
+          def fmt_comp(c):
+              c = (c or "").strip()
+              # "ШЕРСТЬ 80% ВИСКОЗА 17%" -> "Шерсть 80%, вискоза 17%"
+              c = re.sub(r"%\s+", "%, ", c)
+              return c[:1].upper() + c[1:].lower() if c else c
+
+          def esc_html(s):
+              return (s or "").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+
           today = datetime.date.today().isoformat()
           push_lines = []
           tg_items = []
@@ -78,23 +101,50 @@ jobs:
               items = by_model[m]
               n = len(items)
               comp = (items[0].get("comp_ru") or "").strip()
-              img = (items[0].get("image") or "").strip()
+              sizes = (items[0].get("sizes") or "").strip()
               cols = n if n else 1
               colword = plural(cols, "расцветка", "расцветки", "расцветок")
-              sizes = (items[0].get("sizes") or "").strip()
-              text = "Добавили новую модель %s" % m
+              # названия цветов (по-русски, с заглавной), без повторов, в порядке вариантов
+              color_names, seen = [], set()
+              for it in items:
+                  cn = color_name(it)
+                  if cn and cn not in seen:
+                      seen.add(cn); color_names.append(cn.capitalize())
+              # фото всех расцветок (уникальные), максимум 10 для альбома Telegram
+              images, seen_img = [], set()
+              for it in items:
+                  im = (it.get("image") or "").strip()
+                  if im and im not in seen_img:
+                      seen_img.add(im); images.append(SITE + "/" + im)
+              images = images[:10]
+
+              # --- текст для ленты «Новинки» на сайте (простой, читаемый) ---
+              lines = ["Новинка в каталоге VANVION — %s." % m]
               if comp:
-                  text += ": %s" % comp
-              text += ". %d %s." % (cols, colword)
+                  lines.append("Состав: %s." % fmt_comp(comp))
+              if color_names:
+                  lines.append("Цвета (%d): %s." % (cols, ", ".join(color_names)))
               if sizes:
-                  text += " Размерные сетки в наличии: %s." % sizes
-              text += " Смотрите в каталоге с меткой «НОВИНКА»."
-              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": text})
+                  lines.append("Размерные сетки в наличии: %s." % sizes)
+              news_text = " ".join(lines)
+              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": news_text})
+
+              # --- подпись для Telegram (HTML, с переносами и отступами) ---
+              cap = ["🆕 <b>%s</b>" % esc_html(m), ""]
+              cap.append("Новинка в каталоге <b>VANVION</b>.")
+              cap.append("")
+              if comp:
+                  cap.append("🧵 <b>Состав:</b> %s" % esc_html(fmt_comp(comp)))
+              if color_names:
+                  cap.append("🎨 <b>Цвета (%d):</b> %s" % (cols, esc_html(", ".join(color_names))))
+              if sizes:
+                  cap.append("📏 <b>Размеры:</b> %s" % esc_html(sizes))
+              cap.append("")
+              cap.append("🔗 https://vanvion.github.io/")
+              caption = "\n".join(cap)
+
               push_lines.append(m)
-              tg_items.append({
-                  "model": m, "text": text,
-                  "image": (SITE + "/" + img) if img else "",
-              })
+              tg_items.append({"model": m, "caption": caption, "images": images})
               announced.append(m)
 
           news = news[:30]
@@ -115,8 +165,8 @@ jobs:
           else:
               push_title = push_body = ""
 
-          # первая картинка для пуша/телеграма
-          first_img = next((it["image"] for it in tg_items if it["image"]), "")
+          # первая картинка для пуша
+          first_img = next((it["images"][0] for it in tg_items if it.get("images")), "")
 
           out = {
               "count": len(new_models),
@@ -200,7 +250,7 @@ jobs:
           if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets not set — skip"; exit 0; fi
           python3 - <<'PY'
-          import json, os, urllib.request, urllib.parse
+          import json, os, urllib.request, urllib.parse, urllib.error
           data = json.load(open("/tmp/announce.json", encoding="utf-8"))
           token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
           base = "https://api.telegram.org/bot" + token
@@ -208,14 +258,25 @@ jobs:
               req = urllib.request.Request(base + "/" + method,
                   data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
               try:
-                  with urllib.request.urlopen(req, timeout=30) as r:
+                  with urllib.request.urlopen(req, timeout=40) as r:
                       print(method, r.status)
+              except urllib.error.HTTPError as e:
+                  print(method, "HTTP", e.code, e.read().decode("utf-8")[:300])
               except Exception as e:
                   print(method, "error:", e)
           for it in data["tg_items"]:
-              caption = "🆕 %s\n\n%s\n\nhttps://vanvion.github.io/" % (it["model"], it["text"])
-              if it.get("image"):
-                  call("sendPhoto", {"chat_id": chat, "photo": it["image"], "caption": caption})
+              caption = it["caption"]; imgs = it.get("images") or []
+              if len(imgs) >= 2:
+                  # альбом из всех расцветок; подпись — на первом фото
+                  media = []
+                  for i, u in enumerate(imgs):
+                      item = {"type": "photo", "media": u}
+                      if i == 0:
+                          item["caption"] = caption; item["parse_mode"] = "HTML"
+                      media.append(item)
+                  call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
+              elif len(imgs) == 1:
+                  call("sendPhoto", {"chat_id": chat, "photo": imgs[0], "caption": caption, "parse_mode": "HTML"})
               else:
-                  call("sendMessage", {"chat_id": chat, "text": caption})
+                  call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
           PY
