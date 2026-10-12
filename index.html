@@ -652,6 +652,26 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   z-index: 2;
 }
 .new-tag { background: #4f7a63; color: #fff; }
+.card-add {
+  position: absolute; bottom: 8px; right: 8px; z-index: 3;
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-fg);
+  font-size: 22px; line-height: 1; font-weight: 400;
+  display: grid; place-items: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  opacity: 0.94; transition: transform 0.15s, opacity 0.2s;
+}
+.card-add:active { transform: scale(0.88); }
+/* быстрый заказ */
+.qa-sheet { max-width: 440px; }
+.qa-top { display: flex; gap: 14px; align-items: center; margin: 14px 0 6px; }
+.qa-img { width: 92px; height: 112px; object-fit: cover; border-radius: 12px; flex: none; background: var(--border); }
+.qa-colors { flex: 1; min-width: 0; }
+.qa-cur { font-size: 12px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
+.qa-dots { display: flex; flex-wrap: wrap; gap: 8px; }
+.qa-dot { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); box-shadow: inset 0 0 0 2px var(--bg); transition: transform 0.15s; }
+.qa-dot.active { box-shadow: inset 0 0 0 2px var(--bg), 0 0 0 2px var(--accent); transform: scale(1.1); }
+.qa-sheet .addcart { margin-top: 4px; }
 .card-info {
   padding: 10px 12px 13px;
   min-width: 0;
@@ -1528,6 +1548,7 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   <span class="cart-badge" id="cartBadge">0</span>
 </button>
 <div class="contacts" id="cart"></div>
+<div class="contacts" id="qadd"></div>
 <div class="contacts" id="news"></div>
 <div class="contacts" id="chat"></div>
 
@@ -2088,6 +2109,17 @@ function attachCardEvents(el) {
       selectTileColor(el, dot.getAttribute('data-goto'));
     });
   });
+
+  /* --- кнопка «+»: быстрый заказ без открытия карточки --- */
+  const addBtn = el.querySelector('.card-add');
+  if (addBtn) {
+    addBtn.addEventListener('touchstart', e => { e.stopPropagation(); clearTimeout(lpTimer); }, { passive: true });
+    addBtn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      haptic('light');
+      openQuickAdd(cid());
+    });
+  }
 }
 
 /* сменить фото/цвет плитки в каталоге без открытия карточки */
@@ -2273,6 +2305,7 @@ function modelCardHTML(group) {
         '<span class="art-tag">' + esc(colorsLabel) + '</span>' +
         (group.some(v => v.hit) ? '<span class="hit-tag">' + (LANG === 'ru' ? 'ХИТ' : 'TOP') + '</span>'
           : group.some(v => v.isnew) ? '<span class="new-tag">' + (LANG === 'ru' ? 'НОВИНКА' : 'NEW') + '</span>' : '') +
+        '<button class="card-add" data-add="' + esc(rep.id) + '" aria-label="' + (LANG === 'ru' ? 'Быстрый заказ' : 'Quick add') + '">+</button>' +
       '</div>' +
       '<div class="card-info">' +
         '<div class="card-name">' + esc(modelName) + '</div>' +
@@ -3029,7 +3062,7 @@ function addcartHTML(p) {
   }
   return '<div class="addcart-label">' + (ru ? 'КОЛИЧЕСТВО ПАЧЕК' : 'NUMBER OF PACKS') + '</div>' + rows;
 }
-function setupAddCart(p) {
+function setupAddCart(p, onAdded) {
   const ru = LANG === 'ru';
   const btn = $('acBtn'); if (!btn) return;
   document.querySelectorAll('.ac-q').forEach(q => {
@@ -3049,7 +3082,51 @@ function setupAddCart(p) {
     btn.classList.add('added'); btn.textContent = ru ? '✓ ДОБАВЛЕНО' : '✓ ADDED';
     toast(ru ? ('Добавлено: ' + added + ' ' + plural(added, 'пачка', 'пачки', 'пачек')) : ('Added: ' + added + ' packs'));
     setTimeout(() => { btn.classList.remove('added'); btn.textContent = ru ? 'В КОРЗИНУ' : 'ADD TO CART'; }, 1600);
+    if (typeof onAdded === 'function') setTimeout(onAdded, 450);
   };
+}
+/* ---------- БЫСТРЫЙ ЗАКАЗ ИЗ СЕТКИ ---------- */
+let QA_ID = null;
+function openQuickAdd(id) {
+  const p = prodById(id); if (!p) return;
+  QA_ID = id;
+  renderQuickAdd();
+  $('qadd').classList.add('show');
+}
+function closeQuickAdd() { $('qadd').classList.remove('show'); QA_ID = null; }
+function renderQuickAdd() {
+  const box = $('qadd'); if (!box) return;
+  const p = prodById(QA_ID); if (!p) return;
+  const ru = LANG === 'ru';
+  const variants = modelVariants(p);
+  const dots = variants.map(v => {
+    const c = colorList(v.colors)[0];
+    const hex = c ? PALETTE[c].hex : '#cccccc';
+    const label = c ? PALETTE[c][LANG] : v.id;
+    return '<button class="qa-dot' + (v.id === p.id ? ' active' : '') + '" data-qc="' + esc(v.id) + '" style="background:' + hex + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"></button>';
+  }).join('');
+  const curColor = colorList(p.colors)[0];
+  const curLabel = curColor ? PALETTE[curColor][LANG] : '';
+  const modelName = (catWordOf(p.cat) + ' ' + (p.model || '')).trim();
+  box.innerHTML = '<div class="ct-sheet qa-sheet">' +
+    '<button class="ct-close" id="qaClose" aria-label="Закрыть">&#10005;</button>' +
+    '<div class="ct-title">' + (ru ? 'БЫСТРЫЙ ЗАКАЗ' : 'QUICK ADD') + '</div>' +
+    '<div class="ct-sub">' + esc(modelName) + '</div>' +
+    '<div class="qa-top">' +
+      '<img class="qa-img" src="' + esc(p.image) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+      '<div class="qa-colors"><div class="qa-cur" id="qaCur">' + esc(curLabel) + '</div><div class="qa-dots">' + dots + '</div></div>' +
+    '</div>' +
+    '<div class="addcart">' + addcartHTML(p) + '</div>' +
+    '<button class="cart-clear" id="qaOpenFull">' + (ru ? 'Открыть карточку полностью' : 'Open full card') + '</button>' +
+  '</div>';
+  $('qaClose').onclick = closeQuickAdd;
+  box.onclick = e => { if (e.target === box) closeQuickAdd(); };
+  box.querySelectorAll('.qa-dot').forEach(d => d.onclick = () => {
+    const gid = d.getAttribute('data-qc'); if (gid === QA_ID) return;
+    QA_ID = gid; renderQuickAdd();
+  });
+  $('qaOpenFull').onclick = () => { const id = QA_ID; closeQuickAdd(); openDetail(id); };
+  setupAddCart(p, () => { closeQuickAdd(); openCart(); });
 }
 function openCart() { haptic('light'); renderCart(); $('cart').classList.add('show'); }
 function closeCart() { $('cart').classList.remove('show'); }
@@ -3375,7 +3452,7 @@ $('cartFab').onclick = () => openCart();
 $('detailCart').onclick = () => openCart();
 initPush();
 renderCartFab();
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContacts(); closeCart(); closeNews(); closeChat(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeContacts(); closeCart(); closeNews(); closeChat(); closeQuickAdd(); } });
 
 /* ---------- premium libs: Lenis + Splitting + ScrollTrigger ---------- */
 const HAS_LENIS = typeof Lenis !== 'undefined';
