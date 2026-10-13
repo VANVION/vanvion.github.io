@@ -1921,7 +1921,7 @@ function render() {
   const items = filtered();
   const groups = groupByModel(items);
   /* хиты каталога — вверх (порядок внутри сохраняется, т.к. сортировка стабильная) */
-  const grank = g => g.some(v => v.hit) ? 2 : g.some(v => v.isnew) ? 1 : 0;
+  const grank = g => g.some(v => v.isnew) ? 2 : g.some(v => v.hit) ? 1 : 0;
   groups.sort((a, b) => grank(b) - grank(a));
   animateCount(groups.length);
 
