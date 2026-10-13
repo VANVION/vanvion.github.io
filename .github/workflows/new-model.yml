@@ -148,8 +148,24 @@ jobs:
               cap.append('🔗 <a href="%s">Открыть %s в каталоге</a>' % (esc_html(card_url), esc_html(m)))
               caption = "\n".join(cap)
 
+              # --- подпись для Instagram (без HTML; ссылки в тексте не кликабельны → «ссылка в профиле») ---
+              ig = ["🆕 %s" % m, "", "Новинка в каталоге VANVION — мужская классика оптом.", ""]
+              if comp:
+                  ig.append("🧵 Состав: %s" % fmt_comp(comp))
+              if color_names:
+                  ig.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+              if sizes:
+                  ig.append("📏 Размеры: %s" % sizes)
+              ig.append("")
+              ig.append("🛍 Опт · ТЦ «Садовод», Москва")
+              ig.append("🔗 Каталог и заказ — ссылка в профиле (vanvion.github.io)")
+              ig.append("")
+              ig.append("#vanvion #опт #пиджаки #мужскаяодежда #оптом #садовод #мужскойкостюм #оптоваяодежда")
+              ig_caption = "\n".join(ig)
+
               push_lines.append(m)
-              tg_items.append({"model": m, "caption": caption, "images": images, "card_url": card_url})
+              tg_items.append({"model": m, "caption": caption, "images": images,
+                               "card_url": card_url, "ig_caption": ig_caption})
               announced.append(m)
 
           news = news[:30]
@@ -286,4 +302,61 @@ jobs:
                   call("sendPhoto", {"chat_id": chat, "photo": imgs[0], "caption": caption, "parse_mode": "HTML"})
               else:
                   call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
+          PY
+
+      - name: Post to Instagram
+        if: steps.detect.outputs.count != '0'
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$IG_USER_ID" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "Instagram secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.parse, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          uid = os.environ["IG_USER_ID"]; tok = os.environ["IG_ACCESS_TOKEN"]
+          GRAPH = "https://graph.facebook.com/v21.0"
+
+          def api(path, params):
+              body = urllib.parse.urlencode(params).encode("utf-8")
+              req = urllib.request.Request(GRAPH + path, data=body, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      return json.loads(r.read().decode("utf-8")), None
+              except urllib.error.HTTPError as e:
+                  return None, "HTTP %s %s" % (e.code, e.read().decode("utf-8")[:300])
+              except Exception as e:
+                  return None, str(e)
+
+          def publish(creation_id):
+              res, err = api("/%s/media_publish" % uid, {"creation_id": creation_id, "access_token": tok})
+              if err: print("IG publish error:", err)
+              else:   print("IG published:", res.get("id"))
+
+          for it in data["tg_items"]:
+              caption = it.get("ig_caption") or it.get("caption") or ""
+              imgs = it.get("images") or []
+              if not imgs:
+                  print("IG skip (no images):", it.get("model")); continue
+              if len(imgs) == 1:
+                  res, err = api("/%s/media" % uid,
+                                 {"image_url": imgs[0], "caption": caption, "access_token": tok})
+                  if err: print("IG media error:", err); continue
+                  time.sleep(3); publish(res["id"])
+              else:
+                  # карусель: сначала дочерние контейнеры, потом общий, потом публикация
+                  child_ids = []
+                  for u in imgs[:10]:
+                      res, err = api("/%s/media" % uid,
+                                     {"image_url": u, "is_carousel_item": "true", "access_token": tok})
+                      if err: print("IG child error:", err)
+                      elif res.get("id"): child_ids.append(res["id"])
+                  if len(child_ids) < 2:
+                      print("IG carousel: not enough children"); continue
+                  res, err = api("/%s/media" % uid,
+                                 {"media_type": "CAROUSEL", "children": ",".join(child_ids),
+                                  "caption": caption, "access_token": tok})
+                  if err: print("IG carousel error:", err); continue
+                  time.sleep(5); publish(res["id"])
           PY
