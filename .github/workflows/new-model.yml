@@ -209,7 +209,7 @@ jobs:
           app_id = os.environ.get("ONESIGNAL_APP_ID") or "27f0d856-c109-4904-ba79-2491fcebdc06"
           body = {
               "app_id": app_id,
-              "included_segments": ["Subscribed Users"],
+              "included_segments": ["Total Subscriptions", "Subscribed Users"],
               "headings": {"en": data["push_title"], "ru": data["push_title"]},
               "contents": {"en": data["push_body"], "ru": data["push_body"]},
               "url": "https://vanvion.github.io/",
