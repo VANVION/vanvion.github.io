@@ -391,10 +391,11 @@ jobs:
           BASE = "https://botapi.max.ru"
 
           def send_message(text):
-              q = urllib.parse.urlencode({"access_token": tok, "chat_id": chat})
+              q = urllib.parse.urlencode({"chat_id": chat})
               body = json.dumps({"text": text}).encode("utf-8")
               req = urllib.request.Request(BASE + "/messages?" + q, data=body,
-                  headers={"Content-Type": "application/json; charset=utf-8"}, method="POST")
+                  headers={"Content-Type": "application/json; charset=utf-8",
+                           "Authorization": "Bearer " + tok}, method="POST")
               try:
                   with urllib.request.urlopen(req, timeout=40) as r:
                       print("MAX sendMessage", r.status)
