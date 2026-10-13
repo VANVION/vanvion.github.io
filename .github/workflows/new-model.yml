@@ -393,16 +393,21 @@ jobs:
           def send_message(text):
               q = urllib.parse.urlencode({"chat_id": chat})
               body = json.dumps({"text": text}).encode("utf-8")
-              req = urllib.request.Request(BASE + "/messages?" + q, data=body,
-                  headers={"Content-Type": "application/json; charset=utf-8",
-                           "Authorization": "Bearer " + tok}, method="POST")
-              try:
-                  with urllib.request.urlopen(req, timeout=40) as r:
-                      print("MAX sendMessage", r.status)
-              except urllib.error.HTTPError as e:
-                  print("MAX HTTP", e.code, e.read().decode("utf-8")[:400])
-              except Exception as e:
-                  print("MAX error:", e)
+              # MAX принимает токен в заголовке Authorization; пробуем без и с префиксом Bearer
+              for auth in (tok, "Bearer " + tok):
+                  req = urllib.request.Request(BASE + "/messages?" + q, data=body,
+                      headers={"Content-Type": "application/json; charset=utf-8",
+                               "Authorization": auth}, method="POST")
+                  try:
+                      with urllib.request.urlopen(req, timeout=40) as r:
+                          print("MAX sendMessage OK", r.status); return
+                  except urllib.error.HTTPError as e:
+                      msg = e.read().decode("utf-8")[:400]
+                      print("MAX HTTP", e.code, "(auth=%s...)" % auth[:8], msg)
+                      if e.code not in (401, 403):
+                          return
+                  except Exception as e:
+                      print("MAX error:", e); return
 
           for it in data["tg_items"]:
               text = it.get("max_caption") or it.get("ig_caption") or ""
