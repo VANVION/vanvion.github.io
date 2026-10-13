@@ -163,9 +163,24 @@ jobs:
               ig.append("#vanvion #опт #пиджаки #мужскаяодежда #оптом #садовод #мужскойкостюм #оптоваяодежда")
               ig_caption = "\n".join(ig)
 
+              # --- подпись для MAX (простой текст; URL кликается автоматически) ---
+              mx = ["🆕 %s — новинка VANVION" % m, ""]
+              if comp:
+                  mx.append("🧵 Состав: %s" % fmt_comp(comp))
+              if color_names:
+                  mx.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+              if sizes:
+                  mx.append("📏 Размеры: %s" % sizes)
+              mx.append("")
+              mx.append("🛍 Опт · ТЦ «Садовод», Москва")
+              mx.append("👇 Открыть карточку модели (фото, цвета, заказ):")
+              mx.append(card_url)
+              max_caption = "\n".join(mx)
+
               push_lines.append(m)
               tg_items.append({"model": m, "caption": caption, "images": images,
-                               "card_url": card_url, "ig_caption": ig_caption})
+                               "card_url": card_url, "ig_caption": ig_caption,
+                               "max_caption": max_caption})
               announced.append(m)
 
           news = news[:30]
@@ -359,4 +374,36 @@ jobs:
                                   "caption": caption, "access_token": tok})
                   if err: print("IG carousel error:", err); continue
                   time.sleep(5); publish(res["id"])
+          PY
+
+      - name: Post to MAX
+        if: steps.detect.outputs.count != '0'
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
+        run: |
+          if [ -z "$MAX_BOT_TOKEN" ] || [ -z "$MAX_CHAT_ID" ]; then
+            echo "MAX secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          tok = os.environ["MAX_BOT_TOKEN"]; chat = os.environ["MAX_CHAT_ID"]
+          BASE = "https://botapi.max.ru"
+
+          def send_message(text):
+              q = urllib.parse.urlencode({"access_token": tok, "chat_id": chat})
+              body = json.dumps({"text": text}).encode("utf-8")
+              req = urllib.request.Request(BASE + "/messages?" + q, data=body,
+                  headers={"Content-Type": "application/json; charset=utf-8"}, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=40) as r:
+                      print("MAX sendMessage", r.status)
+              except urllib.error.HTTPError as e:
+                  print("MAX HTTP", e.code, e.read().decode("utf-8")[:400])
+              except Exception as e:
+                  print("MAX error:", e)
+
+          for it in data["tg_items"]:
+              text = it.get("max_caption") or it.get("ig_caption") or ""
+              send_message(text)
           PY
