@@ -385,31 +385,75 @@ jobs:
           if [ -z "$MAX_BOT_TOKEN" ] || [ -z "$MAX_CHAT_ID" ]; then
             echo "MAX secrets not set — skip"; exit 0; fi
           python3 - <<'PY'
-          import json, os, urllib.request, urllib.parse, urllib.error
+          import json, os, time, urllib.request, urllib.parse, urllib.error
           data = json.load(open("/tmp/announce.json", encoding="utf-8"))
           tok = os.environ["MAX_BOT_TOKEN"]; chat = os.environ["MAX_CHAT_ID"]
           BASE = "https://botapi.max.ru"
+          AUTH = {"Authorization": tok}
 
-          def send_message(text):
+          def multipart(field, filename, content, ctype="image/jpeg"):
+              b = "----vanvion%d" % int(time.time() * 1000)
+              head = ("--%s\r\nContent-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n"
+                      "Content-Type: %s\r\n\r\n") % (b, field, filename, ctype)
+              body = head.encode("utf-8") + content + ("\r\n--%s--\r\n" % b).encode("utf-8")
+              return body, "multipart/form-data; boundary=" + b
+
+          def upload_image(image_url):
+              # 1) получаем URL для загрузки
+              req = urllib.request.Request(BASE + "/uploads?" + urllib.parse.urlencode({"type": "image"}),
+                  data=b"{}", headers=dict(AUTH, **{"Content-Type": "application/json"}), method="POST")
+              with urllib.request.urlopen(req, timeout=40) as r:
+                  up = json.loads(r.read().decode("utf-8"))
+              upload_url = up.get("url")
+              if not upload_url:
+                  print("MAX upload: no url", up); return None
+              # 2) скачиваем фото с нашего сайта
+              with urllib.request.urlopen(image_url, timeout=60) as r:
+                  img = r.read()
+              # 3) заливаем в MAX
+              body, ct = multipart("data", "photo.jpg", img)
+              req2 = urllib.request.Request(upload_url, data=body,
+                  headers={"Content-Type": ct}, method="POST")
+              with urllib.request.urlopen(req2, timeout=90) as r:
+                  res = json.loads(r.read().decode("utf-8"))
+              if isinstance(res, dict):
+                  if res.get("token"): return res["token"]
+                  for v in (res.get("photos") or {}).values():
+                      if isinstance(v, dict) and v.get("token"): return v["token"]
+              print("MAX upload: no token", str(res)[:200]); return None
+
+          def send(text, attachments):
               q = urllib.parse.urlencode({"chat_id": chat})
-              body = json.dumps({"text": text}).encode("utf-8")
-              # MAX принимает токен в заголовке Authorization; пробуем без и с префиксом Bearer
-              for auth in (tok, "Bearer " + tok):
+              payload = {"text": text}
+              if attachments: payload["attachments"] = attachments
+              body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+              for attempt in range(6):
                   req = urllib.request.Request(BASE + "/messages?" + q, data=body,
-                      headers={"Content-Type": "application/json; charset=utf-8",
-                               "Authorization": auth}, method="POST")
+                      headers=dict(AUTH, **{"Content-Type": "application/json; charset=utf-8"}), method="POST")
                   try:
-                      with urllib.request.urlopen(req, timeout=40) as r:
-                          print("MAX sendMessage OK", r.status); return
+                      with urllib.request.urlopen(req, timeout=60) as r:
+                          print("MAX send OK", r.status); return True
                   except urllib.error.HTTPError as e:
-                      msg = e.read().decode("utf-8")[:400]
-                      print("MAX HTTP", e.code, "(auth=%s...)" % auth[:8], msg)
-                      if e.code not in (401, 403):
-                          return
+                      msg = e.read().decode("utf-8")[:300]
+                      if "attachment.not.ready" in msg and attempt < 5:
+                          print("MAX attachments processing, retry..."); time.sleep(5); continue
+                      print("MAX HTTP", e.code, msg)
+                      if attachments:  # не вышло с фото — отправим хотя бы текст
+                          print("MAX fallback: text only"); return send(text, None)
+                      return False
                   except Exception as e:
-                      print("MAX error:", e); return
+                      print("MAX error:", e); return False
 
           for it in data["tg_items"]:
               text = it.get("max_caption") or it.get("ig_caption") or ""
-              send_message(text)
+              imgs = it.get("images") or []
+              attachments = []
+              for u in imgs[:10]:
+                  try:
+                      t = upload_image(u)
+                  except Exception as e:
+                      print("MAX upload error:", e); t = None
+                  if t: attachments.append({"type": "image", "payload": {"token": t}})
+              print("MAX attachments:", len(attachments))
+              send(text, attachments or None)
           PY
