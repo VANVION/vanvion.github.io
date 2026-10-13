@@ -118,6 +118,10 @@ jobs:
                       seen_img.add(im); images.append(SITE + "/" + im)
               images = images[:10]
 
+              # прямая ссылка на карточку модели (первый вариант)
+              pid = (items[0].get("id") or "").strip()
+              card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
+
               # --- текст для ленты «Новинки» на сайте (простой, читаемый) ---
               lines = ["Новинка в каталоге VANVION — %s." % m]
               if comp:
@@ -140,11 +144,12 @@ jobs:
               if sizes:
                   cap.append("📏 <b>Размеры:</b> %s" % esc_html(sizes))
               cap.append("")
-              cap.append("🔗 https://vanvion.github.io/")
+              cap.append("👇 Нажмите на ссылку — откроется карточка этой модели на сайте: все фото, расцветки, размеры и оформление оптового заказа.")
+              cap.append('🔗 <a href="%s">Открыть %s в каталоге</a>' % (esc_html(card_url), esc_html(m)))
               caption = "\n".join(cap)
 
               push_lines.append(m)
-              tg_items.append({"model": m, "caption": caption, "images": images})
+              tg_items.append({"model": m, "caption": caption, "images": images, "card_url": card_url})
               announced.append(m)
 
           news = news[:30]
@@ -165,14 +170,16 @@ jobs:
           else:
               push_title = push_body = ""
 
-          # первая картинка для пуша
+          # первая картинка и ссылка на карточку для пуша
           first_img = next((it["images"][0] for it in tg_items if it.get("images")), "")
+          push_url = tg_items[0]["card_url"] if (len(push_lines) == 1 and tg_items) else (SITE + "/")
 
           out = {
               "count": len(new_models),
               "push_title": push_title,
               "push_body": push_body,
               "push_image": first_img,
+              "push_url": push_url,
               "tg_items": tg_items,
           }
           with open("/tmp/announce.json", "w", encoding="utf-8") as f:
@@ -212,7 +219,7 @@ jobs:
               "included_segments": ["Total Subscriptions", "Subscribed Users"],
               "headings": {"en": data["push_title"], "ru": data["push_title"]},
               "contents": {"en": data["push_body"], "ru": data["push_body"]},
-              "url": "https://vanvion.github.io/",
+              "url": data.get("push_url") or "https://vanvion.github.io/",
           }
           if data.get("push_image"):
               body["chrome_web_image"] = data["push_image"]
