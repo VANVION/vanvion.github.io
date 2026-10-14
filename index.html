@@ -3248,10 +3248,17 @@ function sendCart(channel) {
     window.open('https://wa.me/' + CONTACTS.wa + '?text=' + encodeURIComponent(msg), '_blank');
     return;
   }
-  // Telegram и MAX не поддерживают предзаполнение текста — копируем и открываем чат
+  if (channel === 'tg') {
+    // Telegram: открываем диалог «Поделиться» с уже готовым текстом заказа
+    window.open('https://t.me/share/url?url=' + encodeURIComponent('https://vanvion.github.io/') +
+      '&text=' + encodeURIComponent(msg), '_blank');
+    toast(LANG === 'ru' ? 'Выберите чат менеджера — заказ уже вставлен' : 'Pick the manager chat — order is prefilled');
+    return;
+  }
+  // MAX предзаполнение текста не поддерживает — копируем и открываем чат
+  copyText(msg);
   toast(LANG === 'ru' ? 'Заказ скопирован — вставьте в чат' : 'Order copied — paste it in the chat');
-  const url = channel === 'tg' ? ('https://t.me/+' + CONTACTS.tg) : CONTACTS.max;
-  setTimeout(() => window.open(url, '_blank'), 800);
+  setTimeout(() => window.open(CONTACTS.max, '_blank'), 800);
 }
 /* цель Яндекс.Метрики (работает только когда счётчик включён) */
 function ymGoal(name) {
