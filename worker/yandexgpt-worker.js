@@ -101,8 +101,23 @@ async function handleTelegram(update, env) {
     if (msg.reply_to_message && msg.reply_to_message.from && msg.reply_to_message.from.is_bot) shouldReply = true;
   }
   if (!shouldReply || !text) return;
-  const reply = await askYandex(env, [{ role: 'user', text: text.slice(0, 1000) }]);
+  const key = 'tg:' + chatId;
+  const hist = await loadHist(env, key);
+  hist.push({ role: 'user', text: text.slice(0, 1000) });
+  const reply = await askYandex(env, hist);
+  hist.push({ role: 'assistant', text: reply });
+  await saveHist(env, key, hist);
   await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, reply, isPrivate ? null : msg.message_id);
+}
+
+/* память диалога (Cloudflare KV binding CHATS); без неё — без контекста */
+async function loadHist(env, key) {
+  if (!env.CHATS) return [];
+  try { const v = await env.CHATS.get(key); return v ? JSON.parse(v) : []; } catch (e) { return []; }
+}
+async function saveHist(env, key, hist) {
+  if (!env.CHATS) return;
+  try { await env.CHATS.put(key, JSON.stringify(hist.slice(-8)), { expirationTtl: 1800 }); } catch (e) {}
 }
 
 async function tgSend(token, chatId, text, replyTo) {
@@ -129,7 +144,12 @@ async function handleMax(update, env) {
   if (!text || !chatId) return;
   // автоответ только в личных диалогах, чтобы не спамить в группе
   if (chatType && chatType !== 'dialog') return;
-  const reply = await askYandex(env, [{ role: 'user', text: String(text).slice(0, 1000) }]);
+  const key = 'max:' + chatId;
+  const hist = await loadHist(env, key);
+  hist.push({ role: 'user', text: String(text).slice(0, 1000) });
+  const reply = await askYandex(env, hist);
+  hist.push({ role: 'assistant', text: reply });
+  await saveHist(env, key, hist);
   await maxSend(env.MAX_BOT_TOKEN, chatId, reply);
 }
 
@@ -155,7 +175,7 @@ async function askYandex(env, messages) {
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Api-Key ' + env.YANDEX_API_KEY },
       body: JSON.stringify({
         modelUri: 'gpt://' + env.YANDEX_FOLDER_ID + '/yandexgpt/latest',
-        completionOptions: { stream: false, temperature: 0.3, maxTokens: 600 },
+        completionOptions: { stream: false, temperature: 0.3, maxTokens: 300 },
         messages: full,
       }),
     });
@@ -197,15 +217,21 @@ async function getCatalogSummary() {
 function buildSystemPrompt(catalog) {
   return [
     'Ты — вежливый консультант оптового каталога мужской одежды VANVION (ТЦ «Садовод», Москва). Мы продаём оптом мужские КОСТЮМНЫЕ пиджаки и брюки — это демисезонная одежда для помещения/офиса, а НЕ зимняя и НЕ верхняя одежда.',
-    'ВАЖНО про язык: отвечай на ТОМ ЖЕ языке, на котором написал клиент (русский, английский, турецкий или азербайджанский). Если язык не ясен — отвечай по-русски.',
-    'Кратко и по делу, помогай подобрать модель и оформить оптовый заказ.',
-    'Используй ТОЛЬКО факты и ассортимент ниже. Если спрашивают цену, минимальную партию, доставку, оплату или наличие — честно скажи, что это уточняется у менеджера (WhatsApp / Telegram / MAX), и не выдумывай цифры.',
+    'ЯЗЫК: отвечай на том же языке, на котором пишет клиент (ru/en/tr/az). Если не ясно — по-русски.',
     '',
-    'ВАЖНЫЕ ПРАВИЛА ПОДБОРА:',
-    '• Город/регион клиента НЕ влияет на ассортимент — товар одинаковый для всех. НЕ подбирай «по климату».',
-    '• Не называй лён, хлопок или вискозу «тёплыми». Зимних и утеплённых вещей НЕТ — если просят тёплое/зимнее, честно скажи, что это костюмные пиджаки и брюки (демисезон).',
-    '• Подбирай по фасону/силуэту, ткани, цвету, размерному ряду (НОРМА/БАТАЛ). При общем запросе задай 1 короткий уточняющий вопрос.',
-    '• Предлагай максимум 3–4 модели за раз.',
+    'СТИЛЬ ОТВЕТА (строго):',
+    '• Очень КОРОТКО: 1–3 коротких предложения. Без воды и вступлений.',
+    '• НЕ здоровайся повторно, если диалог уже начат. НЕ повторяй телефоны/контакты в каждом сообщении.',
+    '• Телефоны давай ТОЛЬКО если клиент просит контакты. Не добавляй их к каждому ответу.',
+    '• Не предлагай «оформить заказ у менеджера» в каждом сообщении — только когда клиент готов заказать.',
+    '• Помни предыдущие сообщения в диалоге и отвечай по контексту, не начинай заново.',
+    '• При подборе называй 1–3 модели, по одной строке, без длинных описаний.',
+    '',
+    'ПРАВИЛА:',
+    'Используй ТОЛЬКО факты и ассортимент ниже. Цену, минимальную партию, доставку, оплату и наличие не выдумывай — скажи коротко, что это уточнит менеджер.',
+    '• Город/регион клиента НЕ влияет на ассортимент. НЕ подбирай «по климату».',
+    '• Зимних/утеплённых вещей НЕТ — это костюмные пиджаки и брюки (демисезон).',
+    '• Если модели нет в ассортименте — коротко скажи, что её нет, и предложи похожую из списка.',
     '',
     'ФАКТЫ:',
     '• Размеры (пачки/ростовки): НОРМА — 50–58, БАТАЛ — 58–66. В модели можно взять отдельно НОРМА и БАТАЛ. У части моделей в наличии только НОРМА — ориентируйся на поле «размеры».',
