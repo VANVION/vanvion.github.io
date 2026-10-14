@@ -47,6 +47,19 @@ export default {
         return new Response('MAX subscribe error: ' + e, { status: 500 });
       }
     }
+    // тест пересылки заказа в группу: открой /test-forward в браузере
+    if (request.method === 'GET' && path === '/test-forward') {
+      const chat = env.TELEGRAM_CHAT_ID || env.MANAGERS_CHAT_ID;
+      if (!env.TELEGRAM_BOT_TOKEN) return new Response('no TELEGRAM_BOT_TOKEN', { status: 500 });
+      if (!chat) return new Response('no TELEGRAM_CHAT_ID / MANAGERS_CHAT_ID', { status: 500 });
+      const r = await fetch('https://api.telegram.org/bot' + env.TELEGRAM_BOT_TOKEN + '/sendMessage', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chat, text: '🛒 Тест пересылки заказа — проверка связи бота с группой' }),
+      });
+      const t = await r.text();
+      return new Response('chat_id=' + chat + '\nHTTP ' + r.status + '\n' + t,
+        { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    }
     if (request.method === 'GET') return new Response('VANVION AI worker OK', { status: 200 });
     if (request.method !== 'POST') return json({ reply: 'Только POST.' }, cors);
 
