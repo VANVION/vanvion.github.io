@@ -119,15 +119,21 @@ async function handleTelegram(update, env) {
   hist.push({ role: 'user', text: text.slice(0, 1000) });
   const raw = await askYandex(env, hist);
   const { clean, order } = extractOrder(raw);
-  hist.push({ role: 'assistant', text: clean });
-  await saveHist(env, key, hist);
+  let reply = clean;
   if (order) {
-    const f = msg.from || {};
-    const who = 'Клиент: ' + [f.first_name, f.last_name].filter(Boolean).join(' ') +
-      (f.username ? ' (@' + f.username + ')' : '') + ' · id ' + (f.id || '');
-    await forwardOrder(env, 'Telegram', who, order);
+    const v = await validateOrder(parseOrder(order));
+    if (v.ok) {
+      const f = msg.from || {};
+      const who = 'Клиент: ' + [f.first_name, f.last_name].filter(Boolean).join(' ') +
+        (f.username ? ' (@' + f.username + ')' : '') + ' · id ' + (f.id || '');
+      await forwardOrder(env, 'Telegram', who, v);
+    } else {
+      reply = 'Уточните, пожалуйста, заказ: ' + v.error + '. Модель выберите из каталога — https://vanvion.github.io';
+    }
   }
-  await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, clean, isPrivate ? null : msg.message_id);
+  hist.push({ role: 'assistant', text: reply });
+  await saveHist(env, key, hist);
+  await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, reply, isPrivate ? null : msg.message_id);
 }
 
 /* вытаскиваем служебную строку [[ORDER]] ... из ответа ИИ */
@@ -136,12 +142,52 @@ function extractOrder(reply) {
   if (!m) return { clean: reply, order: null };
   return { clean: reply.replace(m[0], '').trim(), order: m[1].trim() };
 }
-/* пересылаем заказ в Telegram-группу менеджеров */
-async function forwardOrder(env, source, who, order) {
+/* разбор строки заказа (терпим к key=val и «ключ: значение») */
+function parseOrder(s) {
+  const o = { model: '', color: '', size: '', qty: '' };
+  for (const part of String(s).split(/[;\n]/)) {
+    const p = part.trim(); if (!p) continue;
+    const low = p.toLowerCase();
+    const val = (p.split(/[:=]/).slice(1).join(':') || p).trim();
+    if (/model|модел/.test(low)) o.model = val;
+    else if (/color|цвет|rəng|renk/.test(low)) o.color = val;
+    else if (/size|разм|ölç|beden/.test(low)) o.size = val;
+    else if (/qty|кол|пач|adet|paket|say/.test(low)) o.qty = val;
+  }
+  return o;
+}
+/* проверка заказа по каталогу: модель есть, размер доступен, количество реально */
+async function validateOrder(o) {
+  const data = await getCatalogData();
+  const key = (o.model || '').toUpperCase().replace(/\s+/g, ' ').trim();
+  const flat = key.replace(/\s/g, '');
+  const model = data.names.find(n => n === key)
+    || data.names.find(n => n.replace(/\s/g, '') === flat)
+    || data.names.find(n => flat && (n.replace(/\s/g, '').indexOf(flat) >= 0 || flat.indexOf(n.replace(/\s/g, '')) >= 0));
+  if (!model) return { ok: false, error: 'такой модели нет в каталоге' };
+  const sizes = (data.byModel[model].sizes || '').toUpperCase();
+  const size = /батал|büyük|böyük|batal/i.test(o.size) ? 'БАТАЛ'
+    : /норм|normal/i.test(o.size) ? 'НОРМА' : '';
+  if (size === 'БАТАЛ' && sizes.indexOf('БАТАЛ') < 0) return { ok: false, error: 'у модели ' + model + ' нет ряда БАТАЛ (есть только НОРМА)' };
+  const qty = parseInt(String(o.qty).replace(/[^\d]/g, ''), 10);
+  if (!qty || qty < 1 || qty > 2000) return { ok: false, error: 'укажите реальное количество пачек (1–2000)' };
+  return { ok: true, model, color: (o.color || '').trim(), size: size || (o.size || '').trim(), qty };
+}
+function plPack(n) {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return 'пачка';
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'пачки';
+  return 'пачек';
+}
+/* красиво пересылаем проверенный заказ в Telegram-группу менеджеров */
+async function forwardOrder(env, source, who, v) {
   const chat = env.MANAGERS_CHAT_ID || env.TELEGRAM_CHAT_ID;
   if (!chat || !env.TELEGRAM_BOT_TOKEN) return;
-  const text = '🛒 НОВЫЙ ЗАКАЗ (чат-бот · ' + source + ')\n' + who + '\n\n' + order;
-  await tgSend(env.TELEGRAM_BOT_TOKEN, chat, text, null);
+  const lines = ['🛒 НОВЫЙ ЗАКАЗ · ' + source, '', who, '', '👔 Модель: ' + v.model];
+  if (v.color) lines.push('🎨 Цвет: ' + v.color);
+  if (v.size) lines.push('📏 Размер: ' + v.size);
+  lines.push('📦 Количество: ' + v.qty + ' ' + plPack(v.qty));
+  await tgSend(env.TELEGRAM_BOT_TOKEN, chat, lines.join('\n'), null);
 }
 
 /* память диалога (Cloudflare KV binding CHATS); без неё — без контекста */
@@ -183,15 +229,21 @@ async function handleMax(update, env) {
   hist.push({ role: 'user', text: String(text).slice(0, 1000) });
   const raw = await askYandex(env, hist);
   const { clean, order } = extractOrder(raw);
-  hist.push({ role: 'assistant', text: clean });
-  await saveHist(env, key, hist);
+  let reply = clean;
   if (order) {
-    const s = m.sender || {};
-    const who = 'Клиент (MAX): ' + (s.name || [s.first_name, s.last_name].filter(Boolean).join(' ') || '') +
-      (s.username ? ' (@' + s.username + ')' : '') + ' · id ' + (s.user_id || '');
-    await forwardOrder(env, 'MAX', who, order);
+    const v = await validateOrder(parseOrder(order));
+    if (v.ok) {
+      const s = m.sender || {};
+      const who = 'Клиент (MAX): ' + (s.name || [s.first_name, s.last_name].filter(Boolean).join(' ') || '') +
+        (s.username ? ' (@' + s.username + ')' : '') + ' · id ' + (s.user_id || '');
+      await forwardOrder(env, 'MAX', who, v);
+    } else {
+      reply = 'Уточните, пожалуйста, заказ: ' + v.error + '. Модель выберите из каталога — https://vanvion.github.io';
+    }
   }
-  await maxSend(env.MAX_BOT_TOKEN, chatId, clean);
+  hist.push({ role: 'assistant', text: reply });
+  await saveHist(env, key, hist);
+  await maxSend(env.MAX_BOT_TOKEN, chatId, reply);
 }
 
 async function maxSend(token, chatId, text) {
@@ -255,6 +307,25 @@ async function getCatalogSummary() {
   }
 }
 
+let CATALOG_DATA = { names: [], byModel: {}, at: 0 };
+async function getCatalogData() {
+  if (CATALOG_DATA.names.length && Date.now() - CATALOG_DATA.at < 10 * 60 * 1000) return CATALOG_DATA;
+  try {
+    const r = await fetch(CATALOG_URL, { cf: { cacheTtl: 600 } });
+    const products = await r.json();
+    const byModel = {};
+    for (const p of products) {
+      const m = (p.model || '').toUpperCase().trim();
+      if (!m) continue;
+      if (!byModel[m]) byModel[m] = { sizes: p.sizes || '', cat: p.cat };
+    }
+    CATALOG_DATA = { names: Object.keys(byModel), byModel, at: Date.now() };
+    return CATALOG_DATA;
+  } catch (e) {
+    return CATALOG_DATA;
+  }
+}
+
 function buildSystemPrompt(catalog) {
   return [
     'Ты — вежливый консультант оптового каталога мужской одежды VANVION (ТЦ «Садовод», Москва). Мы продаём оптом мужские КОСТЮМНЫЕ пиджаки и брюки — это демисезонная одежда для помещения/офиса, а НЕ зимняя и НЕ верхняя одежда.',
@@ -269,10 +340,12 @@ function buildSystemPrompt(catalog) {
     '• Называй конкретные модели ТОЛЬКО когда клиент назвал параметры (цвет/ткань/фасон). Тогда 1–3 модели, по одной строке.',
     '',
     'ОФОРМЛЕНИЕ ЗАКАЗА (важно):',
-    '• Если клиент хочет заказать — собери 4 параметра: модель, цвет, размерный ряд (НОРМА или БАТАЛ), количество пачек. Чего не хватает — спроси коротко (по одному).',
-    '• Когда ВСЕ 4 параметра есть и клиент подтвердил — ответь коротко: «Заказ принят ✅ Передал менеджеру, он свяжется с вами для подтверждения и расчёта.» И в САМОМ КОНЦЕ добавь ОТДЕЛЬНОЙ последней строкой служебную строку (её клиенту не показывай и не объясняй):',
-    '  [[ORDER]] модель: X; цвет: Y; размер: НОРМА/БАТАЛ; количество: N пачек',
-    '• НЕ добавляй строку [[ORDER]], пока заказ не полный и клиент не подтвердил. Без подтверждения — просто помогай с подбором.',
+    '• Модель бери ТОЛЬКО из ассортимента ниже, точно как написано. Если клиент назвал модель, которой нет в списке, — НЕ подтверждай заказ, скажи, что такой модели нет, и предложи похожую.',
+    '• Количество пачек должно быть реальным (обычно 1–100). При абсурдных числах (например, 1000000) переспроси.',
+    '• Собери 4 параметра: модель, цвет, размер (НОРМА или БАТАЛ), количество пачек. Чего не хватает — спроси коротко.',
+    '• Когда всё собрано, модель из каталога и клиент подтвердил — ответь коротко: «Заказ принят ✅ Передал менеджеру, он свяжется для подтверждения и расчёта.» И в САМОМ КОНЦЕ добавь ОТДЕЛЬНОЙ последней строкой (клиенту её не показывай и не объясняй) строго в формате:',
+    '  [[ORDER]] model=ТОЧНОЕ_НАЗВАНИЕ_ИЗ_КАТАЛОГА; color=цвет; size=НОРМА или БАТАЛ; qty=число',
+    '• НЕ добавляй строку [[ORDER]], если модели нет в каталоге, данные неполные или клиент не подтвердил.',
     '',
     'ПРАВИЛА:',
     'Используй ТОЛЬКО факты и ассортимент ниже. Цену, минимальную партию, доставку, оплату и наличие не выдумывай — скажи коротко, что это уточнит менеджер.',
