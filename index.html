@@ -228,6 +228,21 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .lang-btn:active { transform: translateY(-50%) scale(0.92); }
+.lang-menu {
+  position: fixed; z-index: 1200; min-width: 160px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.22); padding: 6px; overflow: hidden;
+}
+.lang-opt {
+  width: 100%; display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 10px 12px; border-radius: 10px; font-size: 13px; color: var(--text);
+  text-transform: none; letter-spacing: 0;
+}
+.lang-opt b { font-size: 11px; letter-spacing: 0.1em; color: var(--muted); min-width: 22px; }
+.lang-opt span { font-size: 13.5px; }
+.lang-opt.active { background: var(--card); }
+.lang-opt.active b { color: var(--accent); }
+.lang-opt:active { background: var(--card); }
 .subtitle {
   text-align: center;
   font-size: 10px;
@@ -1625,38 +1640,38 @@ function orderLinks(msg) {
 }
 
 const PALETTE = {
-  charcoal: { hex: '#4a4a48', ru: 'УГОЛЬНЫЙ', en: 'CHARCOAL' },
-  navy: { hex: '#1c2744', ru: 'ТЁМНО-СИНИЙ', en: 'NAVY' },
-  black: { hex: '#18181a', ru: 'ЧЁРНЫЙ', en: 'BLACK' },
-  camel: { hex: '#c2935a', ru: 'КЭМЕЛ', en: 'CAMEL' },
-  beige: { hex: '#d4c4a8', ru: 'БЕЖЕВЫЙ', en: 'BEIGE' },
-  grey: { hex: '#9a9a98', ru: 'СЕРЫЙ', en: 'GREY' },
-  brown: { hex: '#6b4226', ru: 'КОРИЧНЕВЫЙ', en: 'BROWN' },
-  green: { hex: '#2d3d2e', ru: 'ЗЕЛЁНЫЙ', en: 'GREEN' },
-  lightgrey: { hex: '#c8c6c2', ru: 'СВЕТЛО-СЕРЫЙ', en: 'LIGHT GREY' },
-  burgundy: { hex: '#5c1a2a', ru: 'БОРДОВЫЙ', en: 'BURGUNDY' },
-  sand: { hex: '#e0d4b8', ru: 'ПЕСОЧНЫЙ', en: 'SAND' },
-  slate: { hex: '#5a6472', ru: 'СЛАНЦЕВЫЙ', en: 'SLATE' },
-  taba: { hex: '#8b5e3a', ru: 'ТАБА', en: 'TABA' },
-  kiremit: { hex: '#b5462a', ru: 'КИРПИЧНЫЙ', en: 'KIREMIT' },
-  kkiremit: { hex: '#7a3020', ru: 'Т.КИРПИЧНЫЙ', en: 'K.KIREMIT' },
-  kahve: { hex: '#4a2e1a', ru: 'КОФЕ', en: 'KAHVE' },
-  antrasit: { hex: '#3a3a3c', ru: 'АНТРАЦИТ', en: 'ANTRASIT' },
-  yesil: { hex: '#1e3528', ru: 'ЗЕЛЁНЫЙ', en: 'YESIL' },
-  murdum: { hex: '#4a1f3a', ru: 'СЛИВОВЫЙ', en: 'MURDUM' },
-  laci: { hex: '#1c2a4a', ru: 'СИНИЙ', en: 'LACI' },
-  klaci: { hex: '#111e36', ru: 'ТЁМНО-СИНИЙ', en: 'K.LACI' },
-  siyah: { hex: '#141414', ru: 'ЧЁРНЫЙ', en: 'SIYAH' },
-  haki:  { hex: '#3d5a47', ru: 'ХАКИ', en: 'HAKI' },
-  alaci: { hex: '#4a72a8', ru: 'СВЕТЛО-СИНИЙ', en: 'A.LACI' },
-  c295:  { hex: '#7a7a7d', ru: 'СЕРЫЙ', en: 'GREY' },
-  c671:  { hex: '#89b4d4', ru: 'ГОЛУБОЙ', en: 'BLUE' },
-  abej:  { hex: '#d4c4b0', ru: 'СВЕТЛО-БЕЖЕВЫЙ', en: 'A.BEJ' },
-  bej:   { hex: '#c4a882', ru: 'БЕЖЕВЫЙ', en: 'BEJ' },
-  ekru:  { hex: '#ede0c8', ru: 'ЭКРЮ', en: 'EKRU' },
-  beyaz: { hex: '#f0f0f0', ru: 'БЕЛЫЙ', en: 'BEYAZ' },
-  vizon: { hex: '#83726d', ru: 'ВИЗОН', en: 'VIZON' },
-  gri:   { hex: '#787e91', ru: 'СЕРЫЙ', en: 'GRI' }
+  charcoal: { hex: '#4a4a48', ru: 'УГОЛЬНЫЙ', en: 'CHARCOAL', tr: 'ANTRASİT', az: 'ANTRASİT' },
+  navy: { hex: '#1c2744', ru: 'ТЁМНО-СИНИЙ', en: 'NAVY', tr: 'LACİVERT', az: 'TÜND GÖY' },
+  black: { hex: '#18181a', ru: 'ЧЁРНЫЙ', en: 'BLACK', tr: 'SİYAH', az: 'QARA' },
+  camel: { hex: '#c2935a', ru: 'КЭМЕЛ', en: 'CAMEL', tr: 'CAMEL', az: 'DƏVƏ RƏNGİ' },
+  beige: { hex: '#d4c4a8', ru: 'БЕЖЕВЫЙ', en: 'BEIGE', tr: 'BEJ', az: 'BEJ' },
+  grey: { hex: '#9a9a98', ru: 'СЕРЫЙ', en: 'GREY', tr: 'GRİ', az: 'BOZ' },
+  brown: { hex: '#6b4226', ru: 'КОРИЧНЕВЫЙ', en: 'BROWN', tr: 'KAHVERENGİ', az: 'QƏHVƏYİ' },
+  green: { hex: '#2d3d2e', ru: 'ЗЕЛЁНЫЙ', en: 'GREEN', tr: 'YEŞİL', az: 'YAŞIL' },
+  lightgrey: { hex: '#c8c6c2', ru: 'СВЕТЛО-СЕРЫЙ', en: 'LIGHT GREY', tr: 'AÇIK GRİ', az: 'AÇIQ BOZ' },
+  burgundy: { hex: '#5c1a2a', ru: 'БОРДОВЫЙ', en: 'BURGUNDY', tr: 'BORDO', az: 'BORDO' },
+  sand: { hex: '#e0d4b8', ru: 'ПЕСОЧНЫЙ', en: 'SAND', tr: 'KUM RENGİ', az: 'QUM RƏNGİ' },
+  slate: { hex: '#5a6472', ru: 'СЛАНЦЕВЫЙ', en: 'SLATE', tr: 'ARDUVAZ', az: 'BOZ-MAVİ' },
+  taba: { hex: '#8b5e3a', ru: 'ТАБА', en: 'TABA', tr: 'TABA', az: 'TABA' },
+  kiremit: { hex: '#b5462a', ru: 'КИРПИЧНЫЙ', en: 'KIREMIT', tr: 'KİREMİT', az: 'KƏRPİC' },
+  kkiremit: { hex: '#7a3020', ru: 'Т.КИРПИЧНЫЙ', en: 'K.KIREMIT', tr: 'KOYU KİREMİT', az: 'TÜND KƏRPİC' },
+  kahve: { hex: '#4a2e1a', ru: 'КОФЕ', en: 'KAHVE', tr: 'KAHVE', az: 'QƏHVƏ' },
+  antrasit: { hex: '#3a3a3c', ru: 'АНТРАЦИТ', en: 'ANTRASIT', tr: 'ANTRASİT', az: 'ANTRASİT' },
+  yesil: { hex: '#1e3528', ru: 'ЗЕЛЁНЫЙ', en: 'YESIL', tr: 'YEŞİL', az: 'YAŞIL' },
+  murdum: { hex: '#4a1f3a', ru: 'СЛИВОВЫЙ', en: 'MURDUM', tr: 'MÜRDÜM', az: 'GAVALI RƏNGİ' },
+  laci: { hex: '#1c2a4a', ru: 'СИНИЙ', en: 'LACI', tr: 'MAVİ', az: 'GÖY' },
+  klaci: { hex: '#111e36', ru: 'ТЁМНО-СИНИЙ', en: 'K.LACI', tr: 'LACİVERT', az: 'TÜND GÖY' },
+  siyah: { hex: '#141414', ru: 'ЧЁРНЫЙ', en: 'SIYAH', tr: 'SİYAH', az: 'QARA' },
+  haki: { hex: '#3d5a47', ru: 'ХАКИ', en: 'HAKI', tr: 'HAKİ', az: 'XAKİ' },
+  alaci: { hex: '#4a72a8', ru: 'СВЕТЛО-СИНИЙ', en: 'A.LACI', tr: 'AÇIK MAVİ', az: 'AÇIQ GÖY' },
+  c295: { hex: '#7a7a7d', ru: 'СЕРЫЙ', en: 'GREY', tr: 'GRİ', az: 'BOZ' },
+  c671: { hex: '#89b4d4', ru: 'ГОЛУБОЙ', en: 'BLUE', tr: 'AÇIK MAVİ', az: 'MAVİ' },
+  abej: { hex: '#d4c4b0', ru: 'СВЕТЛО-БЕЖЕВЫЙ', en: 'A.BEJ', tr: 'AÇIK BEJ', az: 'AÇIQ BEJ' },
+  bej: { hex: '#c4a882', ru: 'БЕЖЕВЫЙ', en: 'BEJ', tr: 'BEJ', az: 'BEJ' },
+  ekru: { hex: '#ede0c8', ru: 'ЭКРЮ', en: 'EKRU', tr: 'EKRU', az: 'EKRÜ' },
+  beyaz: { hex: '#f0f0f0', ru: 'БЕЛЫЙ', en: 'BEYAZ', tr: 'BEYAZ', az: 'AĞ' },
+  vizon: { hex: '#83726d', ru: 'ВИЗОН', en: 'VIZON', tr: 'VİZON', az: 'VİZON' },
+  gri: { hex: '#787e91', ru: 'СЕРЫЙ', en: 'GRI', tr: 'GRİ', az: 'BOZ' }
 };
 
 /* основные цветовые семейства для фильтра каталога */
@@ -1724,6 +1739,44 @@ const I18N = {
     loading: 'LOADING...',
     error: 'LOADING ERROR',
     retry: 'RETRY'
+  },
+  tr: {
+    subtitle: 'TOPTAN KATALOG · ERKEK KLASİK',
+    search: 'ÜRÜN KODU VEYA ADIYLA ARA',
+    tabs: { all: 'TÜMÜ', bryuki: 'PANTOLON', pidzhaki: 'CEKET', palto: 'PALTO' },
+    count: n => n + ' ÜRÜN',
+    cat: { bryuki: 'PANTOLON', pidzhaki: 'CEKET', palto: 'PALTO' },
+    specs: ['KUMAŞ', 'SİLUET', 'BOY', 'ASTAR', 'DÜĞME', 'ÜLKE', 'BEDEN ARALIĞI'],
+    colors: 'RENKLER',
+    related: 'BENZER MODELLER',
+    newin: 'YENİLİKLER',
+    view: 'GÖR',
+    share: 'PAYLAŞ',
+    reset: 'SIFIRLA',
+    zoom: 'ZOOM',
+    empty: 'HİÇBİR ŞEY BULUNAMADI',
+    loading: 'YÜKLENİYOR...',
+    error: 'YÜKLEME HATASI',
+    retry: 'TEKRAR DENE'
+  },
+  az: {
+    subtitle: 'TOPDAN KATALOQ · KİŞİ KLASSİK',
+    search: 'ARTİKUL VƏ YA AD ÜZRƏ AXTARIŞ',
+    tabs: { all: 'HAMISI', bryuki: 'ŞALVAR', pidzhaki: 'PİDJAK', palto: 'PALTO' },
+    count: n => n + ' MƏHSUL',
+    cat: { bryuki: 'ŞALVAR', pidzhaki: 'PİDJAK', palto: 'PALTO' },
+    specs: ['TƏRKİB', 'SİLUET', 'BOY', 'ASTAR', 'DÜYMƏ', 'ÖLKƏ', 'ÖLÇÜ SIRASI'],
+    colors: 'RƏNGLƏR',
+    related: 'OXŞAR MODELLƏR',
+    newin: 'YENİLİKLƏR',
+    view: 'BAX',
+    share: 'PAYLAŞ',
+    reset: 'SIFIRLA',
+    zoom: 'ZOOM',
+    empty: 'HEÇ NƏ TAPILMADI',
+    loading: 'YÜKLƏNİR...',
+    error: 'YÜKLƏMƏ XƏTASI',
+    retry: 'TƏKRAR CƏHD'
   }
 };
 
@@ -1736,7 +1789,63 @@ function plural(n, one, few, many) {
 
 const PH_SVG = '<svg viewBox="0 0 64 96" fill="none" stroke="#1a1a18" stroke-width="1.5"><path d="M20 12 L32 8 L44 12 L48 28 L40 30 L40 86 L24 86 L24 30 L16 28 Z"/></svg>';
 
-let LANG = 'ru';
+const LANGS = ['ru', 'en', 'tr', 'az'];
+const LANG_LABEL = { ru: 'RU', en: 'EN', tr: 'TR', az: 'AZ' };
+let LANG = (function(){ try { const v = localStorage.getItem('vv-lang'); return LANGS.indexOf(v) >= 0 ? v : 'ru'; } catch(e){ return 'ru'; } })();
+/* словарь переводов интерфейса: ключ — русская строка, значения — tr/az (en берётся из вызова L) */
+const DICT = {
+  'АДРЕСА · ТЦ САДОВОД': { tr: 'ADRESLER · SADOVOD AVM', az: 'ÜNVANLAR · SADOVOD' },
+  'БЫСТРЫЙ ЗАКАЗ': { tr: 'HIZLI SİPARİŞ', az: 'SÜRƏTLİ SİFARİŞ' },
+  'В КОРЗИНУ': { tr: 'SEPETE', az: 'SƏBƏTƏ' },
+  'ВСЕ ТКАНИ': { tr: 'TÜM KUMAŞLAR', az: 'BÜTÜN PARÇALAR' },
+  'Выберите чат менеджера — заказ уже вставлен': { tr: 'Yönetici sohbetini seçin — sipariş hazır', az: 'Menecer söhbətini seçin — sifariş hazırdır' },
+  'ДА': { tr: 'EVET', az: 'BƏLİ' },
+  'ЗАКАЗАТЬ · УЗНАТЬ ЦЕНУ': { tr: 'SİPARİŞ · FİYAT ÖĞREN', az: 'SİFARİŞ · QİYMƏTİ ÖYRƏN' },
+  'Заказ скопирован — вставьте в чат': { tr: 'Sipariş kopyalandı — sohbete yapıştırın', az: 'Sifariş kopyalandı — söhbətə yapışdırın' },
+  'Здравствуйте! Прошу рассчитать заказ VANVION:': { tr: 'Merhaba! VANVION siparişini hesaplamanızı rica ederim:', az: 'Salam! VANVION sifarişini hesablamanızı xahiş edirəm:' },
+  'ИТОГО': { tr: 'TOPLAM', az: 'CƏMİ' },
+  'КОЛИЧЕСТВО ПАЧЕК': { tr: 'PAKET SAYISI', az: 'PAKET SAYI' },
+  'КОММЕНТАРИЙ К ЗАКАЗУ': { tr: 'SİPARİŞ NOTU', az: 'SİFARİŞ QEYDİ' },
+  'КОНТАКТЫ': { tr: 'İLETİŞİM', az: 'ƏLAQƏ' },
+  'КОРЗИНА': { tr: 'SEPET', az: 'SƏBƏT' },
+  'Комментарий: ': { tr: 'Yorum: ', az: 'Qeyd: ' },
+  'Корзина пуста.<br>Добавьте модели из каталога.': { tr: 'Sepet boş.<br>Katalogdan modeller ekleyin.', az: 'Səbət boşdur.<br>Kataloqdan modellər əlavə edin.' },
+  'НЕТ': { tr: 'HAYIR', az: 'XEYR' },
+  'НОВИНКА': { tr: 'YENİ', az: 'YENİ' },
+  'НОВИНКИ': { tr: 'YENİLİKLER', az: 'YENİLİKLƏR' },
+  'Напишите вопрос…': { tr: 'Soru yazın…', az: 'Sualınızı yazın…' },
+  'Не удалось скопировать ссылку': { tr: 'Bağlantı kopyalanamadı', az: 'Keçid kopyalanmadı' },
+  'ОПТ · МУЖСКАЯ КЛАССИКА': { tr: 'TOPTAN · ERKEK KLASİK', az: 'TOPDAN · KİŞİ KLASSİK' },
+  'ОПТ · ОТВЕЧУ НА ВОПРОСЫ': { tr: 'TOPTAN · SORULARINIZI YANITLARIM', az: 'TOPDAN · SUALLARA CAVAB VERİRƏM' },
+  'ОТПРАВИТЬ ЗАКАЗ НА РАСЧЁТ': { tr: 'SİPARİŞİ HESABA GÖNDER', az: 'SİFARİŞİ HESABA GÖNDƏR' },
+  'Открыть карточку полностью': { tr: 'Kartı tam aç', az: 'Kartı tam aç' },
+  'Очистить корзину': { tr: 'Sepeti temizle', az: 'Səbəti təmizlə' },
+  'ПОМОЩНИК': { tr: 'ASİSTAN', az: 'ASSİSTENT' },
+  'ПОСЛЕДНИЕ НОВОСТИ': { tr: 'SON HABERLER', az: 'SON XƏBƏRLƏR' },
+  'ПОСТУПЛЕНИЯ И НОВОСТИ': { tr: 'YENİ ÜRÜNLER VE HABERLER', az: 'YENİ MƏHSULLAR VƏ XƏBƏRLƏR' },
+  'Подписаться на уведомления': { tr: 'Bildirimlere abone ol', az: 'Bildirişlərə abunə ol' },
+  'Пожелания, сроки, город доставки…': { tr: 'İstekler, teslim süresi, şehir…', az: 'İstəklər, müddət, çatdırılma şəhəri…' },
+  'Пока новостей нет.': { tr: 'Henüz haber yok.', az: 'Hələ xəbər yoxdur.' },
+  'РАСЧЁТ ОПТОВОГО ЗАКАЗА': { tr: 'TOPTAN SİPARİŞ HESABI', az: 'TOPDAN SİFARİŞ HESABI' },
+  'Смотреть в каталоге →': { tr: 'Katalogda gör →', az: 'Kataloqda bax →' },
+  'Ссылка на модель скопирована': { tr: 'Model bağlantısı kopyalandı', az: 'Model keçidi kopyalandı' },
+  'ТЕЛЕФОНЫ': { tr: 'TELEFONLAR', az: 'TELEFONLAR' },
+  'Уведомления о новинках': { tr: 'Yeni ürün bildirimleri', az: 'Yeni məhsul bildirişləri' },
+  'Укажите количество пачек': { tr: 'Paket sayısını belirtin', az: 'Paket sayını qeyd edin' },
+  'ХИТ': { tr: 'HİT', az: 'HİT' },
+  'ЭЛЕКТРОННАЯ ПОЧТА (E-MAIL)': { tr: 'E-POSTA (E-MAIL)', az: 'E-POÇT (E-MAIL)' },
+  '✓ Вы подписаны на уведомления': { tr: '✓ Bildirimlere abonesiniz', az: '✓ Bildirişlərə abunəsiniz' },
+  '✓ ДОБАВЛЕНО': { tr: '✓ EKLENDİ', az: '✓ ƏLAVƏ EDİLDİ' },
+  '🔔 Сначала добавьте на экран «Домой»': { tr: '🔔 Önce Ana Ekrana ekleyin', az: '🔔 Əvvəlcə Ana Ekrana əlavə edin' },
+  '🔔 Уведомления недоступны': { tr: '🔔 Bildirimler kullanılamıyor', az: '🔔 Bildirişlər əlçatan deyil' }
+};
+/* L('русский','english') -> строка на текущем языке (tr/az — из DICT) */
+function L(ru, en) {
+  if (LANG === 'ru') return ru;
+  if (LANG === 'en') return en;
+  const d = DICT[ru];
+  return (d && d[LANG]) || en || ru;
+}
 let CAT = (function(){ try { return localStorage.getItem('vv-cat') || 'all'; } catch(e){ return 'all'; } })();
 let QUERY = '';
 let COLOR = '';
@@ -1924,7 +2033,7 @@ function observeImages() {
 function render() {
   $('subtitle').textContent = t().subtitle;
   $('search').placeholder = t().search;
-  $('langBtn').textContent = LANG === 'ru' ? 'EN' : 'RU';
+  $('langBtn').textContent = LANG_LABEL[LANG];
   renderTabs();
   renderLiningBar();
   renderFabricBar();
@@ -1960,7 +2069,8 @@ let countTween = null;
 function animateCount(n) {
   const numEl = $('countNum');
   const labelEl = $('countLabel');
-  const labelText = LANG === 'ru' ? plural(n, 'МОДЕЛЬ', 'МОДЕЛИ', 'МОДЕЛЕЙ') : 'MODELS';
+  const labelText = LANG === 'ru' ? plural(n, 'МОДЕЛЬ', 'МОДЕЛИ', 'МОДЕЛЕЙ')
+    : LANG === 'tr' ? 'MODEL' : LANG === 'az' ? 'MODEL' : 'MODELS';
   if (!HAS_GSAP) { numEl.textContent = n; labelEl.textContent = labelText; return; }
   labelEl.textContent = labelText;
   const obj = { v: parseInt(numEl.textContent) || 0 };
@@ -2213,7 +2323,7 @@ function renderFabricBar() {
   if (FABRIC && !present.has(FABRIC)) FABRIC = '';
   const list = Object.keys(FABRICS).filter(f => present.has(f));
   if (list.length < 2) { bar.innerHTML = ''; return; }
-  const all = LANG === 'ru' ? 'ВСЕ ТКАНИ' : 'ALL FABRICS';
+  const all = L('ВСЕ ТКАНИ', 'ALL FABRICS');
   bar.innerHTML = '<button class="ln' + (FABRIC === '' ? ' active' : '') + '" data-fab="">' + all + '</button>' +
     list.map(f => '<button class="ln' + (FABRIC === f ? ' active' : '') + '" data-fab="' + f + '">' +
       esc(FABRICS[f][LANG]) + '</button>').join('');
@@ -2281,8 +2391,12 @@ function modelKey(p) {
   const n = (p.name_en || p.name_ru || '').trim();
   return n.replace(/\s+\S+$/, '').toLowerCase();
 }
-const CAT_WORD = { pidzhaki: ['ПИДЖАК', 'JACKET'], bryuki: ['БРЮКИ', 'TROUSERS'], palto: ['ПАЛЬТО', 'COAT'] };
-function catWordOf(cat) { const w = CAT_WORD[cat] || ['', '']; return LANG === 'ru' ? w[0] : w[1]; }
+const CAT_WORD = {
+  pidzhaki: { ru: 'ПИДЖАК', en: 'JACKET', tr: 'CEKET', az: 'PİDJAK' },
+  bryuki: { ru: 'БРЮКИ', en: 'TROUSERS', tr: 'PANTOLON', az: 'ŞALVAR' },
+  palto: { ru: 'ПАЛЬТО', en: 'COAT', tr: 'PALTO', az: 'PALTO' }
+};
+function catWordOf(cat) { const w = CAT_WORD[cat]; return w ? (w[LANG] || w.en) : ''; }
 
 /* группировка отфильтрованных товаров по модели (порядок — первого появления) */
 function groupByModel(items) {
@@ -2314,20 +2428,20 @@ function modelCardHTML(group) {
            '" style="background:' + hex + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"></button>';
   }).join('');
   const modelName = (catWordOf(rep.cat) + ' ' + (rep.model || '')).trim();
-  const colorsLabel = LANG === 'ru'
-    ? (n + ' ' + plural(n, 'ЦВЕТ', 'ЦВЕТА', 'ЦВЕТОВ'))
-    : (n + ' COLOR' + (n > 1 ? 'S' : ''));
+  const colorWord = LANG === 'ru' ? plural(n, 'ЦВЕТ', 'ЦВЕТА', 'ЦВЕТОВ')
+    : LANG === 'tr' ? 'RENK' : LANG === 'az' ? 'RƏNG' : ('COLOR' + (n > 1 ? 'S' : ''));
+  const colorsLabel = n + ' ' + colorWord;
   return '<div class="card" data-id="' + esc(rep.id) + '">' +
     '<div class="card-press">' +
       '<div class="card-img">' + imgHTML(rep, true) +
         '<span class="art-tag">' + esc(colorsLabel) + '</span>' +
         '<div class="card-tags">' +
-          (group.some(v => v.isnew) ? '<span class="new-tag">' + (LANG === 'ru' ? 'НОВИНКА' : 'NEW') + '</span>' : '') +
-          (group.some(v => v.hit) ? '<span class="hit-tag">' + (LANG === 'ru' ? 'ХИТ' : 'TOP') + '</span>' : '') +
+          (group.some(v => v.isnew) ? '<span class="new-tag">' + (L('НОВИНКА', 'NEW')) + '</span>' : '') +
+          (group.some(v => v.hit) ? '<span class="hit-tag">' + (L('ХИТ', 'TOP')) + '</span>' : '') +
         '</div>' +
         '<div class="card-packs">' + sizeTiers(rep).map(tr =>
           '<button class="card-pack" data-type="' + tr.type + '">' +
-            '<span class="cp-plus">+</span>' + (tr.label || (LANG === 'ru' ? 'В КОРЗИНУ' : 'ADD')) + '</button>'
+            '<span class="cp-plus">+</span>' + (tr.label || (L('В КОРЗИНУ', 'ADD'))) + '</button>'
         ).join('') + '</div>' +
       '</div>' +
       '<div class="card-info">' +
@@ -2389,7 +2503,7 @@ function openDetail(id, cardEl, opts) {
     ru ? p.comp_ru : p.comp_en,
     ru ? p.sil_ru : p.sil_en,
     ru ? p.ros_ru : p.ros_en,
-    (typeof p.lined === 'boolean') ? (p.lined ? (ru ? 'ДА' : 'YES') : (ru ? 'НЕТ' : 'NO')) : '',
+    (typeof p.lined === 'boolean') ? (p.lined ? (L('ДА', 'YES')) : (L('НЕТ', 'NO'))) : '',
     ru ? p.btn_ru : p.btn_en,
     ru ? p.country_ru : p.country_en,
     p.sizes
@@ -2833,7 +2947,7 @@ function setupZoom() {
 /* ---------- кнопки заказа в карточке + окно контактов ---------- */
 function orderHTML(p) {
   const l = orderLinks('Здравствуйте! Интересует ' + getName(p) + ', арт. ' + p.id);
-  const label = LANG === 'ru' ? 'ЗАКАЗАТЬ · УЗНАТЬ ЦЕНУ' : 'ORDER · GET PRICE';
+  const label = L('ЗАКАЗАТЬ · УЗНАТЬ ЦЕНУ', 'ORDER · GET PRICE');
   return '<div class="order-label">' + label + '</div>' +
     '<div class="order-btns">' +
       '<a class="ob ob-wa" href="' + l.wa + '" target="_blank" rel="noopener">WhatsApp</a>' +
@@ -2854,19 +2968,19 @@ function openContacts() {
   $('contacts').innerHTML =
     '<div class="ct-sheet">' +
       '<button class="ct-close" id="ctClose" aria-label="Закрыть">&#10005;</button>' +
-      '<div class="ct-title">' + (ru ? 'КОНТАКТЫ' : 'CONTACTS') + ' · VANVION</div>' +
-      '<div class="ct-sub">' + (ru ? 'ОПТ · МУЖСКАЯ КЛАССИКА' : 'WHOLESALE · MENSWEAR') + '</div>' +
-      '<button class="ct-notify" id="ctNotify">🔔 ' + (ru ? 'Уведомления о новинках' : 'Notify me about new arrivals') + '</button>' +
+      '<div class="ct-title">' + (L('КОНТАКТЫ', 'CONTACTS')) + ' · VANVION</div>' +
+      '<div class="ct-sub">' + (L('ОПТ · МУЖСКАЯ КЛАССИКА', 'WHOLESALE · MENSWEAR')) + '</div>' +
+      '<button class="ct-notify" id="ctNotify">🔔 ' + (L('Уведомления о новинках', 'Notify me about new arrivals')) + '</button>' +
       '<div class="order-btns ct-msgrs">' +
         '<a class="ob ob-wa" href="' + l.wa + '" target="_blank" rel="noopener">WhatsApp</a>' +
         '<a class="ob ob-tg" href="' + l.tg + '" target="_blank" rel="noopener">Telegram</a>' +
         '<a class="ob ob-mx" href="' + l.max + '" target="_blank" rel="noopener">MAX</a>' +
       '</div>' +
-      '<div class="ct-block-label">' + (ru ? 'ТЕЛЕФОНЫ' : 'PHONES') + '</div>' +
+      '<div class="ct-block-label">' + (L('ТЕЛЕФОНЫ', 'PHONES')) + '</div>' +
       '<div class="ct-phones">' + phones + '</div>' +
-      '<div class="ct-block-label">' + (ru ? 'АДРЕСА · ТЦ САДОВОД' : 'ADDRESSES') + '</div>' +
+      '<div class="ct-block-label">' + (L('АДРЕСА · ТЦ САДОВОД', 'ADDRESSES')) + '</div>' +
       '<div class="ct-addrs">' + addrs + '</div>' +
-      '<div class="ct-block-label">' + (ru ? 'ЭЛЕКТРОННАЯ ПОЧТА (E-MAIL)' : 'E-MAIL') + '</div>' +
+      '<div class="ct-block-label">' + (L('ЭЛЕКТРОННАЯ ПОЧТА (E-MAIL)', 'E-MAIL')) + '</div>' +
       '<a class="ct-email" href="mailto:' + CONTACTS.email + '">' + esc(CONTACTS.email) + '</a>' +
     '</div>';
   const box = $('contacts');
@@ -2929,12 +3043,12 @@ function renderChat(typing) {
   $('chat').innerHTML =
     '<div class="chat-sheet">' +
       '<button class="ct-close" id="chatClose" aria-label="Закрыть">&#10005;</button>' +
-      '<div class="chat-head"><div class="c-t">' + (ru ? 'ПОМОЩНИК' : 'ASSISTANT') + ' · VANVION</div>' +
-        '<div class="c-s">' + (ru ? 'ОПТ · ОТВЕЧУ НА ВОПРОСЫ' : 'WHOLESALE · ASK ME') + '</div></div>' +
+      '<div class="chat-head"><div class="c-t">' + (L('ПОМОЩНИК', 'ASSISTANT')) + ' · VANVION</div>' +
+        '<div class="c-s">' + (L('ОПТ · ОТВЕЧУ НА ВОПРОСЫ', 'WHOLESALE · ASK ME')) + '</div></div>' +
       '<div class="chat-msgs" id="chatMsgs">' + msgs + '</div>' +
       '<div class="chat-chips" id="chatChips">' + chips + '</div>' +
       '<form class="chat-input" id="chatForm" autocomplete="off">' +
-        '<input id="chatInput" type="text" placeholder="' + (ru ? 'Напишите вопрос…' : 'Type your question…') + '">' +
+        '<input id="chatInput" type="text" placeholder="' + (L('Напишите вопрос…', 'Type your question…')) + '">' +
         '<button class="chat-send" type="submit" aria-label="Отправить"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>' +
       '</form>' +
     '</div>';
@@ -3082,11 +3196,11 @@ function addcartHTML(p) {
   if (tiers.length > 1) {
     rows = tiers.map((tr) =>
       '<div class="ac-line"><div class="ac-name">' + tr.label + '<small>' + esc(tr.range) + '</small></div>' + stepper(tr.type, 0) + '</div>'
-    ).join('') + '<button class="addcart-btn" id="acBtn" style="width:100%">' + (ru ? 'В КОРЗИНУ' : 'ADD TO CART') + '</button>';
+    ).join('') + '<button class="addcart-btn" id="acBtn" style="width:100%">' + (L('В КОРЗИНУ', 'ADD TO CART')) + '</button>';
   } else {
-    rows = '<div class="addcart-row">' + stepper('plain', 0) + '<button class="addcart-btn" id="acBtn">' + (ru ? 'В КОРЗИНУ' : 'ADD TO CART') + '</button></div>';
+    rows = '<div class="addcart-row">' + stepper('plain', 0) + '<button class="addcart-btn" id="acBtn">' + (L('В КОРЗИНУ', 'ADD TO CART')) + '</button></div>';
   }
-  return '<div class="addcart-label">' + (ru ? 'КОЛИЧЕСТВО ПАЧЕК' : 'NUMBER OF PACKS') + '</div>' + rows;
+  return '<div class="addcart-label">' + (L('КОЛИЧЕСТВО ПАЧЕК', 'NUMBER OF PACKS')) + '</div>' + rows;
 }
 function setupAddCart(p, onAdded) {
   const ru = LANG === 'ru';
@@ -3103,11 +3217,11 @@ function setupAddCart(p, onAdded) {
       const v = parseInt(q.querySelector('span').textContent, 10) || 0;
       if (v > 0) { cartAdd(p.id, q.getAttribute('data-type'), v); added += v; }
     });
-    if (!added) { toast(ru ? 'Укажите количество пачек' : 'Set quantity'); return; }
+    if (!added) { toast(L('Укажите количество пачек', 'Set quantity')); return; }
     haptic('light');
-    btn.classList.add('added'); btn.textContent = ru ? '✓ ДОБАВЛЕНО' : '✓ ADDED';
+    btn.classList.add('added'); btn.textContent = L('✓ ДОБАВЛЕНО', '✓ ADDED');
     toast(ru ? ('Добавлено: ' + added + ' ' + plural(added, 'пачка', 'пачки', 'пачек')) : ('Added: ' + added + ' packs'));
-    setTimeout(() => { btn.classList.remove('added'); btn.textContent = ru ? 'В КОРЗИНУ' : 'ADD TO CART'; }, 1600);
+    setTimeout(() => { btn.classList.remove('added'); btn.textContent = L('В КОРЗИНУ', 'ADD TO CART'); }, 1600);
     if (typeof onAdded === 'function') setTimeout(onAdded, 450);
   };
 }
@@ -3136,14 +3250,14 @@ function renderQuickAdd() {
   const modelName = (catWordOf(p.cat) + ' ' + (p.model || '')).trim();
   box.innerHTML = '<div class="ct-sheet qa-sheet">' +
     '<button class="ct-close" id="qaClose" aria-label="Закрыть">&#10005;</button>' +
-    '<div class="ct-title">' + (ru ? 'БЫСТРЫЙ ЗАКАЗ' : 'QUICK ADD') + '</div>' +
+    '<div class="ct-title">' + (L('БЫСТРЫЙ ЗАКАЗ', 'QUICK ADD')) + '</div>' +
     '<div class="ct-sub">' + esc(modelName) + '</div>' +
     '<div class="qa-top">' +
       '<img class="qa-img" src="' + esc(p.image) + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
       '<div class="qa-colors"><div class="qa-cur" id="qaCur">' + esc(curLabel) + '</div><div class="qa-dots">' + dots + '</div></div>' +
     '</div>' +
     '<div class="addcart">' + addcartHTML(p) + '</div>' +
-    '<button class="cart-clear" id="qaOpenFull">' + (ru ? 'Открыть карточку полностью' : 'Open full card') + '</button>' +
+    '<button class="cart-clear" id="qaOpenFull">' + (L('Открыть карточку полностью', 'Open full card')) + '</button>' +
   '</div>';
   $('qaClose').onclick = closeQuickAdd;
   box.onclick = e => { if (e.target === box) closeQuickAdd(); };
@@ -3161,7 +3275,7 @@ function renderCart() {
   const ru = LANG === 'ru';
   let body;
   if (!CART.length) {
-    body = '<div class="cart-empty">' + (ru ? 'Корзина пуста.<br>Добавьте модели из каталога.' : 'Your cart is empty.') + '</div>';
+    body = '<div class="cart-empty">' + (L('Корзина пуста.<br>Добавьте модели из каталога.', 'Your cart is empty.')) + '</div>';
   } else {
     const items = CART.map(ci => {
       const p = prodById(ci.id); if (!p) return '';
@@ -3180,23 +3294,23 @@ function renderCart() {
       '</div>';
     }).join('');
     body = items +
-      '<div class="cart-total"><span>' + (ru ? 'ИТОГО' : 'TOTAL') + '</span><b>' +
+      '<div class="cart-total"><span>' + (L('ИТОГО', 'TOTAL')) + '</span><b>' +
         (ru ? (CART.length + ' поз. · ' + cartPacks() + ' ' + plural(cartPacks(), 'пачка', 'пачки', 'пачек')) : (CART.length + ' items · ' + cartPacks() + ' packs')) +
       '</b></div>' +
-      '<div class="addcart-label">' + (ru ? 'КОММЕНТАРИЙ К ЗАКАЗУ' : 'ORDER COMMENT') + '</div>' +
-      '<textarea class="cart-note" id="cartNote" rows="2" placeholder="' + (ru ? 'Пожелания, сроки, город доставки…' : 'Notes, timing, delivery city…') + '">' + esc(CART_COMMENT) + '</textarea>' +
-      '<div class="addcart-label">' + (ru ? 'ОТПРАВИТЬ ЗАКАЗ НА РАСЧЁТ' : 'SEND ORDER FOR A QUOTE') + '</div>' +
+      '<div class="addcart-label">' + (L('КОММЕНТАРИЙ К ЗАКАЗУ', 'ORDER COMMENT')) + '</div>' +
+      '<textarea class="cart-note" id="cartNote" rows="2" placeholder="' + (L('Пожелания, сроки, город доставки…', 'Notes, timing, delivery city…')) + '">' + esc(CART_COMMENT) + '</textarea>' +
+      '<div class="addcart-label">' + (L('ОТПРАВИТЬ ЗАКАЗ НА РАСЧЁТ', 'SEND ORDER FOR A QUOTE')) + '</div>' +
       '<div class="order-btns ct-msgrs">' +
         '<button class="ob ob-wa" id="cartWa">WhatsApp</button>' +
         '<button class="ob ob-tg" id="cartTg">Telegram</button>' +
         '<button class="ob ob-mx" id="cartMx">MAX</button>' +
       '</div>' +
-      '<button class="cart-clear" id="cartClear">' + (ru ? 'Очистить корзину' : 'Clear cart') + '</button>';
+      '<button class="cart-clear" id="cartClear">' + (L('Очистить корзину', 'Clear cart')) + '</button>';
   }
   box.innerHTML = '<div class="ct-sheet">' +
     '<button class="ct-close" id="cartClose" aria-label="Закрыть">&#10005;</button>' +
-    '<div class="ct-title">' + (ru ? 'КОРЗИНА' : 'CART') + ' · VANVION</div>' +
-    '<div class="ct-sub">' + (ru ? 'РАСЧЁТ ОПТОВОГО ЗАКАЗА' : 'WHOLESALE ORDER') + '</div>' +
+    '<div class="ct-title">' + (L('КОРЗИНА', 'CART')) + ' · VANVION</div>' +
+    '<div class="ct-sub">' + (L('РАСЧЁТ ОПТОВОГО ЗАКАЗА', 'WHOLESALE ORDER')) + '</div>' +
     body +
   '</div>';
   $('cartClose').onclick = closeCart;
@@ -3217,7 +3331,7 @@ function renderCart() {
 }
 function cartMessage() {
   const ru = LANG === 'ru';
-  const lines = [ru ? 'Здравствуйте! Прошу рассчитать заказ VANVION:' : 'Hello! Please quote this VANVION order:', ''];
+  const lines = [L('Здравствуйте! Прошу рассчитать заказ VANVION:', 'Hello! Please quote this VANVION order:'), ''];
   CART.forEach((ci, i) => {
     const p = prodById(ci.id); if (!p) return;
     const c = colorList(p.colors)[0];
@@ -3232,7 +3346,7 @@ function cartMessage() {
     : ('Total: ' + CART.length + ' items, ' + cartPacks() + ' packs')));
   if (CART_COMMENT.trim()) {
     lines.push('');
-    lines.push((ru ? 'Комментарий: ' : 'Comment: ') + CART_COMMENT.trim());
+    lines.push((L('Комментарий: ', 'Comment: ')) + CART_COMMENT.trim());
   }
   return lines.join('\n');
 }
@@ -3258,12 +3372,12 @@ function sendCart(channel) {
     // Telegram: открываем диалог «Поделиться» с уже готовым текстом заказа
     window.open('https://t.me/share/url?url=' + encodeURIComponent('https://vanvion.github.io/') +
       '&text=' + encodeURIComponent(msg), '_blank');
-    toast(LANG === 'ru' ? 'Выберите чат менеджера — заказ уже вставлен' : 'Pick the manager chat — order is prefilled');
+    toast(L('Выберите чат менеджера — заказ уже вставлен', 'Pick the manager chat — order is prefilled'));
     return;
   }
   // MAX предзаполнение текста не поддерживает — копируем и открываем чат
   copyText(msg);
-  toast(LANG === 'ru' ? 'Заказ скопирован — вставьте в чат' : 'Order copied — paste it in the chat');
+  toast(L('Заказ скопирован — вставьте в чат', 'Order copied — paste it in the chat'));
   setTimeout(() => window.open(CONTACTS.max, '_blank'), 800);
 }
 /* цель Яндекс.Метрики (работает только когда счётчик включён) */
@@ -3312,18 +3426,18 @@ function wireNotifyBtn(btn) {
   const ru = LANG === 'ru';
   if (iosNeedsInstall()) {
     btn.classList.remove('subscribed'); btn.disabled = false;
-    btn.textContent = ru ? '🔔 Сначала добавьте на экран «Домой»' : '🔔 Add to Home Screen first';
+    btn.textContent = L('🔔 Сначала добавьте на экран «Домой»', '🔔 Add to Home Screen first');
     btn.onclick = () => { openInstallBanner(); closeNews(); closeContacts(); };
   } else if (!pushSupported()) {
     btn.disabled = true;
-    btn.textContent = ru ? '🔔 Уведомления недоступны' : '🔔 Notifications unavailable';
+    btn.textContent = L('🔔 Уведомления недоступны', '🔔 Notifications unavailable');
     btn.onclick = null;
   } else {
     btn.disabled = false;
     btn.classList.toggle('subscribed', PUSH_SUBSCRIBED);
     btn.textContent = PUSH_SUBSCRIBED
-      ? (ru ? '✓ Вы подписаны на уведомления' : '✓ Subscribed')
-      : ('🔔 ' + (ru ? 'Подписаться на уведомления' : 'Subscribe to notifications'));
+      ? (L('✓ Вы подписаны на уведомления', '✓ Subscribed'))
+      : ('🔔 ' + (L('Подписаться на уведомления', 'Subscribe to notifications')));
     btn.onclick = () => {
       if (PUSH_SUBSCRIBED) {
         window.OneSignalDeferred.push(async (OneSignal) => { try { await OneSignal.User.PushSubscription.optOut(); } catch (e) {} });
@@ -3363,16 +3477,16 @@ function renderNews() {
   const list = NEWS.length
     ? NEWS.map(n => {
         const pid = newsProductId(n);
-        const btn = pid ? '<button class="news-link" data-id="' + esc(pid) + '">' + (ru ? 'Смотреть в каталоге →' : 'View in catalogue →') + '</button>' : '';
+        const btn = pid ? '<button class="news-link" data-id="' + esc(pid) + '">' + (L('Смотреть в каталоге →', 'View in catalogue →')) + '</button>' : '';
         return '<div class="news-item"><div class="news-date">' + esc(n.date || '') + '</div><div class="news-title">' + esc(n.title || '') + '</div><div class="news-text">' + esc(n.text || '').replace(/\n/g, '<br>') + '</div>' + btn + '</div>';
       }).join('')
-    : '<div class="news-empty">' + (ru ? 'Пока новостей нет.' : 'No news yet.') + '</div>';
+    : '<div class="news-empty">' + (L('Пока новостей нет.', 'No news yet.')) + '</div>';
   $('news').innerHTML = '<div class="ct-sheet">' +
     '<button class="ct-close" id="newsClose" aria-label="Закрыть">&#10005;</button>' +
-    '<div class="ct-title">' + (ru ? 'НОВИНКИ' : 'NEWS') + ' · VANVION</div>' +
-    '<div class="ct-sub">' + (ru ? 'ПОСТУПЛЕНИЯ И НОВОСТИ' : 'NEW ARRIVALS & NEWS') + '</div>' +
+    '<div class="ct-title">' + (L('НОВИНКИ', 'NEWS')) + ' · VANVION</div>' +
+    '<div class="ct-sub">' + (L('ПОСТУПЛЕНИЯ И НОВОСТИ', 'NEW ARRIVALS & NEWS')) + '</div>' +
     '<button class="ct-notify" id="newsNotify"></button>' +
-    '<div class="ct-block-label">' + (ru ? 'ПОСЛЕДНИЕ НОВОСТИ' : 'LATEST') + '</div>' +
+    '<div class="ct-block-label">' + (L('ПОСЛЕДНИЕ НОВОСТИ', 'LATEST')) + '</div>' +
     list +
   '</div>';
   $('newsClose').onclick = closeNews;
@@ -3411,13 +3525,41 @@ async function shareProduct(p) {
   }
   try {
     await navigator.clipboard.writeText(url);
-    toast(LANG === 'ru' ? 'Ссылка на модель скопирована' : 'Model link copied');
+    toast(L('Ссылка на модель скопирована', 'Model link copied'));
   } catch (e) {
-    toast(LANG === 'ru' ? 'Не удалось скопировать ссылку' : 'Could not copy link');
+    toast(L('Не удалось скопировать ссылку', 'Could not copy link'));
   }
 }
 
-$('langBtn').onclick = () => { haptic('light'); LANG = LANG === 'ru' ? 'en' : 'ru'; render(); };
+function setLang(code) {
+  if (LANGS.indexOf(code) < 0) return;
+  LANG = code;
+  try { localStorage.setItem('vv-lang', code); } catch (e) {}
+  closeLangMenu();
+  render();
+}
+function closeLangMenu() { const m = $('langMenu'); if (m) m.remove(); }
+function openLangMenu() {
+  closeLangMenu();
+  const names = { ru: 'Русский', en: 'English', tr: 'Türkçe', az: 'Azərbaycan' };
+  const menu = document.createElement('div');
+  menu.id = 'langMenu';
+  menu.className = 'lang-menu';
+  menu.innerHTML = LANGS.map(c =>
+    '<button class="lang-opt' + (c === LANG ? ' active' : '') + '" data-l="' + c + '">' +
+      '<b>' + LANG_LABEL[c] + '</b> <span>' + names[c] + '</span></button>'
+  ).join('');
+  document.body.appendChild(menu);
+  const r = $('langBtn').getBoundingClientRect();
+  menu.style.top = (r.bottom + 8) + 'px';
+  menu.style.right = (window.innerWidth - r.right) + 'px';
+  menu.querySelectorAll('.lang-opt').forEach(b => b.onclick = () => { haptic('light'); setLang(b.getAttribute('data-l')); });
+  setTimeout(() => document.addEventListener('click', onLangOutside), 0);
+}
+function onLangOutside(e) {
+  if (!e.target.closest('#langMenu') && e.target.id !== 'langBtn') { closeLangMenu(); document.removeEventListener('click', onLangOutside); }
+}
+$('langBtn').onclick = e => { e.stopPropagation(); haptic('light'); if ($('langMenu')) closeLangMenu(); else openLangMenu(); };
 $('search').oninput = e => {
   QUERY = e.target.value;
   $('searchClear').classList.toggle('show', QUERY.length > 0);
