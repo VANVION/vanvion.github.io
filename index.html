@@ -3355,7 +3355,7 @@ function closeNews() { $('news').classList.remove('show'); }
 function renderNews() {
   const ru = LANG === 'ru';
   const list = NEWS.length
-    ? NEWS.map(n => '<div class="news-item"><div class="news-date">' + esc(n.date || '') + '</div><div class="news-title">' + esc(n.title || '') + '</div><div class="news-text">' + esc(n.text || '') + '</div></div>').join('')
+    ? NEWS.map(n => '<div class="news-item"><div class="news-date">' + esc(n.date || '') + '</div><div class="news-title">' + esc(n.title || '') + '</div><div class="news-text">' + esc(n.text || '').replace(/\n/g, '<br>') + '</div></div>').join('')
     : '<div class="news-empty">' + (ru ? 'Пока новостей нет.' : 'No news yet.') + '</div>';
   $('news').innerHTML = '<div class="ct-sheet">' +
     '<button class="ct-close" id="newsClose" aria-label="Закрыть">&#10005;</button>' +

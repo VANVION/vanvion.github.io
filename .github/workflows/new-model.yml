@@ -122,15 +122,15 @@ jobs:
               pid = (items[0].get("id") or "").strip()
               card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
 
-              # --- текст для ленты «Новинки» на сайте (простой, читаемый) ---
-              lines = ["Новинка в каталоге VANVION — %s." % m]
+              # --- текст для ленты «Новинки» на сайте (структурировано, по строкам) ---
+              nlines = []
               if comp:
-                  lines.append("Состав: %s." % fmt_comp(comp))
+                  nlines.append("🧵 Состав: %s" % fmt_comp(comp))
               if color_names:
-                  lines.append("Цвета (%d): %s." % (cols, ", ".join(color_names)))
+                  nlines.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
               if sizes:
-                  lines.append("Размерные сетки в наличии: %s." % sizes)
-              news_text = " ".join(lines)
+                  nlines.append("📏 Размеры: %s" % sizes)
+              news_text = "\n".join(nlines)
               news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": news_text})
 
               # --- подпись для Telegram (HTML, с переносами и отступами) ---

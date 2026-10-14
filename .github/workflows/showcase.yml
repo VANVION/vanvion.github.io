@@ -1,0 +1,363 @@
+name: Showcase a jacket (2x per week)
+
+# Дважды в неделю (вт и пт, 10:17 МСК) публикует ОДНУ модель пиджака из каталога
+# по кругу: Telegram + MAX + пуш. Это витрина имеющихся моделей, не новинка —
+# в ленту «Новинки» не добавляется. Порядок показа хранится в
+# .github/showcase_state.json; когда все модели показаны — круг начинается заново.
+
+on:
+  schedule:
+    - cron: '17 7 * * 2,5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: showcase-jacket
+  cancel-in-progress: false
+
+jobs:
+  showcase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick a jacket and build payload
+        id: pick
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+
+          SITE = "https://vanvion.github.io"
+          def load(path, default):
+              try:
+                  with open(path, encoding="utf-8") as f:
+                      return json.load(f)
+              except Exception:
+                  return default
+
+          products = load("data/products.json", [])
+          state = load(".github/showcase_state.json", {})
+          shown = state.get("shown", []) if isinstance(state, dict) else []
+
+          order, by = [], {}
+          for p in products:
+              if p.get("cat") != "pidzhaki":
+                  continue
+              m = (p.get("model") or "").strip()
+              if not m:
+                  continue
+              if m not in by:
+                  by[m] = []; order.append(m)
+              by[m].append(p)
+
+          gh = os.environ["GITHUB_OUTPUT"]
+          if not order:
+              with open(gh, "a") as f: f.write("count=0\n")
+              print("no jacket models"); raise SystemExit
+
+          pool = [m for m in order if m not in shown]
+          if not pool:
+              shown = []; pool = order[:]
+          model = pool[0]
+          shown.append(model)
+          with open(".github/showcase_state.json", "w", encoding="utf-8") as f:
+              json.dump({"shown": shown}, f, ensure_ascii=False, indent=2)
+
+          COLOR_RU = {
+            "charcoal":"УГОЛЬНЫЙ","navy":"ТЁМНО-СИНИЙ","black":"ЧЁРНЫЙ","camel":"КЭМЕЛ",
+            "beige":"БЕЖЕВЫЙ","grey":"СЕРЫЙ","brown":"КОРИЧНЕВЫЙ","green":"ЗЕЛЁНЫЙ",
+            "lightgrey":"СВЕТЛО-СЕРЫЙ","burgundy":"БОРДОВЫЙ","sand":"ПЕСОЧНЫЙ","slate":"СЛАНЦЕВЫЙ",
+            "taba":"ТАБА","kiremit":"КИРПИЧНЫЙ","kkiremit":"Т.КИРПИЧНЫЙ","kahve":"КОФЕ",
+            "antrasit":"АНТРАЦИТ","yesil":"ЗЕЛЁНЫЙ","murdum":"СЛИВОВЫЙ","laci":"СИНИЙ",
+            "klaci":"ТЁМНО-СИНИЙ","siyah":"ЧЁРНЫЙ","haki":"ХАКИ","alaci":"СВЕТЛО-СИНИЙ",
+            "c295":"СЕРЫЙ","c671":"ГОЛУБОЙ","abej":"СВЕТЛО-БЕЖЕВЫЙ","bej":"БЕЖЕВЫЙ",
+            "ekru":"ЭКРЮ","beyaz":"БЕЛЫЙ","vizon":"ВИЗОН","gri":"СЕРЫЙ",
+          }
+          def color_name(p):
+              slug = (p.get("colors") or "").split(",")[0].strip().lower()
+              return COLOR_RU.get(slug, "")
+          def fmt_comp(c):
+              c = (c or "").strip(); c = re.sub(r"%\s+", "%, ", c)
+              return c[:1].upper() + c[1:].lower() if c else c
+          def esc_html(s):
+              return (s or "").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+          def plural(n, one, few, many):
+              m10, m100 = n % 10, n % 100
+              if m10 == 1 and m100 != 11: return one
+              if 2 <= m10 <= 4 and not (12 <= m100 <= 14): return few
+              return many
+
+          items = by[model]; n = len(items)
+          comp = (items[0].get("comp_ru") or "").strip()
+          sizes = (items[0].get("sizes") or "").strip()
+          cols = n
+          color_names, seen = [], set()
+          for it in items:
+              cn = color_name(it)
+              if cn and cn not in seen:
+                  seen.add(cn); color_names.append(cn.capitalize())
+          images, seen_img = [], set()
+          for it in items:
+              im = (it.get("image") or "").strip()
+              if im and im not in seen_img:
+                  seen_img.add(im); images.append(SITE + "/" + im)
+          images = images[:10]
+          pid = (items[0].get("id") or "").strip()
+          card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
+
+          # Telegram (HTML)
+          cap = ["👔 <b>%s</b>" % esc_html(model), "", "Из каталога <b>VANVION</b> — мужская классика оптом.", ""]
+          if comp: cap.append("🧵 <b>Состав:</b> %s" % esc_html(fmt_comp(comp)))
+          if color_names: cap.append("🎨 <b>Цвета (%d):</b> %s" % (cols, esc_html(", ".join(color_names))))
+          if sizes: cap.append("📏 <b>Размеры:</b> %s" % esc_html(sizes))
+          cap.append("")
+          cap.append("👇 Открыть модель — фото, цвета и оформление оптового заказа:")
+          cap.append('🔗 <a href="%s">Открыть %s в каталоге</a>' % (esc_html(card_url), esc_html(model)))
+          caption = "\n".join(cap)
+
+          # Instagram
+          ig = ["👔 %s" % model, "", "Мужская классика оптом от VANVION.", ""]
+          if comp: ig.append("🧵 Состав: %s" % fmt_comp(comp))
+          if color_names: ig.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+          if sizes: ig.append("📏 Размеры: %s" % sizes)
+          ig += ["", "🛍 Опт · ТЦ «Садовод», Москва",
+                 "🔗 Каталог и заказ — ссылка в профиле (vanvion.github.io)", "",
+                 "#vanvion #опт #пиджаки #мужскаяодежда #оптом #садовод #мужскойкостюм #оптоваяодежда"]
+          ig_caption = "\n".join(ig)
+
+          # MAX
+          mx = ["👔 %s — из каталога VANVION" % model, ""]
+          if comp: mx.append("🧵 Состав: %s" % fmt_comp(comp))
+          if color_names: mx.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+          if sizes: mx.append("📏 Размеры: %s" % sizes)
+          mx += ["", "🛍 Опт · ТЦ «Садовод», Москва",
+                 "👇 Открыть карточку модели (фото, цвета, заказ):", card_url]
+          max_caption = "\n".join(mx)
+
+          out = {
+              "push_title": "VANVION — модель из каталога",
+              "push_body": "%s · мужская классика оптом" % model,
+              "push_image": images[0] if images else "",
+              "push_url": card_url,
+              "tg_items": [{"model": model, "caption": caption, "images": images,
+                            "card_url": card_url, "ig_caption": ig_caption, "max_caption": max_caption}],
+          }
+          with open("/tmp/announce.json", "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False)
+          with open(gh, "a") as f: f.write("count=1\n")
+          print("showcase model:", model)
+          PY
+
+      - name: Commit showcase state
+        if: steps.pick.outputs.count != '0'
+        run: |
+          git config user.name "VANVION"
+          git config user.email "vanvion@yandex.com"
+          git add .github/showcase_state.json
+          git commit -m "Auto: showcase rotation state" || { echo "nothing to commit"; exit 0; }
+          git push
+
+      - name: Send push (OneSignal)
+        if: steps.pick.outputs.count != '0'
+        env:
+          ONESIGNAL_REST_KEY: ${{ secrets.ONESIGNAL_REST_KEY }}
+          ONESIGNAL_APP_ID: ${{ secrets.ONESIGNAL_APP_ID }}
+        run: |
+          if [ -z "$ONESIGNAL_REST_KEY" ]; then echo "OneSignal secret not set — skip push"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          if not data.get("push_title"):
+              print("nothing to push"); raise SystemExit
+          app_id = os.environ.get("ONESIGNAL_APP_ID") or "27f0d856-c109-4904-ba79-2491fcebdc06"
+          body = {
+              "app_id": app_id,
+              "included_segments": ["Total Subscriptions", "Subscribed Users"],
+              "headings": {"en": data["push_title"], "ru": data["push_title"]},
+              "contents": {"en": data["push_body"], "ru": data["push_body"]},
+              "url": data.get("push_url") or "https://vanvion.github.io/",
+          }
+          if data.get("push_image"):
+              body["chrome_web_image"] = data["push_image"]
+          key = os.environ["ONESIGNAL_REST_KEY"]
+          payload = json.dumps(body).encode("utf-8")
+          schemes = ["Key ", "Basic "] if key.startswith("os_v2_") else ["Basic ", "Key "]
+          for scheme in schemes:
+              req = urllib.request.Request("https://onesignal.com/api/v1/notifications",
+                  data=payload,
+                  headers={"Content-Type": "application/json; charset=utf-8", "Authorization": scheme + key},
+                  method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as r:
+                      print("OneSignal OK (%s):" % scheme.strip(), r.status, r.read().decode("utf-8")[:300]); break
+              except urllib.error.HTTPError as e:
+                  msg = e.read().decode("utf-8")[:300]
+                  print("OneSignal HTTP %s (%s): %s" % (e.code, scheme.strip(), msg))
+                  if e.code not in (400, 401, 403): break
+              except Exception as e:
+                  print("OneSignal error (%s): %s" % (scheme.strip(), e)); break
+          PY
+
+      - name: Post to Telegram channel
+        if: steps.pick.outputs.count != '0'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, urllib.request, urllib.parse, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
+          base = "https://api.telegram.org/bot" + token
+          def call(method, payload):
+              req = urllib.request.Request(base + "/" + method,
+                  data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=40) as r:
+                      print(method, r.status)
+              except urllib.error.HTTPError as e:
+                  print(method, "HTTP", e.code, e.read().decode("utf-8")[:300])
+              except Exception as e:
+                  print(method, "error:", e)
+          for it in data["tg_items"]:
+              caption = it["caption"]; imgs = it.get("images") or []
+              if len(imgs) >= 2:
+                  media = []
+                  for i, u in enumerate(imgs):
+                      item = {"type": "photo", "media": u}
+                      if i == 0:
+                          item["caption"] = caption; item["parse_mode"] = "HTML"
+                      media.append(item)
+                  call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
+              elif len(imgs) == 1:
+                  call("sendPhoto", {"chat_id": chat, "photo": imgs[0], "caption": caption, "parse_mode": "HTML"})
+              else:
+                  call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
+          PY
+
+      - name: Post to Instagram
+        if: steps.pick.outputs.count != '0'
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$IG_USER_ID" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "Instagram secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.parse, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          uid = os.environ["IG_USER_ID"]; tok = os.environ["IG_ACCESS_TOKEN"]
+          GRAPH = "https://graph.facebook.com/v21.0"
+          def api(path, params):
+              body = urllib.parse.urlencode(params).encode("utf-8")
+              req = urllib.request.Request(GRAPH + path, data=body, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      return json.loads(r.read().decode("utf-8")), None
+              except urllib.error.HTTPError as e:
+                  return None, "HTTP %s %s" % (e.code, e.read().decode("utf-8")[:300])
+              except Exception as e:
+                  return None, str(e)
+          def publish(cid):
+              res, err = api("/%s/media_publish" % uid, {"creation_id": cid, "access_token": tok})
+              print("IG publish error:", err) if err else print("IG published:", res.get("id"))
+          for it in data["tg_items"]:
+              caption = it.get("ig_caption") or it.get("caption") or ""
+              imgs = it.get("images") or []
+              if not imgs:
+                  print("IG skip (no images)"); continue
+              if len(imgs) == 1:
+                  res, err = api("/%s/media" % uid, {"image_url": imgs[0], "caption": caption, "access_token": tok})
+                  if err: print("IG media error:", err); continue
+                  time.sleep(3); publish(res["id"])
+              else:
+                  child_ids = []
+                  for u in imgs[:10]:
+                      res, err = api("/%s/media" % uid, {"image_url": u, "is_carousel_item": "true", "access_token": tok})
+                      if err: print("IG child error:", err)
+                      elif res.get("id"): child_ids.append(res["id"])
+                  if len(child_ids) < 2:
+                      print("IG carousel: not enough children"); continue
+                  res, err = api("/%s/media" % uid, {"media_type": "CAROUSEL", "children": ",".join(child_ids),
+                                 "caption": caption, "access_token": tok})
+                  if err: print("IG carousel error:", err); continue
+                  time.sleep(5); publish(res["id"])
+          PY
+
+      - name: Post to MAX
+        if: steps.pick.outputs.count != '0'
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
+        run: |
+          if [ -z "$MAX_BOT_TOKEN" ] || [ -z "$MAX_CHAT_ID" ]; then
+            echo "MAX secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, time, urllib.request, urllib.parse, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          tok = os.environ["MAX_BOT_TOKEN"]; chat = os.environ["MAX_CHAT_ID"]
+          BASE = "https://botapi.max.ru"
+          AUTH = {"Authorization": tok}
+          def multipart(field, filename, content, ctype="image/jpeg"):
+              b = "----vanvion%d" % int(time.time() * 1000)
+              head = ("--%s\r\nContent-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n"
+                      "Content-Type: %s\r\n\r\n") % (b, field, filename, ctype)
+              body = head.encode("utf-8") + content + ("\r\n--%s--\r\n" % b).encode("utf-8")
+              return body, "multipart/form-data; boundary=" + b
+          def upload_image(image_url):
+              req = urllib.request.Request(BASE + "/uploads?" + urllib.parse.urlencode({"type": "image"}),
+                  data=b"{}", headers=dict(AUTH, **{"Content-Type": "application/json"}), method="POST")
+              with urllib.request.urlopen(req, timeout=40) as r:
+                  up = json.loads(r.read().decode("utf-8"))
+              upload_url = up.get("url")
+              if not upload_url:
+                  print("MAX upload: no url", up); return None
+              with urllib.request.urlopen(image_url, timeout=60) as r:
+                  img = r.read()
+              body, ct = multipart("data", "photo.jpg", img)
+              req2 = urllib.request.Request(upload_url, data=body, headers={"Content-Type": ct}, method="POST")
+              with urllib.request.urlopen(req2, timeout=90) as r:
+                  res = json.loads(r.read().decode("utf-8"))
+              if isinstance(res, dict):
+                  if res.get("token"): return res["token"]
+                  for v in (res.get("photos") or {}).values():
+                      if isinstance(v, dict) and v.get("token"): return v["token"]
+              print("MAX upload: no token", str(res)[:200]); return None
+          def send(text, attachments):
+              q = urllib.parse.urlencode({"chat_id": chat})
+              payload = {"text": text}
+              if attachments: payload["attachments"] = attachments
+              body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+              for attempt in range(6):
+                  req = urllib.request.Request(BASE + "/messages?" + q, data=body,
+                      headers=dict(AUTH, **{"Content-Type": "application/json; charset=utf-8"}), method="POST")
+                  try:
+                      with urllib.request.urlopen(req, timeout=60) as r:
+                          print("MAX send OK", r.status); return True
+                  except urllib.error.HTTPError as e:
+                      msg = e.read().decode("utf-8")[:300]
+                      if "attachment.not.ready" in msg and attempt < 5:
+                          print("MAX attachments processing, retry..."); time.sleep(5); continue
+                      print("MAX HTTP", e.code, msg)
+                      if attachments:
+                          print("MAX fallback: text only"); return send(text, None)
+                      return False
+                  except Exception as e:
+                      print("MAX error:", e); return False
+          for it in data["tg_items"]:
+              text = it.get("max_caption") or it.get("ig_caption") or ""
+              imgs = it.get("images") or []
+              attachments = []
+              for u in imgs[:10]:
+                  try:
+                      t = upload_image(u)
+                  except Exception as e:
+                      print("MAX upload error:", e); t = None
+                  if t: attachments.append({"type": "image", "payload": {"token": t}})
+              print("MAX attachments:", len(attachments))
+              send(text, attachments or None)
+          PY
