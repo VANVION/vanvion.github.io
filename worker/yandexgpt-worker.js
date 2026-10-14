@@ -1,13 +1,19 @@
 /*
-  VANVION · ИИ-консультант — Cloudflare Worker (мостик к YandexGPT)
+  VANVION · ИИ-консультант — Cloudflare Worker
   --------------------------------------------------------------
-  Переменные окружения (задаются в настройках воркера):
-    YANDEX_API_KEY   — секрет: API-ключ сервисного аккаунта Yandex Cloud
-    YANDEX_FOLDER_ID  — переменная: ID каталога (folder) в Yandex Cloud
-    ALLOW_ORIGIN      — (необязательно) https://vanvion.github.io  (по умолчанию *)
+  Три роли в одном воркере:
+    • POST /            — чат на сайте (принимает {messages}, отвечает {reply})
+    • POST /tg          — webhook Telegram-бота (отвечает клиентам в чате/ЛС)
+    • POST /max         — webhook MAX-бота (отвечает клиентам в диалоге)
 
-  Сайт шлёт сюда POST { messages: [{role:'user'|'assistant', content:'...'}] }
-  Воркер отвечает { reply: '...' }.
+  Переменные окружения (Settings → Variables and Secrets воркера):
+    YANDEX_API_KEY          — секрет: API-ключ сервисного аккаунта Yandex Cloud
+    YANDEX_FOLDER_ID         — ID каталога Yandex Cloud
+    TELEGRAM_BOT_TOKEN       — секрет: токен Telegram-бота (чтобы отвечать)
+    TELEGRAM_BOT_USERNAME    — (необяз.) username бота без @, для реакции на упоминание в группе
+    TELEGRAM_SECRET          — (необяз.) секрет вебхука Telegram (проверка заголовка)
+    MAX_BOT_TOKEN            — секрет: токен MAX-бота (чтобы отвечать)
+    ALLOW_ORIGIN             — (необяз.) https://vanvion.github.io (для чата на сайте)
 */
 
 const CATALOG_URL = 'https://vanvion.github.io/data/products.json';
@@ -15,6 +21,8 @@ let CATALOG_CACHE = { text: '', at: 0 };
 
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    const path = url.pathname.replace(/\/+$/, '') || '/';
     const origin = env.ALLOW_ORIGIN || '*';
     const cors = {
       'Access-Control-Allow-Origin': origin,
@@ -22,46 +30,126 @@ export default {
       'Access-Control-Allow-Headers': 'Content-Type',
     };
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
+    if (request.method === 'GET') return new Response('VANVION AI worker OK', { status: 200 });
     if (request.method !== 'POST') return json({ reply: 'Только POST.' }, cors);
 
-    let body;
-    try { body = await request.json(); } catch (e) { return json({ reply: 'Неверный запрос.' }, cors); }
+    // --- webhook Telegram ---
+    if (path === '/tg') {
+      if (env.TELEGRAM_SECRET) {
+        const got = request.headers.get('X-Telegram-Bot-Api-Secret-Token');
+        if (got !== env.TELEGRAM_SECRET) return new Response('forbidden', { status: 403 });
+      }
+      let update; try { update = await request.json(); } catch (e) { return new Response('ok'); }
+      // отвечаем асинхронно, Telegram сразу получает 200
+      await handleTelegram(update, env).catch(e => console.log('TG err', e));
+      return new Response('ok');
+    }
+
+    // --- webhook MAX ---
+    if (path === '/max') {
+      let update; try { update = await request.json(); } catch (e) { return new Response('ok'); }
+      await handleMax(update, env).catch(e => console.log('MAX err', e));
+      return new Response('ok');
+    }
+
+    // --- чат на сайте ---
+    let body; try { body = await request.json(); } catch (e) { return json({ reply: 'Неверный запрос.' }, cors); }
     const incoming = Array.isArray(body.messages) ? body.messages.slice(-10) : [];
-
-    // системный промпт со знаниями о каталоге
-    const catalog = await getCatalogSummary();
-    const system = buildSystemPrompt(catalog);
-
-    const messages = [{ role: 'system', text: system }];
+    const msgs = [];
     for (const m of incoming) {
       const role = m.role === 'assistant' ? 'assistant' : 'user';
       const text = String(m.content || '').slice(0, 1000);
-      if (text) messages.push({ role, text });
+      if (text) msgs.push({ role, text });
     }
-    if (messages.length < 2) return json({ reply: 'Здравствуйте! Чем помочь?' }, cors);
-
-    try {
-      const r = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/completion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Api-Key ' + env.YANDEX_API_KEY,
-        },
-        body: JSON.stringify({
-          modelUri: 'gpt://' + env.YANDEX_FOLDER_ID + '/yandexgpt/latest',
-          completionOptions: { stream: false, temperature: 0.3, maxTokens: 600 },
-          messages,
-        }),
-      });
-      const data = await r.json();
-      const reply = data?.result?.alternatives?.[0]?.message?.text
-        || 'Извините, не получилось ответить. Напишите менеджеру в WhatsApp / Telegram / MAX.';
-      return json({ reply }, cors);
-    } catch (e) {
-      return json({ reply: 'Сервис временно недоступен. Напишите менеджеру в WhatsApp / Telegram / MAX.' }, cors);
-    }
+    if (!msgs.length) return json({ reply: 'Здравствуйте! Чем помочь?' }, cors);
+    const reply = await askYandex(env, msgs);
+    return json({ reply }, cors);
   },
 };
+
+/* ---------------- Telegram ---------------- */
+async function handleTelegram(update, env) {
+  const msg = update.message || update.edited_message;
+  if (!msg || !msg.text) return;
+  if (msg.from && msg.from.is_bot) return;
+  const chat = msg.chat || {};
+  const chatId = chat.id;
+  const isPrivate = chat.type === 'private';
+  const uname = (env.TELEGRAM_BOT_USERNAME || '').replace('@', '');
+  let text = msg.text;
+  let shouldReply = isPrivate;
+  if (!isPrivate) {
+    // в группе отвечаем только на упоминание бота или ответ на его сообщение
+    if (uname && text.indexOf('@' + uname) >= 0) { shouldReply = true; text = text.split('@' + uname).join('').trim(); }
+    if (msg.reply_to_message && msg.reply_to_message.from && msg.reply_to_message.from.is_bot) shouldReply = true;
+  }
+  if (!shouldReply || !text) return;
+  const reply = await askYandex(env, [{ role: 'user', text: text.slice(0, 1000) }]);
+  await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, reply, isPrivate ? null : msg.message_id);
+}
+
+async function tgSend(token, chatId, text, replyTo) {
+  if (!token) return;
+  const payload = { chat_id: chatId, text: text, disable_web_page_preview: true };
+  if (replyTo) payload.reply_to_message_id = replyTo;
+  try {
+    await fetch('https://api.telegram.org/bot' + token + '/sendMessage', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+  } catch (e) { console.log('tgSend err', e); }
+}
+
+/* ---------------- MAX ---------------- */
+async function handleMax(update, env) {
+  // новое сообщение от пользователя
+  if (!update || update.update_type !== 'message_created') return;
+  const m = update.message || {};
+  const body = m.body || {};
+  const text = body.text || '';
+  const rec = m.recipient || {};
+  const chatId = rec.chat_id;
+  const chatType = rec.chat_type; // 'dialog' (ЛС) или 'chat' (группа)
+  if (!text || !chatId) return;
+  // автоответ только в личных диалогах, чтобы не спамить в группе
+  if (chatType && chatType !== 'dialog') return;
+  const reply = await askYandex(env, [{ role: 'user', text: String(text).slice(0, 1000) }]);
+  await maxSend(env.MAX_BOT_TOKEN, chatId, reply);
+}
+
+async function maxSend(token, chatId, text) {
+  if (!token) return;
+  try {
+    await fetch('https://botapi.max.ru/messages?' + new URLSearchParams({ chat_id: String(chatId) }), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Authorization': token },
+      body: JSON.stringify({ text: text }),
+    });
+  } catch (e) { console.log('maxSend err', e); }
+}
+
+/* ---------------- YandexGPT ---------------- */
+async function askYandex(env, messages) {
+  const catalog = await getCatalogSummary();
+  const system = buildSystemPrompt(catalog);
+  const full = [{ role: 'system', text: system }].concat(messages);
+  try {
+    const r = await fetch('https://llm.api.cloud.yandex.net/foundationModels/v1/completion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Api-Key ' + env.YANDEX_API_KEY },
+      body: JSON.stringify({
+        modelUri: 'gpt://' + env.YANDEX_FOLDER_ID + '/yandexgpt/latest',
+        completionOptions: { stream: false, temperature: 0.3, maxTokens: 600 },
+        messages: full,
+      }),
+    });
+    const data = await r.json();
+    return (data && data.result && data.result.alternatives && data.result.alternatives[0]
+      && data.result.alternatives[0].message && data.result.alternatives[0].message.text)
+      || 'Извините, не получилось ответить. Напишите менеджеру: +7 916 259 1643.';
+  } catch (e) {
+    return 'Сервис временно недоступен. Напишите менеджеру: +7 916 259 1643.';
+  }
+}
 
 function json(obj, cors) {
   return new Response(JSON.stringify(obj), { headers: { 'Content-Type': 'application/json; charset=utf-8', ...cors } });
@@ -92,27 +180,22 @@ async function getCatalogSummary() {
 function buildSystemPrompt(catalog) {
   return [
     'Ты — вежливый консультант оптового каталога мужской одежды VANVION (ТЦ «Садовод», Москва). Мы продаём оптом мужские КОСТЮМНЫЕ пиджаки и брюки — это демисезонная одежда для помещения/офиса, а НЕ зимняя и НЕ верхняя одежда.',
-    'Отвечай по-русски, кратко и по делу, помогай подобрать модель и оформить оптовый заказ.',
+    'ВАЖНО про язык: отвечай на ТОМ ЖЕ языке, на котором написал клиент (русский, английский, турецкий или азербайджанский). Если язык не ясен — отвечай по-русски.',
+    'Кратко и по делу, помогай подобрать модель и оформить оптовый заказ.',
     'Используй ТОЛЬКО факты и ассортимент ниже. Если спрашивают цену, минимальную партию, доставку, оплату или наличие — честно скажи, что это уточняется у менеджера (WhatsApp / Telegram / MAX), и не выдумывай цифры.',
     '',
     'ВАЖНЫЕ ПРАВИЛА ПОДБОРА:',
-    '• Город/регион клиента (Сургут, Краснодар и т.п.) НЕ влияет на ассортимент — товар одинаковый для всех. НЕ подбирай «по климату» и НЕ советуй модели исходя из погоды или температуры в городе.',
-    '• Не называй лён, хлопок или вискозу «тёплыми» или «подходящими для холода». Это лёгкие костюмные ткани. Зимних и утеплённых вещей у нас НЕТ — если клиент прямо просит тёплое/зимнее, честно скажи, что мы продаём костюмные пиджаки и брюки (демисезон), верхней зимней одежды нет.',
-    '• Подбирай по тому, что действительно важно: фасон/силуэт, тип ткани, цвет, размерный ряд (НОРМА/БАТАЛ). Если запрос общий — задай 1 короткий уточняющий вопрос (например, какой цвет или ткань предпочтительнее), прежде чем вываливать список.',
-    '• Предлагай максимум 3–4 модели за раз, не длинными простынями.',
-    '',
-    'ФОРМАТ ОТВЕТА (обязательно):',
-    '• Пиши короткими абзацами, разделяй смысловые блоки пустой строкой. НЕ пиши сплошной стеной текста.',
-    '• Когда перечисляешь модели — каждую с новой строки как пункт списка, начиная с «• ». Коротко: название, 1–2 ключевых факта (ткань/цвет), без длинных описаний (детали клиент увидит на карточке).',
-    '• Если в ответе ты называешь конкретные модели, ОБЯЗАТЕЛЬНО добавь в самом конце отдельной последней строкой служебную строку вида: МОДЕЛИ: Название1 | Название2 | Название3 — только точные названия моделей из ассортимента ниже, через вертикальную черту «|». Эта строка нужна сайту, чтобы показать карточки товара. Не упоминай её в обычном тексте и не объясняй её клиенту.',
+    '• Город/регион клиента НЕ влияет на ассортимент — товар одинаковый для всех. НЕ подбирай «по климату».',
+    '• Не называй лён, хлопок или вискозу «тёплыми». Зимних и утеплённых вещей НЕТ — если просят тёплое/зимнее, честно скажи, что это костюмные пиджаки и брюки (демисезон).',
+    '• Подбирай по фасону/силуэту, ткани, цвету, размерному ряду (НОРМА/БАТАЛ). При общем запросе задай 1 короткий уточняющий вопрос.',
+    '• Предлагай максимум 3–4 модели за раз.',
     '',
     'ФАКТЫ:',
-    '• Размеры (пачки/ростовки): НОРМА — 50–58, БАТАЛ — 58–66. В модели можно взять отдельно НОРМА и БАТАЛ. У части моделей в наличии только НОРМА — ориентируйся на поле «размеры» конкретной модели в ассортименте ниже.',
-    '• Как заказать: выбрать модель и цвет → указать количество пачек → «В корзину» → в корзине отправить заказ на расчёт в WhatsApp / Telegram / MAX. Можно добавить комментарий.',
+    '• Размеры (пачки/ростовки): НОРМА — 50–58, БАТАЛ — 58–66. В модели можно взять отдельно НОРМА и БАТАЛ. У части моделей в наличии только НОРМА — ориентируйся на поле «размеры».',
+    '• Как заказать: выбрать модель и цвет → указать количество пачек → «В корзину» → отправить заказ на расчёт в WhatsApp / Telegram / MAX. Каталог: https://vanvion.github.io',
     '• Цены — по запросу (через расчёт заказа у менеджера).',
     '• Телефоны: +7 916 259 1643, +7 926 136 5535, +7 903 538 8887.',
     '• Адреса: Москва, ТЦ «Садовод» — корпус Б, 1 этаж, линия В, пав. 50–52; и 16 линия, пав. 72.',
-    '• Уведомления о новинках: кнопка «Новинки» → подписаться (на iPhone сначала добавить сайт на экран «Домой»).',
     '',
     'АССОРТИМЕНТ (модель — число цветов, состав, размеры, силуэт):',
     catalog || '(каталог временно недоступен — предложи написать менеджеру)',
