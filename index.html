@@ -1837,7 +1837,17 @@ const DICT = {
   '✓ Вы подписаны на уведомления': { tr: '✓ Bildirimlere abonesiniz', az: '✓ Bildirişlərə abunəsiniz' },
   '✓ ДОБАВЛЕНО': { tr: '✓ EKLENDİ', az: '✓ ƏLAVƏ EDİLDİ' },
   '🔔 Сначала добавьте на экран «Домой»': { tr: '🔔 Önce Ana Ekrana ekleyin', az: '🔔 Əvvəlcə Ana Ekrana əlavə edin' },
-  '🔔 Уведомления недоступны': { tr: '🔔 Bildirimler kullanılamıyor', az: '🔔 Bildirişlər əlçatan deyil' }
+  '🔔 Уведомления недоступны': { tr: '🔔 Bildirimler kullanılamıyor', az: '🔔 Bildirişlər əlçatan deyil' },
+  'Добавлено': { tr: 'Eklendi', az: 'Əlavə edildi' },
+  'Добавлено: 1 пачка': { tr: '1 paket eklendi', az: '1 paket əlavə edildi' },
+  'Как заказать': { tr: 'Nasıl sipariş verilir', az: 'Necə sifariş vermək' },
+  'Размеры и ростовки': { tr: 'Bedenler ve paketler', az: 'Ölçülər və paketlər' },
+  'Контакты и адрес': { tr: 'İletişim ve adres', az: 'Əlaqə və ünvan' },
+  'Про уведомления': { tr: 'Bildirimler hakkında', az: 'Bildirişlər haqqında' },
+  'Здравствуйте! Я помощник VANVION 🤍\nПодскажу по моделям, размерам и как оформить оптовый заказ. Что вас интересует?': {
+    tr: 'Merhaba! Ben VANVION asistanıyım 🤍\nModeller, bedenler ve toptan sipariş konusunda yardımcı olurum. Nasıl yardımcı olabilirim?',
+    az: 'Salam! Mən VANVION köməkçisiyəm 🤍\nModellər, ölçülər və topdan sifariş barədə kömək edərəm. Sizə necə kömək edə bilərəm?'
+  }
 };
 /* L('русский','english') -> строка на текущем языке (tr/az — из DICT) */
 function L(ru, en) {
@@ -1845,6 +1855,52 @@ function L(ru, en) {
   if (LANG === 'en') return en;
   const d = DICT[ru];
   return (d && d[LANG]) || en || ru;
+}
+/* словарь характеристик товара (ткани, силуэт, пуговицы, страна, ростовки) */
+const SPEC = {
+  'ХЛОПОК': { tr: 'PAMUK', az: 'PAMBIQ' },
+  'ВИСКОЗА': { tr: 'VİSKON', az: 'VİSKOZ' },
+  'ЛЁН': { tr: 'KETEN', az: 'KƏTAN' }, 'ЛЕН': { tr: 'KETEN', az: 'KƏTAN' },
+  'ШЕРСТЬ': { tr: 'YÜN', az: 'YUN' },
+  'ПОЛИЭСТЕР': { tr: 'POLYESTER', az: 'POLYESTER' },
+  'ЛАЙКРА': { tr: 'LİKRA', az: 'LİKRA' },
+  'ЛАВСАН': { tr: 'LAVSAN', az: 'LAVSAN' },
+  'ТЕНСЕЛ': { tr: 'TENCEL', az: 'TENSEL' },
+  'ЭЛАСТАН': { tr: 'ELASTAN', az: 'ELASTAN' },
+  'ШИРОКИЙ СВОБОДНЫЙ': { tr: 'GENİŞ BOL KESİM', az: 'GENİŞ SƏRBƏST' },
+  'СВОБОДНЫЙ, КУЛИСКА': { tr: 'BOL KESİM, İP BEL', az: 'SƏRBƏST, İP BEL' },
+  'ПРИТАЛЕННЫЙ': { tr: 'DAR KESİM', az: 'DAR KƏSİM' },
+  'СВОБОДНЫЙ': { tr: 'BOL KESİM', az: 'SƏRBƏST' },
+  'ОБЫЧНЫЙ': { tr: 'NORMAL', az: 'NORMAL' },
+  'ОВЕРСАЙЗ': { tr: 'OVERSIZE', az: 'OVERSIZE' },
+  '2 ПУГОВИЦЫ': { tr: '2 DÜĞME', az: '2 DÜYMƏ' },
+  'ДВУБОРТНЫЙ': { tr: 'KRUVAZE', az: 'İKİ SIRA DÜYMƏ' },
+  'ПУГОВИЦА · МОЛНИЯ': { tr: 'DÜĞME · FERMUAR', az: 'DÜYMƏ · FERMUAR' },
+  'КУЛИСКА': { tr: 'İP BEL', az: 'İP BEL' },
+  'ТУРЦИЯ': { tr: 'TÜRKİYE', az: 'TÜRKİYƏ' },
+  'БЕЗ ПОДКЛАДКИ': { tr: 'ASTARSIZ', az: 'ASTARSIZ' },
+  'БЕЗ ПОДКЛАДА': { tr: 'ASTARSIZ', az: 'ASTARSIZ' },
+  'НОРМА': { tr: 'NORMAL', az: 'NORMAL' },
+  'БАТАЛ': { tr: 'BÜYÜK', az: 'BÖYÜK' }
+};
+const SPEC_KEYS = Object.keys(SPEC).sort((a, b) => b.length - a.length);
+/* перевод строки характеристики для tr/az (замена известных слов/фраз) */
+function trSpec(val) {
+  if (!val || LANG === 'ru' || LANG === 'en') return val;
+  let s = String(val);
+  for (const k of SPEC_KEYS) {
+    if (s.indexOf(k) >= 0) {
+      const re = new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+      s = s.replace(re, SPEC[k][LANG] || k);
+    }
+  }
+  return s;
+}
+/* значение характеристики: ru -> ruVal, en -> enVal, tr/az -> перевод ruVal */
+function specVal(ruVal, enVal) {
+  if (LANG === 'ru') return ruVal;
+  if (LANG === 'en') return enVal || ruVal;
+  return trSpec(ruVal);
 }
 let CAT = (function(){ try { return localStorage.getItem('vv-cat') || 'all'; } catch(e){ return 'all'; } })();
 let QUERY = '';
@@ -2240,8 +2296,8 @@ function attachCardEvents(el) {
       haptic('light');
       const type = b.getAttribute('data-type');
       cartAdd(cid(), type, 1);
-      const lbl = type === 'norma' ? 'НОРМА' : type === 'batal' ? 'БАТАЛ' : '';
-      toast(LANG === 'ru' ? ('Добавлено: 1 пачка' + (lbl ? ' ' + lbl : '')) : 'Added: 1 pack');
+      const lbl = typeLabel(type);
+      toast(L('Добавлено: 1 пачка', 'Added: 1 pack') + (lbl ? ' ' + lbl : ''));
       const plus = b.querySelector('.cp-plus');
       if (plus) plus.textContent = '✓';
       b.classList.add('added');
@@ -2500,13 +2556,13 @@ function openDetail(id, cardEl, opts) {
   }
   const ru = LANG === 'ru';
   const specs = [
-    ru ? p.comp_ru : p.comp_en,
-    ru ? p.sil_ru : p.sil_en,
-    ru ? p.ros_ru : p.ros_en,
+    specVal(p.comp_ru, p.comp_en),
+    specVal(p.sil_ru, p.sil_en),
+    specVal(p.ros_ru, p.ros_en),
     (typeof p.lined === 'boolean') ? (p.lined ? (L('ДА', 'YES')) : (L('НЕТ', 'NO'))) : '',
-    ru ? p.btn_ru : p.btn_en,
-    ru ? p.country_ru : p.country_en,
-    p.sizes
+    specVal(p.btn_ru, p.btn_en),
+    specVal(p.country_ru, p.country_en),
+    trSpec(p.sizes)
   ];
   const variants = modelVariants(p);
   const swatches = variants.map(x => {
@@ -2998,15 +3054,21 @@ let CHAT_BUSY = false;
 function openChat() {
   haptic('light');
   if (!CHAT_MSGS.length) {
-    CHAT_MSGS.push({ role: 'bot', text: 'Здравствуйте! Я помощник VANVION 🤍\nПодскажу по моделям, размерам и как оформить оптовый заказ. Что вас интересует?' });
+    CHAT_MSGS.push({ role: 'bot', text: L('Здравствуйте! Я помощник VANVION 🤍\nПодскажу по моделям, размерам и как оформить оптовый заказ. Что вас интересует?', 'Hello! I am the VANVION assistant 🤍\nI can help with models, sizes and placing a wholesale order. How can I help?') });
   }
   renderChat();
   $('chat').classList.add('show');
   ymGoal('chat_open');
 }
 function closeChat() { $('chat').classList.remove('show'); }
+/* чипы чата: ru — каноничный текст (для FAQ/ИИ), label — перевод для показа */
 function chatChips() {
-  return ['Как заказать', 'Размеры и ростовки', 'Контакты и адрес', 'Про уведомления'];
+  return [
+    { ru: 'Как заказать', label: L('Как заказать', 'How to order') },
+    { ru: 'Размеры и ростовки', label: L('Размеры и ростовки', 'Sizes & packs') },
+    { ru: 'Контакты и адрес', label: L('Контакты и адрес', 'Contacts & address'), contacts: true },
+    { ru: 'Про уведомления', label: L('Про уведомления', 'Notifications') }
+  ];
 }
 function chatMsgHTML(m) {
   if (m.role === 'user') return '<div class="msg user">' + linkify(esc(m.text)) + '</div>';
@@ -3039,7 +3101,7 @@ function renderChat(typing) {
   const ru = LANG === 'ru';
   const msgs = CHAT_MSGS.map(chatMsgHTML).join('')
     + (typing ? '<div class="chat-typing"><span>•</span><span>•</span><span>•</span></div>' : '');
-  const chips = chatChips().map(c => '<button class="chat-chip">' + esc(c) + '</button>').join('');
+  const chips = chatChips().map((c, i) => '<button class="chat-chip" data-ci="' + i + '">' + esc(c.label) + '</button>').join('');
   $('chat').innerHTML =
     '<div class="chat-sheet">' +
       '<button class="ct-close" id="chatClose" aria-label="Закрыть">&#10005;</button>' +
@@ -3056,9 +3118,11 @@ function renderChat(typing) {
   $('chat').onclick = e => { if (e.target === $('chat')) closeChat(); };
   const mz = $('chatMsgs'); mz.scrollTop = mz.scrollHeight;
   $('chatForm').onsubmit = e => { e.preventDefault(); const v = $('chatInput').value.trim(); if (v) sendChatText(v); };
+  const chipDefs = chatChips();
   $('chatChips').querySelectorAll('.chat-chip').forEach(b => b.onclick = () => {
-    if (b.textContent.indexOf('Контакт') >= 0) { closeChat(); openContacts(); }
-    else sendChatText(b.textContent);
+    const c = chipDefs[+b.getAttribute('data-ci')];
+    if (c && c.contacts) { closeChat(); openContacts(); }
+    else if (c) sendChatText(c.ru);
   });
   mz.querySelectorAll('.chat-card').forEach(b => b.onclick = () => {
     const id = b.getAttribute('data-id'); closeChat(); openDetail(id);
@@ -3153,7 +3217,7 @@ let CART_COMMENT = '';
 function saveCart() { try { localStorage.setItem('vanvion_cart', JSON.stringify(CART)); } catch (e) {} }
 function prodById(id) { return PRODUCTS.find(p => p.id === id); }
 function cartPacks() { return CART.reduce((s, i) => s + i.qty, 0); }
-function typeLabel(t) { return t === 'norma' ? 'НОРМА' : t === 'batal' ? 'БАТАЛ' : ''; }
+function typeLabel(t) { return t === 'norma' ? trSpec('НОРМА') : t === 'batal' ? trSpec('БАТАЛ') : ''; }
 /* тарифы размеров модели: НОРМА/БАТАЛ или одна «пачка» */
 function sizeTiers(p) {
   const s = p.sizes || '';
@@ -3161,10 +3225,10 @@ function sizeTiers(p) {
   if (hasN && hasB) {
     const parts = s.split('·').map(x => x.trim());
     const get = kw => { const pt = parts.find(x => x.indexOf(kw) === 0) || ''; return pt.replace(kw, '').trim(); };
-    return [{ type: 'norma', label: 'НОРМА', range: get('НОРМА') }, { type: 'batal', label: 'БАТАЛ', range: get('БАТАЛ') }];
+    return [{ type: 'norma', label: trSpec('НОРМА'), range: get('НОРМА') }, { type: 'batal', label: trSpec('БАТАЛ'), range: get('БАТАЛ') }];
   }
-  if (hasN) return [{ type: 'norma', label: 'НОРМА', range: s.replace('НОРМА', '').trim() }];
-  if (hasB) return [{ type: 'batal', label: 'БАТАЛ', range: s.replace('БАТАЛ', '').trim() }];
+  if (hasN) return [{ type: 'norma', label: trSpec('НОРМА'), range: s.replace('НОРМА', '').trim() }];
+  if (hasB) return [{ type: 'batal', label: trSpec('БАТАЛ'), range: s.replace('БАТАЛ', '').trim() }];
   return [{ type: 'plain', label: '', range: s }];
 }
 function cartAdd(id, type, qty) {
@@ -3220,7 +3284,7 @@ function setupAddCart(p, onAdded) {
     if (!added) { toast(L('Укажите количество пачек', 'Set quantity')); return; }
     haptic('light');
     btn.classList.add('added'); btn.textContent = L('✓ ДОБАВЛЕНО', '✓ ADDED');
-    toast(ru ? ('Добавлено: ' + added + ' ' + plural(added, 'пачка', 'пачки', 'пачек')) : ('Added: ' + added + ' packs'));
+    toast(L('Добавлено', 'Added') + ': ' + added + (LANG === 'ru' ? (' ' + plural(added, 'пачка', 'пачки', 'пачек')) : ''));
     setTimeout(() => { btn.classList.remove('added'); btn.textContent = L('В КОРЗИНУ', 'ADD TO CART'); }, 1600);
     if (typeof onAdded === 'function') setTimeout(onAdded, 450);
   };
@@ -3330,23 +3394,22 @@ function renderCart() {
   if (mx) mx.onclick = () => sendCart('mx');
 }
 function cartMessage() {
-  const ru = LANG === 'ru';
-  const lines = [L('Здравствуйте! Прошу рассчитать заказ VANVION:', 'Hello! Please quote this VANVION order:'), ''];
+  /* заказ менеджеру всегда формируем по-русски — его читает русскоязычный менеджер */
+  const lines = ['Здравствуйте! Прошу рассчитать заказ VANVION:', ''];
   CART.forEach((ci, i) => {
     const p = prodById(ci.id); if (!p) return;
     const c = colorList(p.colors)[0];
     const col = c && PALETTE[c] ? PALETTE[c].ru : '';
-    const tl = typeLabel(ci.type);
-    const packs = ru ? (ci.qty + ' ' + plural(ci.qty, 'пачка', 'пачки', 'пачек')) : (ci.qty + ' packs');
-    lines.push((i + 1) + '. ' + getName(p) + ' (' + col + ', арт. ' + p.id + ')' + (tl ? ' — ' + tl : ' —') + ' ' + packs);
+    const tl = ci.type === 'norma' ? 'НОРМА' : ci.type === 'batal' ? 'БАТАЛ' : '';
+    const nm = p.name_ru || p.name_en || p.model || '';
+    const packs = ci.qty + ' ' + plural(ci.qty, 'пачка', 'пачки', 'пачек');
+    lines.push((i + 1) + '. ' + nm + ' (' + col + ', арт. ' + p.id + ')' + (tl ? ' — ' + tl : ' —') + ' ' + packs);
   });
   lines.push('');
-  lines.push((ru
-    ? ('Итого: ' + CART.length + ' ' + plural(CART.length, 'позиция', 'позиции', 'позиций') + ', ' + cartPacks() + ' ' + plural(cartPacks(), 'пачка', 'пачки', 'пачек'))
-    : ('Total: ' + CART.length + ' items, ' + cartPacks() + ' packs')));
+  lines.push('Итого: ' + CART.length + ' ' + plural(CART.length, 'позиция', 'позиции', 'позиций') + ', ' + cartPacks() + ' ' + plural(cartPacks(), 'пачка', 'пачки', 'пачек'));
   if (CART_COMMENT.trim()) {
     lines.push('');
-    lines.push((L('Комментарий: ', 'Comment: ')) + CART_COMMENT.trim());
+    lines.push('Комментарий: ' + CART_COMMENT.trim());
   }
   return lines.join('\n');
 }
