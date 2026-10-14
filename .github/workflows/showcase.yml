@@ -27,7 +27,14 @@ jobs:
         id: pick
         run: |
           python3 - <<'PY'
-          import json, os, re
+          import json, os, re, datetime
+
+          # Старт плановых публикаций — с пятницы 17.10.2026 (сегодняшний вт пропускаем,
+          # т.к. уже постили вручную). Ручной запуск (workflow_dispatch) не блокируется.
+          gh = os.environ["GITHUB_OUTPUT"]
+          if os.environ.get("GITHUB_EVENT_NAME") == "schedule" and datetime.date.today() < datetime.date(2026, 10, 17):
+              with open(gh, "a") as f: f.write("count=0\n")
+              print("Before Friday start — skip scheduled run"); raise SystemExit
 
           SITE = "https://vanvion.github.io"
           def load(path, default):
