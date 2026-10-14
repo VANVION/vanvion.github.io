@@ -3292,7 +3292,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4301",
@@ -3317,7 +3318,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4302",
@@ -3342,7 +3344,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4303",
@@ -3367,7 +3370,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4304",
@@ -3392,7 +3396,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4305",
@@ -3417,7 +3422,8 @@
   "hit": true,
   "image2": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6_detail.jpg",
   "ros_ru": "DROP 6",
-  "ros_en": "DROP 6"
+  "ros_en": "DROP 6",
+  "isnew": true
  },
  {
   "id": "PR-4310",
