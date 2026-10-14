@@ -142,29 +142,31 @@ async function handleTelegram(update, env) {
   const hist = await loadHist(env, key);
   hist.push({ role: 'user', text: text.slice(0, 1000) });
   const raw = await askYandex(env, hist);
-  const { clean, order } = extractOrder(raw);
+  const { clean, orders } = extractOrders(raw);
   let reply = clean;
-  if (order) {
-    const v = await validateOrder(parseOrder(order));
-    if (v.ok) {
+  if (orders.length) {
+    const valids = [], errors = [];
+    for (const os of orders) { const v = await validateOrder(parseOrder(os)); if (v.ok) valids.push(v); else errors.push(v.error); }
+    if (valids.length) {
       const f = msg.from || {};
       const who = 'Клиент: ' + [f.first_name, f.last_name].filter(Boolean).join(' ') +
         (f.username ? ' (@' + f.username + ')' : '') + ' · id ' + (f.id || '');
-      await forwardOrder(env, 'Telegram', who, v);
-    } else {
-      reply = 'Уточните, пожалуйста, заказ: ' + v.error + '. Модель выберите из каталога — https://vanvion.github.io';
+      await forwardOrders(env, 'Telegram', who, valids);
     }
+    if (errors.length) reply = (clean ? clean + '\n\n' : '') + 'Уточните, пожалуйста: ' + errors.join('; ') + '.';
   }
   hist.push({ role: 'assistant', text: reply });
   await saveHist(env, key, hist);
   await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, reply, isPrivate ? null : msg.message_id);
 }
 
-/* вытаскиваем служебную строку [[ORDER]] ... из ответа ИИ */
-function extractOrder(reply) {
-  const m = reply.match(/\[\[ORDER\]\]([^\n]*)/i);
-  if (!m) return { clean: reply, order: null };
-  return { clean: reply.replace(m[0], '').trim(), order: m[1].trim() };
+/* вытаскиваем ВСЕ служебные строки [[ORDER]] ... из ответа ИИ (несколько позиций) */
+function extractOrders(reply) {
+  const orders = [];
+  const re = /\[\[ORDER\]\]([^\n]*)/ig; let m;
+  while ((m = re.exec(reply)) !== null) { const s = m[1].trim(); if (s) orders.push(s); }
+  const clean = reply.replace(/\[\[ORDER\]\][^\n]*/ig, '').replace(/\n{3,}/g, '\n\n').trim();
+  return { clean, orders };
 }
 /* разбор строки заказа (терпим к key=val и «ключ: значение») */
 function parseOrder(s) {
@@ -216,6 +218,7 @@ async function validateOrder(o) {
   const qty = parseInt(String(o.qty).replace(/[^\d]/g, ''), 10);
   if (!qty || qty < 1 || qty > 2000) return { ok: false, error: 'укажите реальное количество пачек (1–2000)' };
   const color = matchColor(o.color, data.byModel[model].colors);
+  if (!color) return { ok: false, error: 'уточните цвет для модели ' + model };
   return { ok: true, model, color, size: size || (o.size || '').trim(), qty };
 }
 function plPack(n) {
@@ -224,14 +227,16 @@ function plPack(n) {
   if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'пачки';
   return 'пачек';
 }
-/* красиво пересылаем проверенный заказ в Telegram-группу менеджеров */
-async function forwardOrder(env, source, who, v) {
+/* красиво пересылаем проверенные позиции заказа в Telegram-группу менеджеров */
+async function forwardOrders(env, source, who, items) {
   const chat = env.MANAGERS_CHAT_ID || env.TELEGRAM_CHAT_ID;
-  if (!chat || !env.TELEGRAM_BOT_TOKEN) return;
-  const lines = ['🛒 НОВЫЙ ЗАКАЗ · ' + source, '', who, '', '👔 Модель: ' + v.model];
-  if (v.color) lines.push('🎨 Цвет: ' + v.color);
-  if (v.size) lines.push('📏 Размер: ' + v.size);
-  lines.push('📦 Количество: ' + v.qty + ' ' + plPack(v.qty));
+  if (!chat || !env.TELEGRAM_BOT_TOKEN || !items.length) return;
+  const lines = ['🛒 НОВЫЙ ЗАКАЗ · ' + source, '', who, ''];
+  items.forEach((v, i) => {
+    const num = items.length > 1 ? (i + 1) + ') ' : '';
+    lines.push(num + '👔 ' + v.model + (v.color ? ' · 🎨 ' + v.color : '') +
+      (v.size ? ' · 📏 ' + v.size : '') + ' · 📦 ' + v.qty + ' ' + plPack(v.qty));
+  });
   await tgSend(env.TELEGRAM_BOT_TOKEN, chat, lines.join('\n'), null);
 }
 
@@ -273,18 +278,18 @@ async function handleMax(update, env) {
   const hist = await loadHist(env, key);
   hist.push({ role: 'user', text: String(text).slice(0, 1000) });
   const raw = await askYandex(env, hist);
-  const { clean, order } = extractOrder(raw);
+  const { clean, orders } = extractOrders(raw);
   let reply = clean;
-  if (order) {
-    const v = await validateOrder(parseOrder(order));
-    if (v.ok) {
+  if (orders.length) {
+    const valids = [], errors = [];
+    for (const os of orders) { const v = await validateOrder(parseOrder(os)); if (v.ok) valids.push(v); else errors.push(v.error); }
+    if (valids.length) {
       const s = m.sender || {};
       const who = 'Клиент (MAX): ' + (s.name || [s.first_name, s.last_name].filter(Boolean).join(' ') || '') +
         (s.username ? ' (@' + s.username + ')' : '') + ' · id ' + (s.user_id || '');
-      await forwardOrder(env, 'MAX', who, v);
-    } else {
-      reply = 'Уточните, пожалуйста, заказ: ' + v.error + '. Модель выберите из каталога — https://vanvion.github.io';
+      await forwardOrders(env, 'MAX', who, valids);
     }
+    if (errors.length) reply = (clean ? clean + '\n\n' : '') + 'Уточните, пожалуйста: ' + errors.join('; ') + '.';
   }
   hist.push({ role: 'assistant', text: reply });
   await saveHist(env, key, hist);
@@ -395,10 +400,12 @@ function buildSystemPrompt(catalog) {
     'ОФОРМЛЕНИЕ ЗАКАЗА (важно):',
     '• Модель бери ТОЛЬКО из ассортимента ниже, точно как написано. Если клиент назвал модель, которой нет в списке, — НЕ подтверждай заказ, скажи, что такой модели нет, и предложи похожую.',
     '• Количество пачек должно быть реальным (обычно 1–100). При абсурдных числах (например, 1000000) переспроси.',
-    '• Собери 4 параметра: модель, цвет, размер (НОРМА или БАТАЛ), количество пачек. Чего не хватает — спроси коротко.',
-    '• Когда всё собрано, модель из каталога и клиент подтвердил — ответь коротко: «Заказ принят ✅ Передал менеджеру, он свяжется для подтверждения и расчёта.» И в САМОМ КОНЦЕ добавь ОТДЕЛЬНОЙ последней строкой (клиенту её не показывай и не объясняй) строго в формате:',
+    '• Для КАЖДОЙ позиции нужны 4 параметра: модель, цвет, размер (НОРМА или БАТАЛ), количество пачек.',
+    '• ЦВЕТ НЕ ВЫДУМЫВАЙ. Если клиент не указал цвет — спроси его, не подставляй сам. Бери цвет только из списка цветов этой модели.',
+    '• Когда всё собрано, модели из каталога и клиент подтвердил — ответь коротко: «Заказ принят ✅ Передал менеджеру, он свяжется для подтверждения и расчёта.» И в САМОМ КОНЦЕ добавь служебные строки (клиенту их не показывай) — ПО ОДНОЙ СТРОКЕ НА КАЖДУЮ ПОЗИЦИЮ, строго в формате:',
     '  [[ORDER]] model=ТОЧНОЕ_НАЗВАНИЕ_ИЗ_КАТАЛОГА; color=цвет; size=НОРМА или БАТАЛ; qty=число',
-    '• НЕ добавляй строку [[ORDER]], если модели нет в каталоге, данные неполные или клиент не подтвердил.',
+    '• Если клиент заказал несколько моделей/позиций — добавь несколько строк [[ORDER]], по одной на позицию.',
+    '• НЕ добавляй [[ORDER]], если модели нет в каталоге, цвет/размер/количество не указаны или клиент не подтвердил.',
     '',
     'ПРАВИЛА:',
     'Используй ТОЛЬКО факты и ассортимент ниже. Цену, минимальную партию, доставку, оплату и наличие не выдумывай — скажи коротко, что это уточнит менеджер.',
