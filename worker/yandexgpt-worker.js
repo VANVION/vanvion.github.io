@@ -19,6 +19,30 @@
 const CATALOG_URL = 'https://vanvion.github.io/data/products.json';
 let CATALOG_CACHE = { text: '', at: 0 };
 
+/* slug цвета -> русское название (как на сайте) */
+const COLOR_RU = {
+  charcoal: 'УГОЛЬНЫЙ', navy: 'ТЁМНО-СИНИЙ', black: 'ЧЁРНЫЙ', camel: 'КЭМЕЛ', beige: 'БЕЖЕВЫЙ',
+  grey: 'СЕРЫЙ', brown: 'КОРИЧНЕВЫЙ', green: 'ЗЕЛЁНЫЙ', lightgrey: 'СВЕТЛО-СЕРЫЙ', burgundy: 'БОРДОВЫЙ',
+  sand: 'ПЕСОЧНЫЙ', slate: 'СЛАНЦЕВЫЙ', taba: 'ТАБА', kiremit: 'КИРПИЧНЫЙ', kkiremit: 'Т.КИРПИЧНЫЙ',
+  kahve: 'КОФЕ', antrasit: 'АНТРАЦИТ', yesil: 'ЗЕЛЁНЫЙ', murdum: 'СЛИВОВЫЙ', laci: 'СИНИЙ',
+  klaci: 'ТЁМНО-СИНИЙ', siyah: 'ЧЁРНЫЙ', haki: 'ХАКИ', alaci: 'СВЕТЛО-СИНИЙ', c295: 'СЕРЫЙ',
+  c671: 'ГОЛУБОЙ', abej: 'СВЕТЛО-БЕЖЕВЫЙ', bej: 'БЕЖЕВЫЙ', ekru: 'ЭКРЮ', beyaz: 'БЕЛЫЙ',
+  vizon: 'ВИЗОН', gri: 'СЕРЫЙ',
+};
+/* транслитерация кириллицы в латиницу + нормализация (для нечёткого поиска) */
+const CYR = { а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya' };
+function translit(s) { return String(s || '').toLowerCase().split('').map(c => (CYR[c] !== undefined ? CYR[c] : c)).join(''); }
+function norm(s) { return translit(s).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+function lev(a, b) {
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  const d = []; for (let i = 0; i <= m; i++) d[i] = [i];
+  for (let j = 0; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -157,13 +181,33 @@ function parseOrder(s) {
   return o;
 }
 /* проверка заказа по каталогу: модель есть, размер доступен, количество реально */
+/* нечёткий поиск модели: транслит кириллицы + расстояние Левенштейна */
+function matchModel(input, names) {
+  const q = norm(input);
+  if (!q) return null;
+  let exact = names.find(n => norm(n) === q);
+  if (exact) return exact;
+  // подстрока (напр. «сонили» внутри «MILANO SONILI» — но сначала точное выше)
+  let sub = names.filter(n => { const nn = norm(n); return nn.indexOf(q) >= 0 || q.indexOf(nn) >= 0; });
+  if (sub.length === 1) return sub[0];
+  // ближайшее по опечаткам
+  let best = null, bd = 99;
+  for (const n of names) { const d = lev(q, norm(n)); if (d < bd) { bd = d; best = n; } }
+  const thr = Math.max(1, Math.floor(q.length * 0.34));
+  return best && bd <= thr ? best : null;
+}
+/* нечёткий поиск цвета среди цветов модели; возвращает русское название */
+function matchColor(input, colors) {
+  if (!input || !colors || !colors.length) return (input || '').trim();
+  const q = norm(input);
+  for (const c of colors) if (norm(c.ru) === q || norm(c.slug) === q) return c.ru;
+  let best = null, bd = 99;
+  for (const c of colors) { const d = Math.min(lev(q, norm(c.ru)), lev(q, norm(c.slug))); if (d < bd) { bd = d; best = c; } }
+  return best && bd <= Math.max(1, Math.floor(q.length * 0.4)) ? best.ru : input.trim();
+}
 async function validateOrder(o) {
   const data = await getCatalogData();
-  const key = (o.model || '').toUpperCase().replace(/\s+/g, ' ').trim();
-  const flat = key.replace(/\s/g, '');
-  const model = data.names.find(n => n === key)
-    || data.names.find(n => n.replace(/\s/g, '') === flat)
-    || data.names.find(n => flat && (n.replace(/\s/g, '').indexOf(flat) >= 0 || flat.indexOf(n.replace(/\s/g, '')) >= 0));
+  const model = matchModel(o.model, data.names);
   if (!model) return { ok: false, error: 'такой модели нет в каталоге' };
   const sizes = (data.byModel[model].sizes || '').toUpperCase();
   const size = /батал|büyük|böyük|batal/i.test(o.size) ? 'БАТАЛ'
@@ -171,7 +215,8 @@ async function validateOrder(o) {
   if (size === 'БАТАЛ' && sizes.indexOf('БАТАЛ') < 0) return { ok: false, error: 'у модели ' + model + ' нет ряда БАТАЛ (есть только НОРМА)' };
   const qty = parseInt(String(o.qty).replace(/[^\d]/g, ''), 10);
   if (!qty || qty < 1 || qty > 2000) return { ok: false, error: 'укажите реальное количество пачек (1–2000)' };
-  return { ok: true, model, color: (o.color || '').trim(), size: size || (o.size || '').trim(), qty };
+  const color = matchColor(o.color, data.byModel[model].colors);
+  return { ok: true, model, color, size: size || (o.size || '').trim(), qty };
 }
 function plPack(n) {
   const m10 = n % 10, m100 = n % 100;
@@ -292,13 +337,16 @@ async function getCatalogSummary() {
     const products = await r.json();
     const byModel = new Map();
     for (const p of products) {
-      if (!byModel.has(p.model)) byModel.set(p.model, { cat: p.cat, n: 0, comp: p.comp_ru, sizes: p.sizes, sil: p.sil_ru });
-      byModel.get(p.model).n++;
+      if (!byModel.has(p.model)) byModel.set(p.model, { cat: p.cat, n: 0, comp: p.comp_ru, sizes: p.sizes, sil: p.sil_ru, colors: [], _seen: {} });
+      const v = byModel.get(p.model); v.n++;
+      const slug = String(p.colors || '').split(',')[0].trim().toLowerCase();
+      const ru = COLOR_RU[slug];
+      if (slug && !v._seen[slug]) { v._seen[slug] = 1; v.colors.push(ru || slug); }
     }
     const lines = [];
     for (const [model, v] of byModel) {
       const kind = v.cat === 'bryuki' ? 'БРЮКИ' : 'ПИДЖАК';
-      lines.push(`${kind} ${model} — ${v.n} цв., состав: ${v.comp || '—'}, размеры: ${v.sizes || '—'}, силуэт: ${v.sil || '—'}`);
+      lines.push(`${kind} ${model} — цвета: ${v.colors.join(', ') || '—'}; состав: ${v.comp || '—'}; размеры: ${v.sizes || '—'}; силуэт: ${v.sil || '—'}`);
     }
     CATALOG_CACHE = { text: lines.join('\n'), at: Date.now() };
     return CATALOG_CACHE.text;
@@ -317,7 +365,10 @@ async function getCatalogData() {
     for (const p of products) {
       const m = (p.model || '').toUpperCase().trim();
       if (!m) continue;
-      if (!byModel[m]) byModel[m] = { sizes: p.sizes || '', cat: p.cat };
+      if (!byModel[m]) byModel[m] = { sizes: p.sizes || '', cat: p.cat, colors: [], _seen: {} };
+      const slug = String(p.colors || '').split(',')[0].trim().toLowerCase();
+      const ru = COLOR_RU[slug];
+      if (slug && !byModel[m]._seen[slug]) { byModel[m]._seen[slug] = 1; byModel[m].colors.push({ slug, ru: ru || slug }); }
     }
     CATALOG_DATA = { names: Object.keys(byModel), byModel, at: Date.now() };
     return CATALOG_DATA;
@@ -338,6 +389,8 @@ function buildSystemPrompt(catalog) {
     '• Помни предыдущие сообщения в диалоге и отвечай по контексту, не начинай заново.',
     '• Если клиент говорит «хочу заказать / нужны пиджаки» БЕЗ деталей — НЕ вываливай список моделей. Задай 1 короткий вопрос: какая ткань, цвет или фасон интересует.',
     '• Называй конкретные модели ТОЛЬКО когда клиент назвал параметры (цвет/ткань/фасон). Тогда 1–3 модели, по одной строке.',
+    '',
+    'РАСПОЗНАВАНИЕ: клиент может писать модель и цвет как угодно — кириллицей, с опечатками, по-русски или на своём языке. Примеры: «Шонили» = SONILI, «Викинг» = VIKING; «к.лаки»/«к лачи»/«тёмно-синий» = цвет Тёмно-синий. Распознай и подставляй ТОЧНОЕ название модели из каталога и правильный цвет (цвета каждой модели перечислены в ассортименте ниже).',
     '',
     'ОФОРМЛЕНИЕ ЗАКАЗА (важно):',
     '• Модель бери ТОЛЬКО из ассортимента ниже, точно как написано. Если клиент назвал модель, которой нет в списке, — НЕ подтверждай заказ, скажи, что такой модели нет, и предложи похожую.',
