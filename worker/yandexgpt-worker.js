@@ -104,10 +104,31 @@ async function handleTelegram(update, env) {
   const key = 'tg:' + chatId;
   const hist = await loadHist(env, key);
   hist.push({ role: 'user', text: text.slice(0, 1000) });
-  const reply = await askYandex(env, hist);
-  hist.push({ role: 'assistant', text: reply });
+  const raw = await askYandex(env, hist);
+  const { clean, order } = extractOrder(raw);
+  hist.push({ role: 'assistant', text: clean });
   await saveHist(env, key, hist);
-  await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, reply, isPrivate ? null : msg.message_id);
+  if (order) {
+    const f = msg.from || {};
+    const who = 'Клиент: ' + [f.first_name, f.last_name].filter(Boolean).join(' ') +
+      (f.username ? ' (@' + f.username + ')' : '') + ' · id ' + (f.id || '');
+    await forwardOrder(env, 'Telegram', who, order);
+  }
+  await tgSend(env.TELEGRAM_BOT_TOKEN, chatId, clean, isPrivate ? null : msg.message_id);
+}
+
+/* вытаскиваем служебную строку [[ORDER]] ... из ответа ИИ */
+function extractOrder(reply) {
+  const m = reply.match(/\[\[ORDER\]\]([^\n]*)/i);
+  if (!m) return { clean: reply, order: null };
+  return { clean: reply.replace(m[0], '').trim(), order: m[1].trim() };
+}
+/* пересылаем заказ в Telegram-группу менеджеров */
+async function forwardOrder(env, source, who, order) {
+  const chat = env.MANAGERS_CHAT_ID || env.TELEGRAM_CHAT_ID;
+  if (!chat || !env.TELEGRAM_BOT_TOKEN) return;
+  const text = '🛒 НОВЫЙ ЗАКАЗ (чат-бот · ' + source + ')\n' + who + '\n\n' + order;
+  await tgSend(env.TELEGRAM_BOT_TOKEN, chat, text, null);
 }
 
 /* память диалога (Cloudflare KV binding CHATS); без неё — без контекста */
@@ -147,10 +168,17 @@ async function handleMax(update, env) {
   const key = 'max:' + chatId;
   const hist = await loadHist(env, key);
   hist.push({ role: 'user', text: String(text).slice(0, 1000) });
-  const reply = await askYandex(env, hist);
-  hist.push({ role: 'assistant', text: reply });
+  const raw = await askYandex(env, hist);
+  const { clean, order } = extractOrder(raw);
+  hist.push({ role: 'assistant', text: clean });
   await saveHist(env, key, hist);
-  await maxSend(env.MAX_BOT_TOKEN, chatId, reply);
+  if (order) {
+    const s = m.sender || {};
+    const who = 'Клиент (MAX): ' + (s.name || [s.first_name, s.last_name].filter(Boolean).join(' ') || '') +
+      (s.username ? ' (@' + s.username + ')' : '') + ' · id ' + (s.user_id || '');
+    await forwardOrder(env, 'MAX', who, order);
+  }
+  await maxSend(env.MAX_BOT_TOKEN, chatId, clean);
 }
 
 async function maxSend(token, chatId, text) {
@@ -227,9 +255,11 @@ function buildSystemPrompt(catalog) {
     '• Если клиент говорит «хочу заказать / нужны пиджаки» БЕЗ деталей — НЕ вываливай список моделей. Задай 1 короткий вопрос: какая ткань, цвет или фасон интересует.',
     '• Называй конкретные модели ТОЛЬКО когда клиент назвал параметры (цвет/ткань/фасон). Тогда 1–3 модели, по одной строке.',
     '',
-    'КАК ОФОРМИТЬ ЗАКАЗ (важно):',
-    '• Ты НЕ оформляешь заказ сам и НЕ передаёшь его менеджеру. НИКОГДА не пиши «передам/передал ваш запрос менеджеру» — это неправда.',
-    '• Когда клиент готов заказать — коротко скажи: оформить можно в каталоге (модель и цвет → количество пачек → «В корзину» → «Отправить заказ на расчёт»), либо написать менеджеру в WhatsApp +7 916 259 1643. Каталог: https://vanvion.github.io',
+    'ОФОРМЛЕНИЕ ЗАКАЗА (важно):',
+    '• Если клиент хочет заказать — собери 4 параметра: модель, цвет, размерный ряд (НОРМА или БАТАЛ), количество пачек. Чего не хватает — спроси коротко (по одному).',
+    '• Когда ВСЕ 4 параметра есть и клиент подтвердил — ответь коротко: «Заказ принят ✅ Передал менеджеру, он свяжется с вами для подтверждения и расчёта.» И в САМОМ КОНЦЕ добавь ОТДЕЛЬНОЙ последней строкой служебную строку (её клиенту не показывай и не объясняй):',
+    '  [[ORDER]] модель: X; цвет: Y; размер: НОРМА/БАТАЛ; количество: N пачек',
+    '• НЕ добавляй строку [[ORDER]], пока заказ не полный и клиент не подтвердил. Без подтверждения — просто помогай с подбором.',
     '',
     'ПРАВИЛА:',
     'Используй ТОЛЬКО факты и ассортимент ниже. Цену, минимальную партию, доставку, оплату и наличие не выдумывай — скажи коротко, что это уточнит менеджер.',
