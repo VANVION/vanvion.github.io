@@ -1303,6 +1303,12 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
 .news-date { font-size: 10.5px; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 4px; }
 .news-title { font-size: 13.5px; letter-spacing: 0.02em; margin-bottom: 4px; }
 .news-text { font-size: 12.5px; line-height: 1.45; color: var(--text2); }
+.news-link {
+  margin-top: 10px; font-size: 11.5px; letter-spacing: 0.04em; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--accent);
+  background: var(--accent); color: var(--accent-fg); transition: transform 0.15s, opacity 0.2s;
+}
+.news-link:active { transform: scale(0.96); opacity: 0.85; }
 .news-empty { text-align: center; color: var(--text2); padding: 26px 0; font-size: 13px; }
 .ct-close {
   position: absolute; top: 16px; right: 16px;
@@ -3355,7 +3361,11 @@ function closeNews() { $('news').classList.remove('show'); }
 function renderNews() {
   const ru = LANG === 'ru';
   const list = NEWS.length
-    ? NEWS.map(n => '<div class="news-item"><div class="news-date">' + esc(n.date || '') + '</div><div class="news-title">' + esc(n.title || '') + '</div><div class="news-text">' + esc(n.text || '').replace(/\n/g, '<br>') + '</div></div>').join('')
+    ? NEWS.map(n => {
+        const pid = newsProductId(n);
+        const btn = pid ? '<button class="news-link" data-id="' + esc(pid) + '">' + (ru ? 'Смотреть в каталоге →' : 'View in catalogue →') + '</button>' : '';
+        return '<div class="news-item"><div class="news-date">' + esc(n.date || '') + '</div><div class="news-title">' + esc(n.title || '') + '</div><div class="news-text">' + esc(n.text || '').replace(/\n/g, '<br>') + '</div>' + btn + '</div>';
+      }).join('')
     : '<div class="news-empty">' + (ru ? 'Пока новостей нет.' : 'No news yet.') + '</div>';
   $('news').innerHTML = '<div class="ct-sheet">' +
     '<button class="ct-close" id="newsClose" aria-label="Закрыть">&#10005;</button>' +
@@ -3368,6 +3378,22 @@ function renderNews() {
   $('newsClose').onclick = closeNews;
   $('news').onclick = e => { if (e.target === $('news')) closeNews(); };
   wireNotifyBtn($('newsNotify'));
+  $('news').querySelectorAll('.news-link').forEach(b => b.onclick = () => {
+    const id = b.getAttribute('data-id'); haptic('light'); closeNews(); openDetail(id);
+  });
+}
+/* находим карточку модели, о которой новость: по полю model или по названию */
+function newsProductId(n) {
+  let name = (n && n.model || '').trim();
+  if (!name && n && n.title) {
+    const m = n.title.split('—');  // «Новинка — MODEL»
+    if (m.length > 1) name = m[m.length - 1].trim();
+  }
+  if (!name) return null;
+  const low = name.toLowerCase();
+  const p = PRODUCTS.find(x => x.model && x.model.toLowerCase() === low)
+    || PRODUCTS.find(x => x.model && (x.model.toLowerCase().includes(low) || low.includes(x.model.toLowerCase())));
+  return p ? p.id : null;
 }
 
 async function shareProduct(p) {

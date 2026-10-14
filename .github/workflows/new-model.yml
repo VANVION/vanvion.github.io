@@ -131,7 +131,7 @@ jobs:
               if sizes:
                   nlines.append("📏 Размеры: %s" % sizes)
               news_text = "\n".join(nlines)
-              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "text": news_text})
+              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "model": m, "text": news_text})
 
               # --- подпись для Telegram (HTML, с переносами и отступами) ---
               cap = ["🆕 <b>%s</b>" % esc_html(m), ""]
