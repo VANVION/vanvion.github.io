@@ -30,6 +30,23 @@ export default {
       'Access-Control-Allow-Headers': 'Content-Type',
     };
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
+
+    // одноразовая настройка вебхука MAX: открой /max-subscribe в браузере
+    if (request.method === 'GET' && path === '/max-subscribe') {
+      const hookUrl = url.origin + '/max';
+      try {
+        const r = await fetch('https://botapi.max.ru/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': env.MAX_BOT_TOKEN || '' },
+          body: JSON.stringify({ url: hookUrl }),
+        });
+        const t = await r.text();
+        return new Response('MAX subscribe → ' + hookUrl + '\nHTTP ' + r.status + '\n' + t,
+          { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      } catch (e) {
+        return new Response('MAX subscribe error: ' + e, { status: 500 });
+      }
+    }
     if (request.method === 'GET') return new Response('VANVION AI worker OK', { status: 200 });
     if (request.method !== 'POST') return json({ reply: 'Только POST.' }, cors);
 
