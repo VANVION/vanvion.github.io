@@ -665,7 +665,8 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   transition: transform 0.15s, background 0.2s;
 }
 .card-pack:active { transform: scale(0.9); }
-.card-pack.added { background: #4f7a63; color: #fff; }
+.card-pack.added { background: #4f7a63; color: #fff; transition: background 0.1s; }
+.cp-plus { font-weight: 800; margin-right: 4px; display: inline-block; }
 /* быстрый заказ */
 .qa-sheet { max-width: 440px; }
 .qa-top { display: flex; gap: 14px; align-items: center; margin: 14px 0 6px; }
@@ -2124,8 +2125,10 @@ function attachCardEvents(el) {
       cartAdd(cid(), type, 1);
       const lbl = type === 'norma' ? 'НОРМА' : type === 'batal' ? 'БАТАЛ' : '';
       toast(LANG === 'ru' ? ('Добавлено: 1 пачка' + (lbl ? ' ' + lbl : '')) : 'Added: 1 pack');
+      const plus = b.querySelector('.cp-plus');
+      if (plus) plus.textContent = '✓';
       b.classList.add('added');
-      setTimeout(() => b.classList.remove('added'), 900);
+      setTimeout(() => { b.classList.remove('added'); if (plus) plus.textContent = '+'; }, 400);
     });
   });
 }
@@ -2315,7 +2318,7 @@ function modelCardHTML(group) {
           : group.some(v => v.isnew) ? '<span class="new-tag">' + (LANG === 'ru' ? 'НОВИНКА' : 'NEW') + '</span>' : '') +
         '<div class="card-packs">' + sizeTiers(rep).map(tr =>
           '<button class="card-pack" data-type="' + tr.type + '">' +
-            (tr.label || (LANG === 'ru' ? 'В КОРЗИНУ' : 'ADD')) + '</button>'
+            '<span class="cp-plus">+</span>' + (tr.label || (LANG === 'ru' ? 'В КОРЗИНУ' : 'ADD')) + '</button>'
         ).join('') + '</div>' +
       '</div>' +
       '<div class="card-info">' +
