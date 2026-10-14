@@ -652,16 +652,20 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   z-index: 2;
 }
 .new-tag { background: #4f7a63; color: #fff; }
-.card-add {
-  position: absolute; bottom: 8px; right: 8px; z-index: 3;
-  width: 34px; height: 34px; border-radius: 50%;
-  background: var(--accent); color: var(--accent-fg);
-  font-size: 22px; line-height: 1; font-weight: 400;
-  display: grid; place-items: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
-  opacity: 0.94; transition: transform 0.15s, opacity 0.2s;
+.card-packs {
+  position: absolute; bottom: 8px; left: 8px; right: 8px; z-index: 3;
+  display: flex; gap: 6px; justify-content: flex-end;
 }
-.card-add:active { transform: scale(0.88); }
+.card-pack {
+  flex: 0 1 auto; min-width: 0;
+  font-size: 10.5px; letter-spacing: 0.06em; font-weight: 600;
+  padding: 7px 11px; border-radius: 999px; white-space: nowrap;
+  background: var(--accent); color: var(--accent-fg);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.28);
+  transition: transform 0.15s, background 0.2s;
+}
+.card-pack:active { transform: scale(0.9); }
+.card-pack.added { background: #4f7a63; color: #fff; }
 /* быстрый заказ */
 .qa-sheet { max-width: 440px; }
 .qa-top { display: flex; gap: 14px; align-items: center; margin: 14px 0 6px; }
@@ -2110,16 +2114,20 @@ function attachCardEvents(el) {
     });
   });
 
-  /* --- кнопка «+»: быстрый заказ без открытия карточки --- */
-  const addBtn = el.querySelector('.card-add');
-  if (addBtn) {
-    addBtn.addEventListener('touchstart', e => { e.stopPropagation(); clearTimeout(lpTimer); }, { passive: true });
-    addBtn.addEventListener('click', e => {
+  /* --- кнопки НОРМА/БАТАЛ: добавить пачку в корзину прямо из сетки --- */
+  el.querySelectorAll('.card-pack').forEach(b => {
+    b.addEventListener('touchstart', e => { e.stopPropagation(); clearTimeout(lpTimer); }, { passive: true });
+    b.addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation();
       haptic('light');
-      openQuickAdd(cid());
+      const type = b.getAttribute('data-type');
+      cartAdd(cid(), type, 1);
+      const lbl = type === 'norma' ? 'НОРМА' : type === 'batal' ? 'БАТАЛ' : '';
+      toast(LANG === 'ru' ? ('Добавлено: 1 пачка' + (lbl ? ' ' + lbl : '')) : 'Added: 1 pack');
+      b.classList.add('added');
+      setTimeout(() => b.classList.remove('added'), 900);
     });
-  }
+  });
 }
 
 /* сменить фото/цвет плитки в каталоге без открытия карточки */
@@ -2305,7 +2313,10 @@ function modelCardHTML(group) {
         '<span class="art-tag">' + esc(colorsLabel) + '</span>' +
         (group.some(v => v.hit) ? '<span class="hit-tag">' + (LANG === 'ru' ? 'ХИТ' : 'TOP') + '</span>'
           : group.some(v => v.isnew) ? '<span class="new-tag">' + (LANG === 'ru' ? 'НОВИНКА' : 'NEW') + '</span>' : '') +
-        '<button class="card-add" data-add="' + esc(rep.id) + '" aria-label="' + (LANG === 'ru' ? 'Быстрый заказ' : 'Quick add') + '">+</button>' +
+        '<div class="card-packs">' + sizeTiers(rep).map(tr =>
+          '<button class="card-pack" data-type="' + tr.type + '">' +
+            (tr.label || (LANG === 'ru' ? 'В КОРЗИНУ' : 'ADD')) + '</button>'
+        ).join('') + '</div>' +
       '</div>' +
       '<div class="card-info">' +
         '<div class="card-name">' + esc(modelName) + '</div>' +
@@ -3020,11 +3031,14 @@ function typeLabel(t) { return t === 'norma' ? 'НОРМА' : t === 'batal' ? '�
 /* тарифы размеров модели: НОРМА/БАТАЛ или одна «пачка» */
 function sizeTiers(p) {
   const s = p.sizes || '';
-  if (s.indexOf('НОРМА') >= 0 && s.indexOf('БАТАЛ') >= 0) {
+  const hasN = s.indexOf('НОРМА') >= 0, hasB = s.indexOf('БАТАЛ') >= 0;
+  if (hasN && hasB) {
     const parts = s.split('·').map(x => x.trim());
     const get = kw => { const pt = parts.find(x => x.indexOf(kw) === 0) || ''; return pt.replace(kw, '').trim(); };
     return [{ type: 'norma', label: 'НОРМА', range: get('НОРМА') }, { type: 'batal', label: 'БАТАЛ', range: get('БАТАЛ') }];
   }
+  if (hasN) return [{ type: 'norma', label: 'НОРМА', range: s.replace('НОРМА', '').trim() }];
+  if (hasB) return [{ type: 'batal', label: 'БАТАЛ', range: s.replace('БАТАЛ', '').trim() }];
   return [{ type: 'plain', label: '', range: s }];
 }
 function cartAdd(id, type, qty) {
