@@ -34,6 +34,7 @@ jobs:
           import json, os, time, re, urllib.request, urllib.parse, urllib.error
 
           SITE = "https://vanvion.github.io"
+          BOUNDARY = "----vanviontg%d" % int(time.time() * 1000)
           target = (os.environ["TARGET_MODEL"] or "").strip()
           token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
           base = "https://api.telegram.org/bot" + token
@@ -70,11 +71,12 @@ jobs:
               cn = color_name(it)
               if cn and cn not in seen:
                   seen.add(cn); color_names.append(cn.capitalize())
+          # локальные пути к фото из репозитория (заливаем байтами, не по ссылке)
           images, seen_img = [], set()
           for it in items:
               im = (it.get("image") or "").strip()
-              if im and im not in seen_img:
-                  seen_img.add(im); images.append(SITE + "/" + im)
+              if im and im not in seen_img and os.path.exists(im):
+                  seen_img.add(im); images.append(im)
           images = images[:10]
           pid = (items[0].get("id") or "").strip()
           card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
@@ -88,7 +90,7 @@ jobs:
                   '🔗 <a href="%s">Открыть %s в каталоге</a>' % (esc_html(card_url), esc_html(model))]
           caption = "\n".join(cap)
 
-          def call(method, payload):
+          def call_urlencoded(method, payload):
               req = urllib.request.Request(base + "/" + method,
                   data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
               try:
@@ -99,25 +101,67 @@ jobs:
               except Exception as e:
                   print(method, "error:", e); return False
 
-          ok = False
-          if len(images) >= 2:
-              media = []
-              for i, u in enumerate(images):
-                  item = {"type": "photo", "media": u}
+          def multipart_body(fields, files):
+              # fields: list of (name, value_str); files: list of (name, filename, bytes)
+              out = []
+              for name, value in fields:
+                  out.append(("--%s\r\n" % BOUNDARY).encode())
+                  out.append(('Content-Disposition: form-data; name="%s"\r\n\r\n' % name).encode())
+                  out.append(value.encode("utf-8")); out.append(b"\r\n")
+              for name, filename, content in files:
+                  out.append(("--%s\r\n" % BOUNDARY).encode())
+                  out.append(('Content-Disposition: form-data; name="%s"; filename="%s"\r\n'
+                              % (name, filename)).encode())
+                  out.append(b"Content-Type: image/jpeg\r\n\r\n")
+                  out.append(content); out.append(b"\r\n")
+              out.append(("--%s--\r\n" % BOUNDARY).encode())
+              return b"".join(out)
+
+          def send_album_upload(paths):
+              # заливаем файлы байтами через attach://
+              media, files = [], []
+              for i, p in enumerate(paths):
+                  name = "photo%d" % i
+                  item = {"type": "photo", "media": "attach://" + name}
                   if i == 0:
                       item["caption"] = caption; item["parse_mode"] = "HTML"
                   media.append(item)
-              for attempt in range(3):
-                  ok = call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
-                  if ok: break
-                  print("retry sendMediaGroup...", attempt + 1); time.sleep(15)
+                  with open(p, "rb") as f:
+                      files.append((name, os.path.basename(p), f.read()))
+              fields = [("chat_id", chat), ("media", json.dumps(media, ensure_ascii=False))]
+              body = multipart_body(fields, files)
+              req = urllib.request.Request(base + "/sendMediaGroup", data=body,
+                  headers={"Content-Type": "multipart/form-data; boundary=" + BOUNDARY}, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=120) as r:
+                      print("sendMediaGroup(upload)", r.status); return True
+              except urllib.error.HTTPError as e:
+                  print("sendMediaGroup(upload) HTTP", e.code, e.read().decode("utf-8")[:300]); return False
+              except Exception as e:
+                  print("sendMediaGroup(upload) error:", e); return False
+
+          def send_photo_upload(path):
+              with open(path, "rb") as f:
+                  content = f.read()
+              fields = [("chat_id", chat), ("caption", caption), ("parse_mode", "HTML")]
+              body = multipart_body(fields, [("photo", os.path.basename(path), content)])
+              req = urllib.request.Request(base + "/sendPhoto", data=body,
+                  headers={"Content-Type": "multipart/form-data; boundary=" + BOUNDARY}, method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=90) as r:
+                      print("sendPhoto(upload)", r.status); return True
+              except urllib.error.HTTPError as e:
+                  print("sendPhoto(upload) HTTP", e.code, e.read().decode("utf-8")[:300]); return False
+              except Exception as e:
+                  print("sendPhoto(upload) error:", e); return False
+
+          ok = False
+          if len(images) >= 2:
+              ok = send_album_upload(images)
           elif len(images) == 1:
-              for attempt in range(3):
-                  ok = call("sendPhoto", {"chat_id": chat, "photo": images[0], "caption": caption, "parse_mode": "HTML"})
-                  if ok: break
-                  print("retry sendPhoto...", attempt + 1); time.sleep(15)
+              ok = send_photo_upload(images[0])
           if not ok:
               print("fallback: text only")
-              call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
+              call_urlencoded("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
           print("done:", model, "| photos:", len(images))
           PY
