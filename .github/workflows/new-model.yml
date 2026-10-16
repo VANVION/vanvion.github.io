@@ -238,6 +238,41 @@ jobs:
           git commit -m "Auto: announce new model(s)" || { echo "nothing to commit"; exit 0; }
           git push
 
+      - name: Wait for new images on GitHub Pages
+        if: steps.detect.outputs.count != '0'
+        run: |
+          python3 - <<'PY'
+          import json, time, urllib.request, urllib.error
+          data = json.load(open("/tmp/announce.json", encoding="utf-8"))
+          # собираем все картинки из анонса
+          urls = []
+          for it in data.get("tg_items", []):
+              for u in (it.get("images") or []):
+                  if u not in urls:
+                      urls.append(u)
+          if not urls:
+              print("no images to wait for"); raise SystemExit
+          # Pages пересобирается после коммита; ждём, пока первая картинка станет доступна (до ~3 мин)
+          target = urls[0]
+          deadline = time.time() + 180
+          attempt = 0
+          while time.time() < deadline:
+              attempt += 1
+              try:
+                  req = urllib.request.Request(target, method="HEAD")
+                  with urllib.request.urlopen(req, timeout=20) as r:
+                      if r.status == 200:
+                          print("image live after %d attempt(s):" % attempt, target)
+                          break
+              except urllib.error.HTTPError as e:
+                  print("attempt %d: HTTP %s" % (attempt, e.code))
+              except Exception as e:
+                  print("attempt %d: %s" % (attempt, e))
+              time.sleep(12)
+          else:
+              print("timeout waiting for images — продолжаем (сработают текстовые фолбэки)")
+          PY
+
       - name: Send push (OneSignal)
         if: steps.detect.outputs.count != '0'
         env:
@@ -295,7 +330,7 @@ jobs:
           if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets not set — skip"; exit 0; fi
           python3 - <<'PY'
-          import json, os, urllib.request, urllib.parse, urllib.error
+          import json, os, time, urllib.request, urllib.parse, urllib.error
           data = json.load(open("/tmp/announce.json", encoding="utf-8"))
           token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
           base = "https://api.telegram.org/bot" + token
@@ -304,25 +339,35 @@ jobs:
                   data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
               try:
                   with urllib.request.urlopen(req, timeout=40) as r:
-                      print(method, r.status)
+                      print(method, r.status); return True
               except urllib.error.HTTPError as e:
-                  print(method, "HTTP", e.code, e.read().decode("utf-8")[:300])
+                  print(method, "HTTP", e.code, e.read().decode("utf-8")[:300]); return False
               except Exception as e:
-                  print(method, "error:", e)
+                  print(method, "error:", e); return False
           for it in data["tg_items"]:
               caption = it["caption"]; imgs = it.get("images") or []
+              ok = False
               if len(imgs) >= 2:
-                  # альбом из всех расцветок; подпись — на первом фото
+                  # альбом из всех расцветок; подпись — на первом фото.
+                  # Пробуем несколько раз: сразу после пуша Pages мог ещё не отдать фото.
                   media = []
                   for i, u in enumerate(imgs):
                       item = {"type": "photo", "media": u}
                       if i == 0:
                           item["caption"] = caption; item["parse_mode"] = "HTML"
                       media.append(item)
-                  call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
+                  for attempt in range(3):
+                      ok = call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
+                      if ok: break
+                      print("Telegram sendMediaGroup retry...", attempt + 1); time.sleep(15)
               elif len(imgs) == 1:
-                  call("sendPhoto", {"chat_id": chat, "photo": imgs[0], "caption": caption, "parse_mode": "HTML"})
-              else:
+                  for attempt in range(3):
+                      ok = call("sendPhoto", {"chat_id": chat, "photo": imgs[0], "caption": caption, "parse_mode": "HTML"})
+                      if ok: break
+                      print("Telegram sendPhoto retry...", attempt + 1); time.sleep(15)
+              # Фолбэк: если с фото не вышло (или фото нет) — отправляем текст, чтобы пост точно появился
+              if not ok:
+                  print("Telegram fallback: text only")
                   call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
           PY
 
