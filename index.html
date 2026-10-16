@@ -1696,6 +1696,17 @@ const FAMILY_OF = {
   c671:'blue', abej:'beige', bej:'beige', ekru:'beige', beyaz:'white',
   vizon:'brown', gri:'grey'
 };
+/* Срок действия плашки «НОВИНКА»: снимается автоматически через NEW_DAYS дней
+   после даты new_since (YYYY-MM-DD). Без new_since модель считается новинкой. */
+const NEW_DAYS = 30;
+function isNewActive(v) {
+  if (!v || !v.isnew) return false;
+  const ds = v.new_since;
+  if (!ds) return true;
+  const t = Date.parse(ds);
+  if (isNaN(t)) return true;
+  return (Date.now() - t) <= NEW_DAYS * 24 * 60 * 60 * 1000;
+}
 function familyOf(p) {
   const c = colorList(p.colors)[0];
   return c ? (FAMILY_OF[c] || null) : null;
@@ -2098,7 +2109,7 @@ function render() {
   const items = filtered();
   const groups = groupByModel(items);
   /* хиты каталога — вверх (порядок внутри сохраняется, т.к. сортировка стабильная) */
-  const grank = g => g.some(v => v.isnew) ? 2 : g.some(v => v.hit) ? 1 : 0;
+  const grank = g => g.some(isNewActive) ? 2 : g.some(v => v.hit) ? 1 : 0;
   groups.sort((a, b) => grank(b) - grank(a));
   animateCount(groups.length);
 
@@ -2492,7 +2503,7 @@ function modelCardHTML(group) {
       '<div class="card-img">' + imgHTML(rep, true) +
         '<span class="art-tag">' + esc(colorsLabel) + '</span>' +
         '<div class="card-tags">' +
-          (group.some(v => v.isnew) ? '<span class="new-tag">' + (L('НОВИНКА', 'NEW')) + '</span>' : '') +
+          (group.some(isNewActive) ? '<span class="new-tag">' + (L('НОВИНКА', 'NEW')) + '</span>' : '') +
           (group.some(v => v.hit) ? '<span class="hit-tag">' + (L('ХИТ', 'TOP')) + '</span>' : '') +
         '</div>' +
         '<div class="card-packs">' + sizeTiers(rep).map(tr =>

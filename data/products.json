@@ -3293,7 +3293,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4301",
@@ -3319,7 +3320,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4302",
@@ -3345,7 +3347,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4303",
@@ -3371,7 +3374,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4304",
@@ -3397,7 +3401,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4305",
@@ -3423,7 +3428,8 @@
     "image2": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-14"
   },
   {
     "id": "PR-4310",
@@ -3773,7 +3779,8 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-06"
   },
   {
     "id": "PR-4401",
@@ -3798,7 +3805,8 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-06"
   },
   {
     "id": "PR-4402",
@@ -3823,7 +3831,8 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-06"
   },
   {
     "id": "PR-4403",
@@ -3848,7 +3857,8 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-06"
   },
   {
     "id": "PR-4410",
@@ -3923,7 +3933,8 @@
     "image2": "images/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-16"
   },
   {
     "id": "PR-4413",
@@ -3948,7 +3959,8 @@
     "image2": "images/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-16"
   },
   {
     "id": "PR-4414",
@@ -3973,7 +3985,8 @@
     "image2": "images/Palmiro_Rossi_LOCATELLI_GRI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-16"
   },
   {
     "id": "PR-4415",
@@ -3998,7 +4011,8 @@
     "image2": "images/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-16"
   },
   {
     "id": "PR-4416",
@@ -4023,6 +4037,7 @@
     "image2": "images/Palmiro_Rossi_LOCATELLI_VIZON_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "isnew": true
+    "isnew": true,
+    "new_since": "2026-10-16"
   }
 ]

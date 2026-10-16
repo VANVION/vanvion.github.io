@@ -99,6 +99,10 @@ jobs:
           tg_items = []
           for m in new_models:
               items = by_model[m]
+              # проставляем дату появления — от неё на сайте отсчитывается срок плашки «НОВИНКА»
+              for it in items:
+                  if not it.get("new_since"):
+                      it["new_since"] = today
               n = len(items)
               comp = (items[0].get("comp_ru") or "").strip()
               sizes = (items[0].get("sizes") or "").strip()
@@ -190,6 +194,9 @@ jobs:
               json.dump(news, f, ensure_ascii=False, indent=2)
           with open(".github/announced_models.json", "w", encoding="utf-8") as f:
               json.dump(announced, f, ensure_ascii=False, indent=2)
+          # сохраняем проставленные new_since обратно в каталог
+          with open("data/products.json", "w", encoding="utf-8") as f:
+              json.dump(products, f, ensure_ascii=False, indent=2)
 
           # пуш-текст
           if len(push_lines) == 1:
@@ -227,7 +234,7 @@ jobs:
         run: |
           git config user.name "VANVION"
           git config user.email "vanvion@yandex.com"
-          git add news.json .github/announced_models.json
+          git add news.json .github/announced_models.json data/products.json
           git commit -m "Auto: announce new model(s)" || { echo "nothing to commit"; exit 0; }
           git push
 
