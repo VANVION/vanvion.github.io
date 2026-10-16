@@ -1,0 +1,123 @@
+name: Post a model to Telegram (manual)
+
+# Ручная публикация ОДНОЙ модели из каталога только в Telegram-канал (с фото).
+# Удобно, когда нужно до-отправить модель, которая не ушла в Telegram.
+# Запуск: вкладка Actions -> "Post a model to Telegram (manual)" -> Run workflow,
+# указать название модели (как в поле model в data/products.json), напр. LOCATELLI.
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Название модели (поле model), напр. LOCATELLI"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  tgpost:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Post to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TARGET_MODEL: ${{ inputs.model }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets not set — stop"; exit 1; fi
+          python3 - <<'PY'
+          import json, os, time, re, urllib.request, urllib.parse, urllib.error
+
+          SITE = "https://vanvion.github.io"
+          target = (os.environ["TARGET_MODEL"] or "").strip()
+          token = os.environ["TELEGRAM_BOT_TOKEN"]; chat = os.environ["TELEGRAM_CHAT_ID"]
+          base = "https://api.telegram.org/bot" + token
+
+          products = json.load(open("data/products.json", encoding="utf-8"))
+          items = [p for p in products if (p.get("model") or "").strip().lower() == target.lower()]
+          if not items:
+              print("Модель не найдена в каталоге:", target); raise SystemExit(1)
+          model = (items[0].get("model") or "").strip()
+
+          COLOR_RU = {
+            "charcoal":"УГОЛЬНЫЙ","navy":"ТЁМНО-СИНИЙ","black":"ЧЁРНЫЙ","camel":"КЭМЕЛ",
+            "beige":"БЕЖЕВЫЙ","grey":"СЕРЫЙ","brown":"КОРИЧНЕВЫЙ","green":"ЗЕЛЁНЫЙ",
+            "lightgrey":"СВЕТЛО-СЕРЫЙ","burgundy":"БОРДОВЫЙ","sand":"ПЕСОЧНЫЙ","slate":"СЛАНЦЕВЫЙ",
+            "taba":"ТАБА","kiremit":"КИРПИЧНЫЙ","kkiremit":"Т.КИРПИЧНЫЙ","kahve":"КОФЕ",
+            "antrasit":"АНТРАЦИТ","yesil":"ЗЕЛЁНЫЙ","murdum":"СЛИВОВЫЙ","laci":"СИНИЙ",
+            "klaci":"ТЁМНО-СИНИЙ","siyah":"ЧЁРНЫЙ","haki":"ХАКИ","alaci":"СВЕТЛО-СИНИЙ",
+            "c295":"СЕРЫЙ","c671":"ГОЛУБОЙ","abej":"СВЕТЛО-БЕЖЕВЫЙ","bej":"БЕЖЕВЫЙ",
+            "ekru":"ЭКРЮ","beyaz":"БЕЛЫЙ","vizon":"ВИЗОН","gri":"СЕРЫЙ",
+          }
+          def color_name(p):
+              slug = (p.get("colors") or "").split(",")[0].strip().lower()
+              return COLOR_RU.get(slug, "")
+          def fmt_comp(c):
+              c = (c or "").strip(); c = re.sub(r"%\s+", "%, ", c)
+              return c[:1].upper() + c[1:].lower() if c else c
+          def esc_html(s):
+              return (s or "").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+
+          comp = (items[0].get("comp_ru") or "").strip()
+          sizes = (items[0].get("sizes") or "").strip()
+          color_names, seen = [], set()
+          for it in items:
+              cn = color_name(it)
+              if cn and cn not in seen:
+                  seen.add(cn); color_names.append(cn.capitalize())
+          images, seen_img = [], set()
+          for it in items:
+              im = (it.get("image") or "").strip()
+              if im and im not in seen_img:
+                  seen_img.add(im); images.append(SITE + "/" + im)
+          images = images[:10]
+          pid = (items[0].get("id") or "").strip()
+          card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
+
+          cap = ["👔 <b>%s</b>" % esc_html(model), "",
+                 "Из каталога <b>VANVION</b> — мужская классика оптом.", ""]
+          if comp: cap.append("🧵 <b>Состав:</b> %s" % esc_html(fmt_comp(comp)))
+          if color_names: cap.append("🎨 <b>Цвета (%d):</b> %s" % (len(color_names), esc_html(", ".join(color_names))))
+          if sizes: cap.append("📏 <b>Размеры:</b> %s" % esc_html(sizes))
+          cap += ["", "👇 Открыть модель — фото, цвета и оформление оптового заказа:",
+                  '🔗 <a href="%s">Открыть %s в каталоге</a>' % (esc_html(card_url), esc_html(model))]
+          caption = "\n".join(cap)
+
+          def call(method, payload):
+              req = urllib.request.Request(base + "/" + method,
+                  data=urllib.parse.urlencode(payload).encode("utf-8"), method="POST")
+              try:
+                  with urllib.request.urlopen(req, timeout=40) as r:
+                      print(method, r.status); return True
+              except urllib.error.HTTPError as e:
+                  print(method, "HTTP", e.code, e.read().decode("utf-8")[:300]); return False
+              except Exception as e:
+                  print(method, "error:", e); return False
+
+          ok = False
+          if len(images) >= 2:
+              media = []
+              for i, u in enumerate(images):
+                  item = {"type": "photo", "media": u}
+                  if i == 0:
+                      item["caption"] = caption; item["parse_mode"] = "HTML"
+                  media.append(item)
+              for attempt in range(3):
+                  ok = call("sendMediaGroup", {"chat_id": chat, "media": json.dumps(media, ensure_ascii=False)})
+                  if ok: break
+                  print("retry sendMediaGroup...", attempt + 1); time.sleep(15)
+          elif len(images) == 1:
+              for attempt in range(3):
+                  ok = call("sendPhoto", {"chat_id": chat, "photo": images[0], "caption": caption, "parse_mode": "HTML"})
+                  if ok: break
+                  print("retry sendPhoto...", attempt + 1); time.sleep(15)
+          if not ok:
+              print("fallback: text only")
+              call("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
+          print("done:", model, "| photos:", len(images))
+          PY
