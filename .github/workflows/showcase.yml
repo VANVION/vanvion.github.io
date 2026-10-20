@@ -27,7 +27,16 @@ jobs:
         id: pick
         run: |
           python3 - <<'PY'
-          import json, os, re
+          import json, os, re, datetime
+
+          # Разовый пропуск витрины на конкретные даты (по запросу).
+          # Очередь показа не трогаем — ближайший следующий запуск пройдёт как обычно.
+          SKIP_DATES = {"2026-10-20"}
+          if datetime.date.today().isoformat() in SKIP_DATES:
+              with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+                  f.write("count=0\n")
+              print("Showcase skipped today by request:", datetime.date.today().isoformat())
+              raise SystemExit
 
           SITE = "https://vanvion.github.io"
           def load(path, default):
