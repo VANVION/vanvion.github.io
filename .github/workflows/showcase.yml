@@ -31,7 +31,7 @@ jobs:
 
           # Разовый пропуск витрины на конкретные даты (по запросу).
           # Очередь показа не трогаем — ближайший следующий запуск пройдёт как обычно.
-          SKIP_DATES = {"2026-10-20"}
+          SKIP_DATES = set()
           if datetime.date.today().isoformat() in SKIP_DATES:
               with open(os.environ["GITHUB_OUTPUT"], "a") as f:
                   f.write("count=0\n")
@@ -66,9 +66,30 @@ jobs:
               with open(gh, "a") as f: f.write("count=0\n")
               print("no jacket models"); raise SystemExit
 
-          pool = [m for m in order if m not in shown]
-          if not pool:
-              shown = []; pool = order[:]
+          # Витрина не показывает модели, которые СЕЙЧАС в статусе НОВИНКА
+          # (≤ NEW_COOLDOWN_DAYS дней с new_since) — их и так продвигает автоанонс,
+          # иначе свежая новинка повторно вылезала бы в витрине через пару дней.
+          NEW_COOLDOWN_DAYS = 30
+          today = datetime.date.today()
+          def is_fresh_new(m):
+              for p in by[m]:
+                  ns = p.get("new_since")
+                  if p.get("isnew") and ns:
+                      try:
+                          if (today - datetime.date.fromisoformat(ns)).days <= NEW_COOLDOWN_DAYS:
+                              return True
+                      except Exception:
+                          pass
+              return False
+
+          eligible = [m for m in order if not is_fresh_new(m)]
+          if not eligible:                      # вдруг все свежие — тогда без фильтра
+              eligible = order[:]
+
+          pool = [m for m in eligible if m not in shown]
+          if not pool:                          # круг пройден — начинаем заново
+              shown = []
+              pool = eligible[:]
           model = pool[0]
           shown.append(model)
           with open(".github/showcase_state.json", "w", encoding="utf-8") as f:
