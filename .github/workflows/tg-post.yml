@@ -1,9 +1,10 @@
-name: Post a model to Telegram (manual)
+name: Post a model to Telegram + MAX (manual)
 
-# Ручная публикация ОДНОЙ модели из каталога только в Telegram-канал (с фото).
-# Удобно, когда нужно до-отправить модель, которая не ушла в Telegram.
-# Запуск: вкладка Actions -> "Post a model to Telegram (manual)" -> Run workflow,
-# указать название модели (как в поле model в data/products.json), напр. LOCATELLI.
+# Ручная публикация ОДНОЙ модели из каталога в Telegram и MAX (с фото).
+# Фото заливаются БАЙТАМИ прямо из репозитория — не зависит от кэша/CDN сайта.
+# Удобно для чистого перепоста (например после замены фото).
+# Запуск: вкладка Actions -> "Post a model to Telegram + MAX (manual)" -> Run workflow,
+# указать название модели (как в поле model в data/products.json), напр. OSCAR.
 
 on:
   workflow_dispatch:
@@ -163,5 +164,128 @@ jobs:
           if not ok:
               print("fallback: text only")
               call_urlencoded("sendMessage", {"chat_id": chat, "text": caption, "parse_mode": "HTML"})
-          print("done:", model, "| photos:", len(images))
+          print("done (Telegram):", model, "| photos:", len(images))
+          PY
+
+      - name: Post to MAX
+        env:
+          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
+          MAX_CHAT_ID: ${{ secrets.MAX_CHAT_ID }}
+          TARGET_MODEL: ${{ inputs.model }}
+        run: |
+          if [ -z "$MAX_BOT_TOKEN" ] || [ -z "$MAX_CHAT_ID" ]; then
+            echo "MAX secrets not set — skip"; exit 0; fi
+          python3 - <<'PY'
+          import json, os, time, re, urllib.request, urllib.parse, urllib.error
+
+          SITE = "https://vanvion.github.io"
+          target = (os.environ["TARGET_MODEL"] or "").strip()
+          tok = os.environ["MAX_BOT_TOKEN"]; chat = os.environ["MAX_CHAT_ID"]
+          BASE = "https://botapi.max.ru"
+          AUTH = {"Authorization": tok}
+
+          products = json.load(open("data/products.json", encoding="utf-8"))
+          items = [p for p in products if (p.get("model") or "").strip().lower() == target.lower()]
+          if not items:
+              print("Модель не найдена:", target); raise SystemExit(1)
+          model = (items[0].get("model") or "").strip()
+
+          COLOR_RU = {
+            "charcoal":"УГОЛЬНЫЙ","navy":"ТЁМНО-СИНИЙ","black":"ЧЁРНЫЙ","camel":"КЭМЕЛ",
+            "beige":"БЕЖЕВЫЙ","grey":"СЕРЫЙ","brown":"КОРИЧНЕВЫЙ","green":"ЗЕЛЁНЫЙ",
+            "lightgrey":"СВЕТЛО-СЕРЫЙ","burgundy":"БОРДОВЫЙ","sand":"ПЕСОЧНЫЙ","slate":"СЛАНЦЕВЫЙ",
+            "taba":"ТАБА","kiremit":"КИРПИЧНЫЙ","kkiremit":"Т.КИРПИЧНЫЙ","kahve":"КОФЕ",
+            "antrasit":"АНТРАЦИТ","yesil":"ЗЕЛЁНЫЙ","murdum":"СЛИВОВЫЙ","laci":"СИНИЙ",
+            "klaci":"ТЁМНО-СИНИЙ","siyah":"ЧЁРНЫЙ","haki":"ХАКИ","alaci":"СВЕТЛО-СИНИЙ",
+            "c295":"СЕРЫЙ","c671":"ГОЛУБОЙ","abej":"СВЕТЛО-БЕЖЕВЫЙ","bej":"БЕЖЕВЫЙ",
+            "ekru":"ЭКРЮ","beyaz":"БЕЛЫЙ","vizon":"ВИЗОН","gri":"СЕРЫЙ","skahve":"СВЕТЛО-КОРИЧНЕВЫЙ",
+          }
+          def color_name(p):
+              slug = (p.get("colors") or "").split(",")[0].strip().lower()
+              return COLOR_RU.get(slug, "")
+          def fmt_comp(c):
+              c = (c or "").strip(); c = re.sub(r"%\s+", "%, ", c)
+              return c[:1].upper() + c[1:].lower() if c else c
+
+          comp = (items[0].get("comp_ru") or "").strip()
+          sizes = (items[0].get("sizes") or "").strip()
+          color_names, seen = [], set()
+          for it in items:
+              cn = color_name(it)
+              if cn and cn not in seen:
+                  seen.add(cn); color_names.append(cn.capitalize())
+          paths, seen_img = [], set()
+          for it in items:
+              im = (it.get("image") or "").strip()
+              if im and im not in seen_img and os.path.exists(im):
+                  seen_img.add(im); paths.append(im)
+          paths = paths[:10]
+          pid = (items[0].get("id") or "").strip()
+          card_url = (SITE + "/#p=" + pid) if pid else (SITE + "/")
+
+          mx = ["👔 %s — из каталога VANVION" % model, ""]
+          if comp: mx.append("🧵 Состав: %s" % fmt_comp(comp))
+          if color_names: mx.append("🎨 Цвета (%d): %s" % (len(color_names), ", ".join(color_names)))
+          if sizes: mx.append("📏 Размеры: %s" % sizes)
+          mx += ["", "🛍 Опт · ТЦ «Садовод», Москва",
+                 "👇 Открыть карточку модели (фото, цвета, заказ):", card_url]
+          text = "\n".join(mx)
+
+          def multipart(field, filename, content, ctype="image/jpeg"):
+              b = "----vanvionmax%d" % int(time.time() * 1000)
+              head = ("--%s\r\nContent-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n"
+                      "Content-Type: %s\r\n\r\n") % (b, field, filename, ctype)
+              body = head.encode("utf-8") + content + ("\r\n--%s--\r\n" % b).encode("utf-8")
+              return body, "multipart/form-data; boundary=" + b
+          def upload_local(path):
+              req = urllib.request.Request(BASE + "/uploads?" + urllib.parse.urlencode({"type": "image"}),
+                  data=b"{}", headers=dict(AUTH, **{"Content-Type": "application/json"}), method="POST")
+              with urllib.request.urlopen(req, timeout=40) as r:
+                  up = json.loads(r.read().decode("utf-8"))
+              upload_url = up.get("url")
+              if not upload_url:
+                  print("MAX upload: no url", up); return None
+              with open(path, "rb") as f:
+                  img = f.read()
+              body, ct = multipart("data", os.path.basename(path), img)
+              req2 = urllib.request.Request(upload_url, data=body, headers={"Content-Type": ct}, method="POST")
+              with urllib.request.urlopen(req2, timeout=90) as r:
+                  res = json.loads(r.read().decode("utf-8"))
+              if isinstance(res, dict):
+                  if res.get("token"): return res["token"]
+                  for v in (res.get("photos") or {}).values():
+                      if isinstance(v, dict) and v.get("token"): return v["token"]
+              print("MAX upload: no token", str(res)[:200]); return None
+          def send(text, attachments):
+              q = urllib.parse.urlencode({"chat_id": chat})
+              payload = {"text": text}
+              if attachments: payload["attachments"] = attachments
+              body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+              for attempt in range(6):
+                  req = urllib.request.Request(BASE + "/messages?" + q, data=body,
+                      headers=dict(AUTH, **{"Content-Type": "application/json; charset=utf-8"}), method="POST")
+                  try:
+                      with urllib.request.urlopen(req, timeout=60) as r:
+                          print("MAX send OK", r.status); return True
+                  except urllib.error.HTTPError as e:
+                      msg = e.read().decode("utf-8")[:300]
+                      if "attachment.not.ready" in msg and attempt < 5:
+                          print("MAX attachments processing, retry..."); time.sleep(5); continue
+                      print("MAX HTTP", e.code, msg)
+                      if attachments:
+                          print("MAX fallback: text only"); return send(text, None)
+                      return False
+                  except Exception as e:
+                      print("MAX error:", e); return False
+
+          attachments = []
+          for p in paths:
+              try:
+                  t = upload_local(p)
+              except Exception as e:
+                  print("MAX upload error:", e); t = None
+              if t: attachments.append({"type": "image", "payload": {"token": t}})
+          print("MAX attachments:", len(attachments))
+          send(text, attachments or None)
+          print("done (MAX):", model, "| photos:", len(paths))
           PY
