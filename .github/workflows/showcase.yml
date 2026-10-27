@@ -25,17 +25,20 @@ jobs:
 
       - name: Pick a jacket and build payload
         id: pick
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           python3 - <<'PY'
           import json, os, re, datetime
 
-          # Разовый пропуск витрины на конкретные даты (по запросу).
-          # Очередь показа не трогаем — ближайший следующий запуск пройдёт как обычно.
-          SKIP_DATES = set()
-          if datetime.date.today().isoformat() in SKIP_DATES:
+          # Разовый пропуск ПЛАНОВОГО запуска на конкретные даты (по запросу).
+          # Срабатывает только для event=schedule; ручной запуск (workflow_dispatch)
+          # публикует всегда. Очередь показа при пропуске не трогаем.
+          SKIP_DATES = {"2026-10-27"}
+          if os.environ.get("EVENT_NAME") == "schedule" and datetime.date.today().isoformat() in SKIP_DATES:
               with open(os.environ["GITHUB_OUTPUT"], "a") as f:
                   f.write("count=0\n")
-              print("Showcase skipped today by request:", datetime.date.today().isoformat())
+              print("Scheduled showcase skipped today by request:", datetime.date.today().isoformat())
               raise SystemExit
 
           SITE = "https://vanvion.github.io"
