@@ -271,3 +271,60 @@ test('classic grid fallback and responsive ATELIER touch controls',async t=>{
     }
   }
 });
+
+test('navigation preview: combined filters, search, reset, language and keyboard',async t=>{
+  const p=await pageFor(t,'/?navigation=atelier'); await p.locator('.ag-open').first().waitFor();
+  const target=await p.evaluate(()=>{
+    const x=PRODUCTS.find(x=>x.cat==='pidzhaki'&&x.lined===false&&fabricOf(x)&&familyOf(x));
+    return {id:x.id,fabric:fabricOf(x),color:familyOf(x)};
+  });
+  await p.locator('[data-cat="pidzhaki"]').click();
+  const lining=p.locator('[data-filter="liningBar"]'); await lining.locator('summary').click();
+  await p.locator('[data-ln="nolining"]').click();
+  assert.equal(await p.locator('[data-ln="nolining"]').getAttribute('aria-pressed'),'true');
+  await p.locator('[data-filter="fabricBar"] summary').click();
+  await p.locator(`[data-fab="${target.fabric}"]`).click();
+  await p.locator('[data-filter="colorBar"] summary').click();
+  await p.locator(`[data-c="${target.color}"]`).click();
+  assert(await p.evaluate(()=>filtered().length)>0);
+  assert.equal(await p.locator('.card').count(),await p.evaluate(()=>groupByModel(filtered()).length));
+  await p.locator('#search').fill(target.id); await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
+  assert.equal(await p.locator('.ag-article').innerText(),target.id);
+  await p.locator('.an-reset').click();
+  assert.deepEqual(await p.evaluate(()=>({query:QUERY,color:COLOR,fabric:FABRIC,lining:LINING,cat:CAT})),{query:'',color:'',fabric:'',lining:'',cat:'pidzhaki'});
+  assert.equal(await p.locator('#search').evaluate(e=>e===document.activeElement),true);
+  assert.equal(await p.locator('.an-reset').isVisible(),false);
+  await p.locator('#langBtn').click(); await p.locator('[data-l="en"]').click();
+  assert.equal(await p.locator('[data-filter="fabricBar"] .an-title').innerText(),'FABRIC');
+  assert.match(await p.locator('#search').getAttribute('aria-label'),/^Search/);
+  assert.equal(await p.locator('#search').getAttribute('placeholder'),'Article or name');
+  const summary=p.locator('[data-filter="fabricBar"] summary');
+  await summary.focus(); await p.keyboard.press('Enter');
+  assert.equal(await p.locator('[data-filter="fabricBar"]').evaluate(e=>e.open),false);
+  await p.keyboard.press('Enter');
+  assert.equal(await p.locator('[data-filter="fabricBar"]').evaluate(e=>e.open),true);
+});
+
+test('navigation preview is isolated and responsive in RU/EN',async t=>{
+  const normal=await pageFor(t,'/'); await normal.locator('.card').first().waitFor();
+  assert.equal(await normal.locator('.atelier-nav').count(),0);
+  assert.equal(await normal.locator('link[href="experiments/atelier-navigation/navigation.css"]').count(),0);
+  const p=await pageFor(t,'/?navigation=atelier'); await p.locator('.ag-open').first().waitFor();
+  for(const width of [320,390,768,1024,1440]){
+    await p.setViewportSize({width,height:900});
+    for(const lang of ['ru','en']){
+      await p.evaluate(lang=>setLang(lang),lang);
+      assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`${lang} overflow at ${width}`);
+      assert.equal(await p.locator('[data-filter="fabricBar"]').evaluate(e=>e.open),width>=900);
+      if(width<900){
+        await p.locator('[data-filter="fabricBar"] summary').click();
+        await p.locator('[data-filter="colorBar"] summary').click();
+        assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+        await p.locator('[data-filter="fabricBar"] summary').click();
+        await p.locator('[data-filter="colorBar"] summary').click();
+      }
+      const sizes=await p.locator('.sidebar .tab').evaluateAll(buttons=>buttons.map(e=>e.getBoundingClientRect().height));
+      assert(sizes.every(h=>h>=44),'Category controls need 44px targets');
+    }
+  }
+});
