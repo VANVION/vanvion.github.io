@@ -1,6 +1,14 @@
-# VANVION ATELIER 3.0
+# VANVION ATELIER — 3.0 preview / 3.1 stabilization
 
 An isolated, mobile-first product-card prototype. It does not replace the normal catalogue or the Modern Tailoring preview.
+
+## Repository and publication status
+
+ATELIER 3.0 commit `1f26bf560ea32c6daaea92e88f5a1b4890d6ba24` was pushed to GitHub and is already in `main`. The original `design/vanvion-atelier-3` branch and `main` pointed to that same commit when stabilization began; the lack of differences between them is expected.
+
+ATELIER 3.1 changes are prepared separately in `fix/atelier-3-stabilization`, based on the current remote `main`. They must not be sent to `main` or published without separate explicit user approval. Preparing a local commit is not publication.
+
+GitHub Pages deployment needs a separate verification. The last public check was blocked by the environment's proxy (`Tunnel connection failed: 403 Forbidden`). This does not establish that the public site is broken, or that a deployment succeeded. Do not trigger a new deployment to work around the check.
 
 ## Preview
 
@@ -10,32 +18,56 @@ From the repository root:
 python3 -m http.server 8000 --bind 127.0.0.1
 ```
 
-Append `?design=atelier-3#p=PR-3001` to the served site address. With no hash, the preview opens PR-3001. The comparison control opens the existing card; RU/EN switches the current product immediately. Remove the query parameter to return to the ordinary catalogue. Do not publish or merge this branch without user confirmation.
+Open the local server with `?design=atelier-3#p=PR-3001` appended to its address. With no hash, the preview opens PR-3001. The comparison control opens the existing card; RU/EN switches the current product immediately. Remove the query parameter to return to the ordinary catalogue. The experiment is still opt-in after inclusion in `main`.
 
 ## Architecture
 
-`index.html` loads the opt-in script. It exits immediately outside `design=atelier-3`; its stylesheet is loaded only inside that mode. Styles are scoped to `.at-card` and `at-` components and define their own colour, spacing, type, border, radius and motion tokens. Futura PT remains the existing local font. No libraries are added.
+`index.html` loads the opt-in script. It exits immediately outside `design=atelier-3`; its stylesheet is loaded only inside that mode. Styles are scoped to `.at-card` and `at-` components and define their own colour, spacing, type, border, radius and motion tokens. Futura PT remains the existing local font. No runtime libraries are added.
 
 The preview reuses PRODUCTS, getName, localised specification helpers, PALETTE, orderLinks, history routing, the existing product overlay, scroll locking, Telegram back navigation and fullscreen zoom. It adds keyboard focus handling to zoom in ATELIER mode. The ordinary catalogue's cart remains intact; the ATELIER card presents existing messenger channels rather than introducing checkout behavior.
 
 The scope is the inspected М93V pair PR-3001 / PR-3003. Both have matching category, model, composition, fit, construction, lining, country and sizes. Their colour and photograph differ. A fixed allowlist plus field equality checks prevents an arbitrary same-model record or a future mismatched variant from becoming a colour option. Product JSON and photos are unchanged. The selected real model has one photo per article. A second photograph is supported only when image2 exists; no fictitious views or thumbnails are created.
 
-WhatsApp uses the existing destination with localised model/article/colour text. Telegram and MAX keep the existing contact destinations; those routes do not support the same prefilled-message mechanism, so the prototype does not invent one.
+WhatsApp uses the existing destination with localised model/article/colour text. Telegram and MAX keep the existing contact destinations and do not receive prefilled product details. The RU/EN interface now states this explicitly; users must include those details in Telegram/MAX messages themselves. Contact addresses and routing have not changed.
 
-## Validation
+## 3.1 image stabilization
 
-Chromium headless checks passed:
+The photo stage reserves its responsive height independently of the image. Explicit hidden rules prevent the image and error overlay from occupying space while hidden. A single polite live-status message overlays the existing stage on failure; repeated errors do not append more messages. Loading and unavailable photos are marked `aria-disabled` and cannot open zoom, while the trigger stays keyboard-focusable. Gallery navigation remains accessible. Selecting another photo clears the error and restores the zoom label and affordance only after a successful load. No product data, pictures or integration settings are modified.
 
-- RU and EN layouts at 320, 375, 390, 430, 768, 1024 and 1440 px without horizontal overflow.
-- Real catalogue/photo loading, original-card comparison, size range and product specifications.
-- One-photo mode without empty navigation controls; PR-3001 → PR-3003 updates article, image and contact text.
-- A temporary in-memory image2 using another existing image exercised two-photo buttons, keyboard and touch swipe. This tests gallery behavior, not a second real view of the selected article. No fixture data was written to disk.
-- Zoom open/close, keyboard focus containment and focus restoration.
-- Mobile contact action brings the real WhatsApp link into view; reduced-motion preference is respected.
-- A temporary mismatched size value excludes an unsafe colour variant.
-- Default catalogue category/search/product detail and the previous Modern Tailoring preview still work. No JavaScript page errors in the main functional run.
-- `node --check experiments/atelier-3/card.js` and `git diff --check` passed.
+## Reproducible regression tests
 
-Screenshots: `/workspace/artifacts/atelier-3/` contains old/new cards at 390 and 1440 px, plus mobile details and contact screens.
+Requirements: Node.js 22 or newer and Chromium. Tests use Node's built-in test runner and the pinned Playwright dev dependency in `tests/atelier-3/`; no application build or test framework is added to the catalogue.
 
-Limitations: native Telegram Mini App behavior, actual iPhone safe-area rendering, live AI chat, push SDKs and real outbound messaging were not exercised. External SDK domains are restricted in this environment. Local viewport and DOM checks do not establish real-device behavior. No production messages were sent, no integration settings changed, no main-site deployment performed.
+```sh
+cd tests/atelier-3
+npm ci --ignore-scripts
+# Use an installed Chromium (as in the prepared cloud environment):
+CHROMIUM_PATH=/usr/bin/chromium npm test
+```
+
+Alternatively install Playwright's matching browser once, then omit CHROMIUM_PATH:
+
+```sh
+npx playwright install chromium
+npm test
+```
+
+The runner starts and stops its own loopback HTTP server on a free port; no separately running app server is required. External network requests and service workers are blocked in test contexts to keep photo failure injection deterministic and avoid production SDK calls. Error messages in the browser network console for deliberate HTTP 404 fixtures are expected; JavaScript page errors fail every test.
+
+Nine tests cover:
+
+- Ordinary catalogue isolation, category/search and original product detail.
+- Real PR-3001 ↔ PR-3003 switching, sizes, RU/EN, precise contact text and unchanged contact routes.
+- Zoom keyboard activation, Tab/Shift+Tab containment and focus restoration.
+- Loading → first-photo failure → working second photo, with unchanged stage/gallery/heading geometry.
+- Second-photo failure, repeated error events, recovery and variant switching.
+- Failed PR-3001 → working PR-3003 → failed PR-3001.
+- RU/EN successful and failed-photo layouts at 320, 390 and 1440 px without horizontal overflow.
+
+For two-photo checks, only intercepted JSON responses and local image responses are changed. The fixture reuses an existing picture to test mechanics; it is not a new product photograph. No product/image files are written. Geometry assertions compare stage height, gallery height and heading position with a tolerance below 1 px. Changing from a two-photo fixture to a one-photo variant intentionally removes navigation buttons; only photo-stage height is required to remain identical across that change.
+
+The 3.1 run passed all nine tests, with zero failures, skips or JavaScript page errors. Syntax and whitespace checks also passed. Acceptance screenshots and the test transcript are stored outside the checkout in `/workspace/artifacts/atelier-3.1/`. The before screenshots use the exact 3.0 JS/CSS from commit `1f26bf5` served through browser interception; after screenshots show the local 3.1 working tree.
+
+## Remaining limitations
+
+Native Telegram Mini App behavior, actual iPhone safe-area rendering, real touch devices, live AI chat, push SDKs and real outbound messaging were not exercised. Full accessibility and performance audits are outside this stabilization pass. External SDK domains and the public Pages URL are restricted in this environment. Local viewport checks do not establish real-device behavior. No production messages were sent and no 3.1 main-site deployment was performed.

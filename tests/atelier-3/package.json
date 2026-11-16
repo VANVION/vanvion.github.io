@@ -1,0 +1,1 @@
+{"name":"vanvion-atelier-regression","private":true,"scripts":{"test":"node --test regression.test.cjs"},"devDependencies":{"playwright":"1.62.1"}}

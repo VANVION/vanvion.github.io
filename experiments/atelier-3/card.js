@@ -59,12 +59,12 @@
     const rows = specs.map(([k,v]) => '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('');
     const contacts = orderLinks(L('Здравствуйте! Интересует ','Hello! I am interested in ') + getName(p) + ', ' + L('артикул ','article ') + p.id + (colorName ? ', ' + colorName : ''));
     const photos = [...new Set([p.image,p.image2].filter(Boolean))];
-    $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
+    $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button><span class="at-photo-error" role="status" aria-live="polite" hidden></span>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
       '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat]) + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(p.model || getName(p)) + '</h1><p class="at-product-name">' + esc(getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
       '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span>' + esc(colorName) + '</span></div></section>' +
       (p.sizes ? '<section class="at-sizes">' + sectionTitle('03',L('Размерный ряд','Size range')) + '<p>' + esc(trSpec(p.sizes)) + '</p></section>' : '') +
       (specs.length ? '<section class="at-specs">' + sectionTitle('04',L('В деталях','In detail')) + '<dl>' + rows + '</dl></section>' : '') +
-      '<section class="at-notes">' + sectionTitle('05',L('Оптовым клиентам','For wholesale clients')) + '<p>' + L('Наличие, стоимость и условия поставки уточнит менеджер. Передадим модель и артикул в выбранный канал связи.','Your manager will confirm availability, pricing and delivery terms. Share the model and article through your preferred channel.') + '</p></section>' +
+      '<section class="at-notes">' + sectionTitle('05',L('Оптовым клиентам','For wholesale clients')) + '<p>' + L('Наличие, стоимость и условия поставки уточнит менеджер. В WhatsApp подготовим сообщение с моделью, артикулом и цветом. Telegram и MAX откроют контакт менеджера — укажите данные товара в сообщении.','Your manager will confirm availability, pricing and delivery terms. WhatsApp includes a prepared message with the model, article and colour. Telegram and MAX open the manager’s contact — include the product details in your message.') + '</p></section>' +
       '<section class="at-contact" id="atelierContact"><span class="at-contact-label">' + L('Обсудим ваш заказ','Let’s discuss your order') + '</span><h2>' + L('На связи.<br>По делу.','A direct line.<br>A considered choice.') + '</h2><div class="at-contact-links"><a class="at-primary" href="' + esc(contacts.wa) + '" target="_blank" rel="noopener"><span>' + L('Написать в WhatsApp','Message on WhatsApp') + '</span>' + arrow + '</a><div><a href="' + esc(contacts.tg) + '" target="_blank" rel="noopener">Telegram ' + arrow + '</a><a href="' + esc(contacts.max) + '" target="_blank" rel="noopener">MAX ' + arrow + '</a></div></div></section></div>';
     $('detailContent').prepend(tools);
     const dock = document.createElement('div'); dock.className = 'at-dock';
@@ -85,19 +85,45 @@
     const photo = gallery.querySelector('img');
     const controls = gallery.querySelector('.at-photo-controls');
     const counter = document.createElement('span'); counter.setAttribute('aria-live','polite');
-    let index = 0, start = null, swiped = false;
+    const trigger = gallery.querySelector('.at-photo');
+    const stage = gallery.querySelector('.at-photo-stage');
+    const notice = gallery.querySelector('.at-photo-error');
+    const expand = gallery.querySelector('.at-expand');
+    const zoomLabel = L('Увеличить фотографию','Enlarge photograph');
+    let index = 0, start = null, swiped = false, ready = false;
     function show(next) {
       index = (next + photos.length) % photos.length;
-      photo.hidden = false; gallery.querySelector('.at-photo-error')?.remove();
-      photo.classList.remove('at-loaded'); photo.src = photos[index];
+      ready = false;
+      photo.hidden = true;
+      photo.classList.remove('at-loaded');
+      notice.hidden = true;
+      notice.textContent = '';
+      expand.hidden = true;
+      trigger.setAttribute('aria-disabled','true');
+      trigger.setAttribute('aria-label',L('Загрузка фотографии','Loading photograph'));
+      stage.setAttribute('aria-busy','true');
+      photo.src = photos[index];
       counter.textContent = String(index + 1).padStart(2,'0') + ' / ' + String(photos.length).padStart(2,'0');
     }
-    photo.onload = () => photo.classList.add('at-loaded');
+    photo.onload = () => {
+      ready = true;
+      photo.hidden = false;
+      photo.classList.add('at-loaded');
+      expand.hidden = false;
+      trigger.setAttribute('aria-disabled','false');
+      trigger.setAttribute('aria-label',zoomLabel);
+      stage.setAttribute('aria-busy','false');
+    };
     photo.onerror = () => {
+      ready = false;
       photo.hidden = true;
-      gallery.querySelector('.at-photo').setAttribute('aria-label',L('Фото недоступно','Photograph unavailable'));
-      const notice = document.createElement('span'); notice.className='at-photo-error'; notice.textContent=L('Фото недоступно','Photograph unavailable');
-      gallery.querySelector('.at-photo').append(notice);
+      photo.classList.remove('at-loaded');
+      expand.hidden = true;
+      trigger.setAttribute('aria-disabled','true');
+      trigger.setAttribute('aria-label',L('Фото недоступно','Photograph unavailable'));
+      stage.setAttribute('aria-busy','false');
+      notice.textContent = L('Фото недоступно','Photograph unavailable');
+      notice.hidden = false;
     };
     if (photos.length > 1) {
       for (const direction of [-1,1]) {
@@ -107,7 +133,7 @@
       }
     }
     controls.append(counter); show(0);
-    gallery.querySelector('.at-photo').onclick = () => { if (!swiped && !photo.hidden) openZoom(photos[index]); swiped=false; };
+    gallery.querySelector('.at-photo').onclick = () => { if (!swiped && ready) openZoom(photos[index]); swiped=false; };
     gallery.addEventListener('touchstart',e=>{e.stopPropagation();swiped=false;start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
     gallery.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
     gallery.addEventListener('touchend',e=>{e.stopPropagation();if(!start)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){swiped=true;show(index+(dx<0?1:-1));}start=null;},{passive:true});
