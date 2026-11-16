@@ -219,3 +219,55 @@ test('explicit classic and previous Modern Tailoring modes remain available', as
     if(mode==='modern-tailoring') assert.equal(await p.locator('.mt-card').count(),1);
   }
 });
+
+test('ATELIER grid preview: variants, pack cart action and detail navigation', async t => {
+  const p=await pageFor(t,'/?catalog=atelier');
+  const card=p.locator('.card').filter({has:p.locator('.mdot:not(.active)')}).first();
+  await card.locator('.ag-open').waitFor(); await card.scrollIntoViewIfNeeded();
+  const dot=card.locator('.mdot:not(.active)').first();
+  const id=await dot.getAttribute('data-goto'); await dot.click();
+  assert.equal(await card.getAttribute('data-id'),id);
+  assert.equal(await card.locator('.ag-article').innerText(),id);
+  assert.equal(await card.locator('.mdot.active').getAttribute('aria-pressed'),'true');
+  const expected=await p.evaluate(id=>PRODUCTS.find(x=>x.id===id),id);
+  assert.equal(await card.locator('.card-img img').getAttribute('src'),expected.image);
+  await card.locator('.card-pack').first().click();
+  assert.equal(await p.evaluate(()=>cartPacks()),1);
+  assert.equal(await p.evaluate(()=>CART[0].id),id);
+  assert.equal(await p.locator('#detail.open').count(),0,'Quick add must not open detail');
+  await card.locator('.ag-open').click(); await loaded(p);
+  assert.match(await p.locator('.at-meta').innerText(),new RegExp(id));
+  await p.locator('#backBtn').click();
+  await p.waitForFunction(()=>!document.getElementById('detail').classList.contains('open'));
+  await p.evaluate(()=>setLang('en'));
+  assert.match(await p.locator('.ag-open').first().getAttribute('aria-label'),/^Open /);
+  await p.locator('#search').fill('PR-3001');
+  await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
+  assert.equal(await p.locator('.ag-category').innerText(),'TROUSERS');
+});
+
+test('grid preview is scoped and responsive with usable touch controls',async t=>{
+  const normal=await pageFor(t,'/'); await normal.locator('.card').first().waitFor();
+  assert.equal(await normal.locator('.atelier-grid').count(),0);
+  assert.equal(await normal.locator('link[href="experiments/atelier-grid/grid.css"]').count(),0);
+  const p=await pageFor(t,'/?catalog=atelier'); await p.locator('.ag-open').first().waitFor();
+  for(const width of [320,390,768,1440]) {
+    await p.setViewportSize({width,height:900});
+    for(const lang of ['ru','en']) {
+      await p.evaluate(lang=>setLang(lang),lang);
+      const issues=await p.evaluate(()=>{
+        const issues=[];
+        if(document.documentElement.scrollWidth>innerWidth)issues.push('page overflow');
+        for(const card of document.querySelectorAll('.card')) {
+          if(card.scrollWidth>card.clientWidth)issues.push(card.dataset.id+': card overflow');
+          for(const button of card.querySelectorAll('.mdot,.card-pack')) {
+            const rect=button.getBoundingClientRect();
+            if(rect.height && rect.height<44)issues.push(card.dataset.id+': small control');
+          }
+        }
+        return issues;
+      });
+      assert.deepEqual(issues,[],`${lang} at ${width}px`);
+    }
+  }
+});

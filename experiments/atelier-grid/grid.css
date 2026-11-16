@@ -1,0 +1,29 @@
+/* Scoped review styles: detail overlay and integration panels keep their own styling. */
+.atelier-grid .grid{gap:28px 12px;padding:20px 16px 40px;max-width:1180px}
+.atelier-grid .card{background:#f6f5f2;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;transform:none;transition:opacity .22s ease}
+.atelier-grid .card-press{transform:none!important}
+.atelier-grid .card-img{aspect-ratio:2/3;background:#e9e6e0}
+.atelier-grid .card-img img{inset:0;width:100%;height:100%;object-fit:contain;transform:none!important;transition:opacity .22s ease}
+.atelier-grid .art-tag{top:8px;left:8px;border:0;border-radius:0;background:#f6f5f2eb;color:#625f59;backdrop-filter:none;font-size:9px;padding:5px 7px;letter-spacing:.02em}
+.atelier-grid .card-tags{top:8px;right:8px;gap:4px}
+.atelier-grid .hit-tag,.atelier-grid .new-tag{border-radius:0;background:#20211f;color:#f6f5f2;box-shadow:none;font-weight:400;letter-spacing:.04em;padding:5px 7px;font-size:9px}
+.atelier-grid .new-tag{background:#f6f5f2;color:#20211f;border:1px solid #d8d3cb}
+.atelier-grid .card-info{padding:16px 0 0}
+.ag-category{font-size:9px;letter-spacing:.08em;color:#625f59;margin-bottom:8px}
+.atelier-grid .card-name{display:block;max-width:100%;white-space:normal;overflow-wrap:anywhere;text-overflow:clip;font:inherit;font-size:clamp(18px,4.5vw,26px);font-weight:400;line-height:1.2;letter-spacing:-.025em;text-align:left;border:0;background:none;padding:0;color:#20211f;min-height:44px;cursor:pointer}
+.ag-meta{display:flex;justify-content:space-between;gap:8px;font-size:9px;color:#625f59;line-height:1.5;letter-spacing:.01em;margin:8px 0}
+.ag-article{white-space:nowrap;font-variant-numeric:tabular-nums}
+.ag-color{text-align:right;overflow-wrap:anywhere}
+.atelier-grid .mdots{flex-wrap:nowrap;overflow-x:auto;gap:0;max-width:100%;margin:8px 0 0;padding:3px 0 5px;scrollbar-width:thin;scrollbar-color:#b6aea2 transparent}
+.atelier-grid .mdot{width:44px;height:44px;border:1px solid transparent;background:transparent!important;box-shadow:none;transform:none;flex:none;transition:border-color .2s ease}
+.atelier-grid .mdot::before{content:'';position:absolute;width:19px;height:19px;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--ag-swatch);border:1px solid #20211f30;border-radius:50%}
+.atelier-grid .mdot::after{display:none}
+.atelier-grid .mdot.active{border-color:#927b62;box-shadow:none}
+.atelier-grid .card-packs{position:static;display:flex;flex-wrap:wrap;justify-content:stretch;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid #d8d3cb}
+.atelier-grid .card-pack{flex:1;min-height:44px;min-width:0;border:1px solid #c5bdb1;border-radius:2px;padding:10px 6px;background:transparent;color:#20211f;box-shadow:none;font-weight:400;font-size:10px;letter-spacing:.01em}
+.atelier-grid .card-pack:hover{background:#e9e6e0}
+.atelier-grid .card-pack.added{background:#20211f;color:#f6f5f2}
+.atelier-grid .cp-plus{font-weight:400;margin-right:5px}
+.atelier-grid .grid button:focus-visible{outline:2px solid #927b62;outline-offset:2px}
+@media(min-width:900px){.atelier-grid .grid{gap:40px 28px;padding:24px 32px 56px}.atelier-grid .card-name{font-size:28px}.ag-meta{font-size:11px}.ag-category{font-size:10px}.atelier-grid .card-img{aspect-ratio:3/4}.atelier-grid .card-pack{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.atelier-grid .grid,.atelier-grid .grid *{transition:none!important;animation:none!important}}
