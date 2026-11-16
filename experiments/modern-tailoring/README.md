@@ -17,3 +17,9 @@ Chromium headless: no horizontal overflow at 320, 375, 390, 430, 768 and 1440 px
 Screenshots are stored outside the checkout in `/workspace/artifacts/modern-tailoring/` (old/new at 390 and 1440 px).
 
 Limitations: the selected real model has no second photograph, so a real two-photo interaction cannot be demonstrated with its current data. Telegram host behavior, real iPhone safe-area rendering and outbound messaging are not verified by desktop Chromium. CDN SDKs are blocked in this environment; external service behavior is unverified. No production messages were sent.
+
+## Layout refinement
+
+The follow-up branch `design/modern-tailoring-refinement` places the model heading above the photo on mobile and beside it on desktop. The selected colour is paired with the swatches, the pack controls have a separate surface, and a mobile sticky action scrolls to the existing order controls without adding a new checkout flow. Quantity controls have descriptive accessible labels. No product data or integrations change.
+
+Repeated Chromium validation at all six target widths, original/new comparison, RU/EN, colour switching, image zoom, cart addition and ordinary catalogue search passed with no page errors. The sticky action target was verified visible on a 375 × 812 viewport with reduced motion enabled. Updated screenshots: `/workspace/artifacts/modern-tailoring-refinement/`.

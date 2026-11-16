@@ -23,6 +23,9 @@
     const intro = document.createElement('div'); intro.className = 'mt-intro';
     intro.innerHTML = '<span>' + esc(getName(p)) + '</span><span>' + L('Артикул', 'Article') + ' ' + esc(p.id) + '</span>' + (isNewActive(p) ? '<span>NEW</span>' : '');
     body.querySelector('.detail-name').after(intro);
+    const headingBlock = document.createElement('header'); headingBlock.className = 'mt-heading';
+    headingBlock.append(body.querySelector('.detail-cat'), body.querySelector('.detail-name'), intro);
+    $('detailContent').insertBefore(headingBlock, body);
     const size = document.createElement('section'); size.className = 'mt-size';
     size.innerHTML = '<h2>' + L('Размерный ряд', 'Size range') + '</h2><p>' + esc(trSpec(p.sizes || '—')) + '</p><small>' + L('Отгрузка пачками · наличие уточнит менеджер', 'Sold in packs · availability confirmed by your manager') + '</small>';
     body.querySelector('.addcart').before(size);
@@ -32,9 +35,21 @@
     specs.innerHTML = values.map((v,i) => v ? '<div class="spec-row"><div class="spec-key">'+esc(t().specs[i])+'</div><div class="spec-val">'+esc(v)+'</div></div>' : '').join('');
     const heading = document.createElement('h2'); heading.textContent = L('Детали изделия', 'Garment details'); specs.prepend(heading);
     body.querySelectorAll('.cv').forEach(el => el.setAttribute('aria-pressed', String(el.classList.contains('active'))));
+    const colorHeader = document.createElement('div'); colorHeader.className = 'mt-color-header';
+    colorHeader.append(body.querySelector('.section-label'), body.querySelector('.cv-current'));
+    body.querySelector('.cv-row').before(colorHeader);
+    const order = body.querySelector('.addcart'); order.id = 'mtOrder';
+    order.querySelectorAll('.ac-q button').forEach(button => button.setAttribute('aria-label', button.dataset.d === '1' ? L('Добавить пачку', 'Increase packs') : L('Убрать пачку', 'Decrease packs')));
+    const dock = document.createElement('div'); dock.className = 'mt-dock';
+    dock.innerHTML = '<div><span>' + esc(p.model || getName(p)) + '</span><small>' + esc(trSpec(p.sizes || '')) + '</small></div><button>' + L('К оптовому заказу', 'Wholesale order') + ' <span aria-hidden="true">↗</span></button>';
+    dock.querySelector('button').onclick = () => {
+      order.scrollIntoView({block:'center', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+      order.querySelector('button').focus({preventScroll:true});
+    };
+    $('detailContent').append(dock);
     const gallery = $('detailImg'); gallery.className = 'mt-gallery';
     const photos = [p.image,p.image2].filter(Boolean); let active = 0;
-    gallery.innerHTML = '<button class="mt-photo" aria-label="'+L('Увеличить фотографию','Enlarge photograph')+'"><img alt="'+esc(getName(p))+'"></button><div class="mt-gallery-bar"><span>'+L('Изделие / крупный план','Garment / detail')+'</span><div class="mt-controls"></div></div>';
+    gallery.innerHTML = '<button class="mt-photo" aria-label="'+L('Увеличить фотографию','Enlarge photograph')+'"><span class="mt-zoom-mark" aria-hidden="true">↗</span><img alt="'+esc(getName(p))+'"></button><div class="mt-gallery-bar"><span>'+L('Нажмите, чтобы рассмотреть','Tap to explore')+'</span><div class="mt-controls"></div></div>';
     const photo = gallery.querySelector('img'); const controls = gallery.querySelector('.mt-controls');
     const status = document.createElement('span'); status.setAttribute('aria-live','polite');
     function show(n) { active = (n + photos.length) % photos.length; photo.src = photos[active]; status.textContent = (active+1)+' / '+photos.length; }
