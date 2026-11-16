@@ -1,6 +1,7 @@
-/* ATELIER is an opt-in view; catalogue data and contact routing stay authoritative. */
+/* Default product-card presentation; catalogue data and contact routing stay authoritative. */
 (() => {
-  if (new URLSearchParams(location.search).get('design') !== 'atelier-3') return;
+  const design = new URLSearchParams(location.search).get('design');
+  if (design && design !== 'atelier-3') return;
   const originalOpen = openDetail;
   const originalSetLang = setLang;
   const originalHash = openFromHash;
@@ -149,5 +150,5 @@
     }
   }
   setLang = function(code) {originalSetLang(code); if(eligible(PRODUCTS.find(p=>p.id===currentDetailId)))openDetail(currentDetailId,null,{noAnim:true,fromHash:true});};
-  openFromHash = function() {if(!location.hash)history.replaceState(null,'',location.pathname+location.search+'#p=PR-3001');originalHash();};
+  openFromHash = function() {if(design === 'atelier-3' && !location.hash)history.replaceState(null,'',location.pathname+location.search+'#p=PR-3001');originalHash();};
 })();

@@ -62,13 +62,15 @@ async function twoPhotos(p, failSecond) {
     ? r.fulfill({status:404,body:''})
     : r.fulfill({status:200,contentType:'image/jpeg',body:await fs.readFile(path.join(root,'images/PR-3001.jpg'))}));
 }
-test('ordinary catalogue: isolation, category, search and original detail',async t => {
+test('default catalogue: category, search and ATELIER detail without auto-open',async t => {
   const p = await pageFor(t,'/'); await p.locator('.card').first().waitFor();
-  assert.equal(await p.locator('link[href="experiments/atelier-3/card.css"]').count(),0);
+  assert.equal(await p.locator('#detail.open').count(),0, 'Catalogue must not auto-open a product');
   await p.locator('[data-cat="bryuki"]').click(); await p.locator('#search').fill('PR-3001');
   await p.waitForFunction(() => document.querySelectorAll('.card').length === 1);
   await p.locator('.card').click(); await p.locator('#detail.open').waitFor();
-  assert.equal(await p.locator('.at-card').count(),0); assert.equal(await p.locator('#acBtn').count(),1);
+  await loaded(p);
+  assert.equal(await p.locator('.at-card').count(),1);
+  assert.match(await p.locator('.at-meta').innerText(),/PR-3001/);
 });
 test('PR-3001 ↔ PR-3003, sizes, RU/EN and unchanged contact routes',async t => {
   const p = await pageFor(t); await loaded(p);
@@ -204,4 +206,16 @@ test('real two-photo jacket gallery, full size ranges and original comparison', 
   assert.equal(await p.locator('#acBtn').count(),1);
   await p.locator('.at-compare').click(); await loaded(p);
   assert.match(await p.locator('.at-meta').innerText(),new RegExp(jacket));
+});
+
+
+test('explicit classic and previous Modern Tailoring modes remain available', async t => {
+  for (const mode of ['classic','modern-tailoring']) {
+    const p=await pageFor(t,`/?design=${mode}#p=PR-3001`);
+    await p.locator('#detail.open').waitFor();
+    assert.equal(await p.locator('link[href="experiments/atelier-3/card.css"]').count(),0);
+    assert.equal(await p.locator('.at-card').count(),0);
+    assert.equal(await p.locator('#acBtn').count(),1);
+    if(mode==='modern-tailoring') assert.equal(await p.locator('.mt-card').count(),1);
+  }
 });
