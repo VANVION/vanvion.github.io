@@ -26,7 +26,9 @@ Open the local server with `?design=atelier-3#p=PR-3001` appended to its address
 
 The preview reuses PRODUCTS, getName, localised specification helpers, PALETTE, orderLinks, history routing, the existing product overlay, scroll locking, Telegram back navigation and fullscreen zoom. It adds keyboard focus handling to zoom in ATELIER mode. The ordinary catalogue's cart remains intact; the ATELIER card presents existing messenger channels rather than introducing checkout behavior.
 
-The scope is the inspected М93V pair PR-3001 / PR-3003. Both have matching category, model, composition, fit, construction, lining, country and sizes. Their colour and photograph differ. A fixed allowlist plus field equality checks prevents an arbitrary same-model record or a future mismatched variant from becoming a colour option. Product JSON and photos are unchanged. The selected real model has one photo per article. A second photograph is supported only when image2 exists; no fictitious views or thumbnails are created.
+The current working branch `design/atelier-catalog-cards` extends the stabilized view to every product in the existing catalogue (179 records at validation: 7 trousers and 172 jackets). This branch includes the local 3.1 stabilization commit and has not been published. The view still requires `?design=atelier-3`; the ordinary catalogue remains the default until the user approves activation.
+
+Colour choices reuse the existing modelVariants grouping and additionally require exact matches for category, model, composition, fit, construction, lining, country, height and sizes. A product with no model is shown on its own. Same model names with different characteristics are not presented as interchangeable variants. Product JSON and photos are unchanged. Real second photographs use image2; no fictitious views or thumbnails are created. Sizes, including НОРМА/БАТАЛ, retain their existing formats.
 
 WhatsApp uses the existing destination with localised model/article/colour text. Telegram and MAX keep the existing contact destinations and do not receive prefilled product details. The RU/EN interface now states this explicitly; users must include those details in Telegram/MAX messages themselves. Contact addresses and routing have not changed.
 
@@ -54,7 +56,7 @@ npm test
 
 The runner starts and stops its own loopback HTTP server on a free port; no separately running app server is required. External network requests and service workers are blocked in test contexts to keep photo failure injection deterministic and avoid production SDK calls. Error messages in the browser network console for deliberate HTTP 404 fixtures are expected; JavaScript page errors fail every test.
 
-Nine tests cover:
+Eleven tests cover:
 
 - Ordinary catalogue isolation, category/search and original product detail.
 - Real PR-3001 ↔ PR-3003 switching, sizes, RU/EN, precise contact text and unchanged contact routes.
@@ -66,8 +68,10 @@ Nine tests cover:
 
 For two-photo checks, only intercepted JSON responses and local image responses are changed. The fixture reuses an existing picture to test mechanics; it is not a new product photograph. No product/image files are written. Geometry assertions compare stage height, gallery height and heading position with a tolerance below 1 px. Changing from a two-photo fixture to a one-photo variant intentionally removes navigation buttons; only photo-stage height is required to remain identical across that change.
 
-The 3.1 run passed all nine tests, with zero failures, skips or JavaScript page errors. Syntax and whitespace checks also passed. Acceptance screenshots and the test transcript are stored outside the checkout in `/workspace/artifacts/atelier-3.1/`. The before screenshots use the exact 3.0 JS/CSS from commit `1f26bf5` served through browser interception; after screenshots show the local 3.1 working tree.
+The 3.1 run passed nine tests. The all-products extension additionally checks every real product in RU/EN at 320, 390 and 1440 px, and exercises a real two-photo jacket with НОРМА/БАТАЛ sizes and original-card comparison. The combined run passed all eleven tests, with zero failures, skips or JavaScript page errors. Syntax and whitespace checks also passed. Acceptance screenshots and the test transcript are stored outside the checkout in `/workspace/artifacts/atelier-3.1/`. The before screenshots use the exact 3.0 JS/CSS from commit `1f26bf5` served through browser interception; after screenshots show the local 3.1 working tree.
 
 ## Remaining limitations
 
 Native Telegram Mini App behavior, actual iPhone safe-area rendering, real touch devices, live AI chat, push SDKs and real outbound messaging were not exercised. Full accessibility and performance audits are outside this stabilization pass. External SDK domains and the public Pages URL are restricted in this environment. Local viewport checks do not establish real-device behavior. No production messages were sent and no 3.1 main-site deployment was performed.
+
+All-product acceptance screenshots and the current test transcript are stored outside the checkout in `/workspace/artifacts/atelier-all-cards/`. Publishing this branch or enabling the design by default still requires explicit user approval.

@@ -4,8 +4,7 @@
   const originalOpen = openDetail;
   const originalSetLang = setLang;
   const originalHash = openFromHash;
-  const sampleIds = new Set(['PR-3001', 'PR-3003']);
-  const eligible = p => p && sampleIds.has(p.id) && p.cat === 'bryuki' && p.model === 'М93V';
+  const eligible = p => p && typeof p.id === 'string';
   let classic = false;
   const link = document.createElement('link');
   link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css'; document.head.append(link);
@@ -24,10 +23,11 @@
   });
   const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg>';
   const sectionTitle = (n, title) => '<h2 class="at-section-title"><span>' + n + '</span>' + esc(title) + '</h2>';
-  // An explicitly inspected pair, additionally guarded against future differences.
+  // A shared model is only a candidate: all supported characteristics must match.
   function variants(p) {
     const keys = ['cat','model','sizes','comp_ru','comp_en','sil_ru','sil_en','lin_ru','lin_en','lined','btn_ru','btn_en','country_ru','country_en','ros_ru','ros_en'];
-    return PRODUCTS.filter(x => eligible(x) && keys.every(k => x[k] === p[k]));
+    if (!p.model || !p.model.trim()) return [p];
+    return modelVariants(p).filter(x => keys.every(k => x[k] === p[k]));
   }
   openDetail = function(id, card, opts) {
     const p = PRODUCTS.find(x => x.id === id);
@@ -48,19 +48,21 @@
       const label = c ? PALETTE[c][LANG] : x.id;
       return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + x.id) + '"><span style="--swatch:' + (c ? PALETTE[c].hex : '#cccccc') + '"></span></button>';
     }).join('');
+    const hasValue = value => value && !/^[\s—–-]+$/.test(value);
+    const lining = specVal(p.lin_ru,p.lin_en);
     const specs = [
       [L('Состав','Composition'),specVal(p.comp_ru,p.comp_en)],
       [L('Силуэт','Fit'),specVal(p.sil_ru,p.sil_en)],
       [L('Рост','Height'),specVal(p.ros_ru,p.ros_en)],
-      [L('Подкладка','Lining'),specVal(p.lin_ru,p.lin_en) || (typeof p.lined === 'boolean' ? (p.lined ? L('Да','Yes') : L('Нет','No')) : '')],
+      [L('Подкладка','Lining'),(hasValue(lining) ? lining : '') || (typeof p.lined === 'boolean' ? (p.lined ? L('Да','Yes') : L('Нет','No')) : '')],
       [L('Конструкция','Construction'),specVal(p.btn_ru,p.btn_en)],
       [L('Производство','Made in'),specVal(p.country_ru,p.country_en)]
-    ].filter(([,v]) => v);
+    ].filter(([,v]) => hasValue(v));
     const rows = specs.map(([k,v]) => '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('');
     const contacts = orderLinks(L('Здравствуйте! Интересует ','Hello! I am interested in ') + getName(p) + ', ' + L('артикул ','article ') + p.id + (colorName ? ', ' + colorName : ''));
     const photos = [...new Set([p.image,p.image2].filter(Boolean))];
     $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button><span class="at-photo-error" role="status" aria-live="polite" hidden></span>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
-      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat]) + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(p.model || getName(p)) + '</h1><p class="at-product-name">' + esc(getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
+      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(p.model || getName(p)) + '</h1><p class="at-product-name">' + esc(getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
       '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span>' + esc(colorName) + '</span></div></section>' +
       (p.sizes ? '<section class="at-sizes">' + sectionTitle('03',L('Размерный ряд','Size range')) + '<p>' + esc(trSpec(p.sizes)) + '</p></section>' : '') +
       (specs.length ? '<section class="at-specs">' + sectionTitle('04',L('В деталях','In detail')) + '<dl>' + rows + '</dl></section>' : '') +

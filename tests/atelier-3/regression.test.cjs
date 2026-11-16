@@ -151,3 +151,57 @@ for (const width of [320,390,1440]) test(`RU/EN successful/error layouts at ${wi
     if (lang === 'ru') await p.evaluate(() => openDetail('PR-3001',null,{noAnim:true,fromHash:true}));
   }
 });
+
+test('all real products render correct data in RU/EN at 320/390/1440px', async t => {
+  const p = await pageFor(t);
+  await loaded(p);
+  const products = await p.evaluate(() => PRODUCTS.map(x => ({id:x.id,cat:x.cat})));
+  assert(products.length > 0, 'Catalogue must contain products');
+  t.diagnostic(`Checked ${products.length} products in both languages at all three widths`);
+  for (const width of [320,390,1440]) {
+    await p.setViewportSize({width,height:900});
+    for (const lang of ['ru','en']) {
+      const failures = await p.evaluate(({lang}) => {
+        setLang(lang);
+        const failures=[];
+        for (const product of PRODUCTS) {
+          openDetail(product.id,null,{noAnim:true,fromHash:true});
+          const detail=document.getElementById('detail');
+          const heading=detail.querySelector('.at-heading h1');
+          const sizes=detail.querySelector('.at-sizes p');
+          const image=detail.querySelector('.at-photo img');
+          const link=detail.querySelector('.at-primary');
+          if(!detail.classList.contains('at-card') || heading?.textContent !== (product.model || getName(product))) failures.push(product.id+': heading');
+          if(product.sizes && sizes?.textContent !== trSpec(product.sizes)) failures.push(product.id+': sizes');
+          if(product.image && image?.getAttribute('src') !== product.image) failures.push(product.id+': image');
+          if(!new URL(link.href).searchParams.get('text').includes(product.id)) failures.push(product.id+': order context');
+          if([...detail.querySelectorAll('.at-specs dd')].some(el=>/^[\s—–-]+$/.test(el.textContent))) failures.push(product.id+': empty specification');
+          if(detail.scrollWidth>detail.clientWidth) failures.push(product.id+': overflow');
+          const group=[...detail.querySelectorAll('[data-variant]')].map(el=>PRODUCTS.find(x=>x.id===el.dataset.variant));
+          if(group.some(x=>x.cat!==product.cat || x.model!==product.model || x.sizes!==product.sizes || x.comp_ru!==product.comp_ru)) failures.push(product.id+': incompatible variant');
+        }
+        return failures;
+      },{lang});
+      assert.deepEqual(failures,[],`${lang} at ${width}px`);
+    }
+  }
+});
+
+test('real two-photo jacket gallery, full size ranges and original comparison', async t => {
+  const p=await pageFor(t);
+  const jacket=await p.evaluate(()=>PRODUCTS.find(x=>x.cat==='pidzhaki' && x.image2 && x.sizes.includes('БАТАЛ')).id);
+  await p.evaluate(id=>openDetail(id,null,{noAnim:true,fromHash:true}),jacket);
+  await loaded(p);
+  assert.match(await p.locator('.at-sizes').innerText(),/НОРМА/);
+  assert.match(await p.locator('.at-sizes').innerText(),/БАТАЛ/);
+  assert.equal(await p.locator('.at-photo-controls').innerText().then(s=>s.includes('01 / 02')),true);
+  await p.locator('.at-photo-controls button').last().click(); await loaded(p);
+  assert.match(await p.locator('.at-photo-controls').innerText(),/02 \/ 02/);
+  await p.locator('.at-photo').focus(); await p.keyboard.press('ArrowLeft'); await loaded(p);
+  assert.match(await p.locator('.at-photo-controls').innerText(),/01 \/ 02/);
+  await p.locator('.at-compare').click();
+  assert.equal(await p.locator('.at-card').count(),0);
+  assert.equal(await p.locator('#acBtn').count(),1);
+  await p.locator('.at-compare').click(); await loaded(p);
+  assert.match(await p.locator('.at-meta').innerText(),new RegExp(jacket));
+});
