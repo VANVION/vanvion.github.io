@@ -1,6 +1,7 @@
-/* Review-only navigation on the existing catalogue; no data or routing changes. */
+/* Approved default navigation on the existing catalogue; no data or routing changes. */
 (() => {
-  if (new URLSearchParams(location.search).get('navigation') !== 'atelier') return;
+  const navigation=new URLSearchParams(location.search).get('navigation');
+  if (navigation && navigation !== 'atelier') return;
   document.body.classList.add('atelier-nav');
   const css=document.createElement('link'); css.rel='stylesheet'; css.href='experiments/atelier-navigation/navigation.css'; document.head.append(css);
   const sidebar=$('sidebar');

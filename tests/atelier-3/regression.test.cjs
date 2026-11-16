@@ -272,8 +272,9 @@ test('classic grid fallback and responsive ATELIER touch controls',async t=>{
   }
 });
 
-test('navigation preview: combined filters, search, reset, language and keyboard',async t=>{
-  const p=await pageFor(t,'/?navigation=atelier'); await p.locator('.ag-open').first().waitFor();
+test('default navigation: combined filters, search, reset, language and keyboard',async t=>{
+  const p=await pageFor(t,'/'); await p.locator('.ag-open').first().waitFor();
+  assert.equal(await p.locator('.atelier-nav').count(),1);
   const target=await p.evaluate(()=>{
     const x=PRODUCTS.find(x=>x.cat==='pidzhaki'&&x.lined===false&&fabricOf(x)&&familyOf(x));
     return {id:x.id,fabric:fabricOf(x),color:familyOf(x)};
@@ -305,8 +306,8 @@ test('navigation preview: combined filters, search, reset, language and keyboard
   assert.equal(await p.locator('[data-filter="fabricBar"]').evaluate(e=>e.open),true);
 });
 
-test('navigation preview is isolated and responsive in RU/EN',async t=>{
-  const normal=await pageFor(t,'/'); await normal.locator('.card').first().waitFor();
+test('classic navigation fallback and responsive ATELIER in RU/EN',async t=>{
+  const normal=await pageFor(t,'/?navigation=classic'); await normal.locator('.card').first().waitFor();
   assert.equal(await normal.locator('.atelier-nav').count(),0);
   assert.equal(await normal.locator('link[href="experiments/atelier-navigation/navigation.css"]').count(),0);
   const p=await pageFor(t,'/?navigation=atelier'); await p.locator('.ag-open').first().waitFor();
