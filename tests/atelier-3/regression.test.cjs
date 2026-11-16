@@ -220,8 +220,8 @@ test('explicit classic and previous Modern Tailoring modes remain available', as
   }
 });
 
-test('ATELIER grid preview: variants, pack cart action and detail navigation', async t => {
-  const p=await pageFor(t,'/?catalog=atelier');
+test('default ATELIER grid: variants, pack cart action and detail navigation', async t => {
+  const p=await pageFor(t,'/');
   const card=p.locator('.card').filter({has:p.locator('.mdot:not(.active)')}).first();
   await card.locator('.ag-open').waitFor(); await card.scrollIntoViewIfNeeded();
   const dot=card.locator('.mdot:not(.active)').first();
@@ -246,8 +246,8 @@ test('ATELIER grid preview: variants, pack cart action and detail navigation', a
   assert.equal(await p.locator('.ag-category').innerText(),'TROUSERS');
 });
 
-test('grid preview is scoped and responsive with usable touch controls',async t=>{
-  const normal=await pageFor(t,'/'); await normal.locator('.card').first().waitFor();
+test('classic grid fallback and responsive ATELIER touch controls',async t=>{
+  const normal=await pageFor(t,'/?catalog=classic'); await normal.locator('.card').first().waitFor();
   assert.equal(await normal.locator('.atelier-grid').count(),0);
   assert.equal(await normal.locator('link[href="experiments/atelier-grid/grid.css"]').count(),0);
   const p=await pageFor(t,'/?catalog=atelier'); await p.locator('.ag-open').first().waitFor();

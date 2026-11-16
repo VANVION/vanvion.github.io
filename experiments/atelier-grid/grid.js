@@ -1,6 +1,7 @@
-/* Review-only grid presentation on the existing catalogue. */
+/* Approved default grid presentation on the existing catalogue. */
 (() => {
-  if (new URLSearchParams(location.search).get('catalog') !== 'atelier') return;
+  const catalog = new URLSearchParams(location.search).get('catalog');
+  if (catalog && catalog !== 'atelier') return;
   document.body.classList.add('atelier-grid');
   const stylesheet = document.createElement('link');
   stylesheet.rel = 'stylesheet'; stylesheet.href = 'experiments/atelier-grid/grid.css'; document.head.append(stylesheet);
