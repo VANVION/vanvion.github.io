@@ -25,5 +25,5 @@
 .atelier-grid .card-pack.added{background:#20211f;color:#f6f5f2}
 .atelier-grid .cp-plus{font-weight:400;margin-right:5px}
 .atelier-grid .grid button:focus-visible{outline:2px solid #927b62;outline-offset:2px}
-@media(min-width:900px){.atelier-grid .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 28px;padding:24px 32px 56px}.atelier-grid .card-name{font-size:28px}.ag-meta{font-size:11px}.ag-category{font-size:10px}.atelier-grid .card-img{aspect-ratio:3/4}.atelier-grid .card-pack{font-size:11px}}
+@media(min-width:900px){.atelier-grid .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 28px;padding:24px 32px 56px}.atelier-grid .card-name{font-size:28px}.ag-meta{font-size:11px}.ag-category{font-size:10px}.atelier-grid .card-img{aspect-ratio:3/4}.atelier-grid .card-pack{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.atelier-grid .grid,.atelier-grid .grid *{transition:none!important;animation:none!important}}
