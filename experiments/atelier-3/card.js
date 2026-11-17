@@ -6,7 +6,6 @@
   const originalSetLang = setLang;
   const originalHash = openFromHash;
   const eligible = p => p && typeof p.id === 'string';
-  let classic = false;
   const link = document.createElement('link');
   link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css'; document.head.append(link);
   const originalZoom = openZoom;
@@ -35,11 +34,12 @@
     $('detail').classList.remove('at-card');
     originalOpen(id, eligible(p) ? null : card, eligible(p) ? {...opts, noAnim:true} : opts);
     if (!eligible(p)) return;
-    const tools = document.createElement('div'); tools.className = 'at-tools';
-    tools.innerHTML = '<button class="at-compare">' + (classic ? L('ATELIER 3.0 · предпросмотр','ATELIER 3.0 · preview') : L('Сравнить с оригиналом','Compare with original')) + '</button><button class="at-language" aria-label="' + L('Переключить на английский','Switch to Russian') + '">' + (LANG === 'ru' ? 'EN' : 'RU') + '</button>';
-    tools.querySelector('.at-compare').onclick = () => {classic = !classic; openDetail(id,null,{noAnim:true,fromHash:true});};
-    tools.querySelector('.at-language').onclick = () => setLang(LANG === 'ru' ? 'en' : 'ru');
-    if (classic) { $('detailContent').prepend(tools); return; }
+    document.querySelector('.detail-top .at-language')?.remove();
+    const language = document.createElement('button'); language.className = 'at-language';
+    language.textContent = LANG === 'ru' ? 'EN' : 'RU';
+    language.setAttribute('aria-label', L('Переключить на английский','Switch to Russian'));
+    language.onclick = () => setLang(LANG === 'ru' ? 'en' : 'ru');
+    $('detailCart').before(language);
     $('detail').classList.add('at-card');
     $('detailArt').textContent = 'VANVION / ATELIER';
     const selectedColor = colorList(p.colors)[0];
@@ -69,7 +69,6 @@
       (specs.length ? '<section class="at-specs">' + sectionTitle('04',L('В деталях','In detail')) + '<dl>' + rows + '</dl></section>' : '') +
       '<section class="at-notes">' + sectionTitle('05',L('Оптовым клиентам','For wholesale clients')) + '<p>' + L('Наличие, стоимость и условия поставки уточнит менеджер. В WhatsApp подготовим сообщение с моделью, артикулом и цветом. Telegram и MAX откроют контакт менеджера — укажите данные товара в сообщении.','Your manager will confirm availability, pricing and delivery terms. WhatsApp includes a prepared message with the model, article and colour. Telegram and MAX open the manager’s contact — include the product details in your message.') + '</p></section>' +
       '<section class="at-contact" id="atelierContact"><span class="at-contact-label">' + L('Обсудим ваш заказ','Let’s discuss your order') + '</span><h2>' + L('На связи.<br>По делу.','A direct line.<br>A considered choice.') + '</h2><div class="at-contact-links"><a class="at-primary" href="' + esc(contacts.wa) + '" target="_blank" rel="noopener"><span>' + L('Написать в WhatsApp','Message on WhatsApp') + '</span>' + arrow + '</a><div><a href="' + esc(contacts.tg) + '" target="_blank" rel="noopener">Telegram ' + arrow + '</a><a href="' + esc(contacts.max) + '" target="_blank" rel="noopener">MAX ' + arrow + '</a></div></div></section></div>';
-    $('detailContent').prepend(tools);
     const dock = document.createElement('div'); dock.className = 'at-dock';
     dock.innerHTML = '<div><span>' + esc(p.model || getName(p)) + '</span><small>' + esc(p.id) + '</small></div><button>' + L('Связаться с менеджером','Contact your manager') + arrow + '</button>';
     dock.querySelector('button').onclick = () => {

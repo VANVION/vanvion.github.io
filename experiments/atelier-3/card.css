@@ -10,10 +10,7 @@
 .at-card .back-btn{position:static;width:44px;height:44px;background:none;border:0;box-shadow:none;backdrop-filter:none;margin:0;border-radius:0}
 .at-card .detail-art{font-size:11px;letter-spacing:.12em;color:var(--at-ink)}
 .at-card #detailContent{display:grid;grid-template-columns:minmax(0,1fr);max-width:1440px;margin:auto;padding:0;gap:0}
-.at-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 20px;min-width:0}
-.at-tools button{min-height:44px;background:transparent;border:0;font:inherit;font-size:11px;letter-spacing:.02em;color:#625f59;cursor:pointer;text-align:left}
-.at-tools .at-language{min-width:44px;text-align:center;border-left:1px solid #d8d3cb}
-.at-card .at-tools{grid-column:1/-1;padding:0 var(--at-s3);border-bottom:var(--at-rule)}
+.at-card .at-language{min-width:44px;min-height:44px;background:transparent;border:0;font:inherit;font-size:11px;color:var(--at-ink);cursor:pointer}
 .at-gallery{min-width:0;touch-action:pan-y}
 .at-photo-stage{height:var(--at-photo-height);background:#e9e6e0;position:relative;min-width:0}
 .at-photo{height:100%;position:relative;display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;overflow:hidden}
@@ -70,5 +67,5 @@
 .at-card button:focus-visible,.at-card a:focus-visible{outline:2px solid var(--at-bronze);outline-offset:4px}
 .at-card button:active,.at-card a:active{filter:brightness(.88)}
 @media(min-width:768px) and (max-width:999px){.at-info{padding:40px 64px 64px}.at-card{--at-photo-height:68svh}.at-caption{padding:16px 64px}.at-dock{padding-left:64px;padding-right:64px}}
-@media(min-width:1000px){.at-card #detailContent{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:clamp(40px,5vw,80px);padding:0 48px 64px}.at-card .at-tools{padding:0;margin-bottom:32px}.at-gallery{position:sticky;top:76px;align-self:start}.at-card{--at-photo-height:min(78vh,900px)}.at-caption{padding:16px 0}.at-info{padding:4px 0 0}.at-heading{padding-bottom:32px}.at-heading h1{font-size:clamp(72px,7vw,104px)}.at-dock{display:none}.at-info section{padding:28px 0}.at-info .at-contact{padding-bottom:0}}
+@media(min-width:1000px){.at-card #detailContent{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:clamp(40px,5vw,80px);padding:0 48px 64px}.at-gallery{position:sticky;top:76px;align-self:start}.at-card{--at-photo-height:min(78vh,900px)}.at-caption{padding:16px 0}.at-info{padding:4px 0 0}.at-heading{padding-bottom:32px}.at-heading h1{font-size:clamp(72px,7vw,104px)}.at-dock{display:none}.at-info section{padding:28px 0}.at-info .at-contact{padding-bottom:0}}
 @media(prefers-reduced-motion:reduce){.at-card,.at-card *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

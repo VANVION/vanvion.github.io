@@ -189,7 +189,7 @@ test('all real products render correct data in RU/EN at 320/390/1440px', async t
   }
 });
 
-test('real two-photo jacket gallery, full size ranges and original comparison', async t => {
+test('real two-photo jacket gallery, full size ranges and no comparison strip', async t => {
   const p=await pageFor(t);
   const jacket=await p.evaluate(()=>PRODUCTS.find(x=>x.cat==='pidzhaki' && x.image2 && x.sizes.includes('БАТАЛ')).id);
   await p.evaluate(id=>openDetail(id,null,{noAnim:true,fromHash:true}),jacket);
@@ -201,10 +201,8 @@ test('real two-photo jacket gallery, full size ranges and original comparison', 
   assert.match(await p.locator('.at-photo-controls').innerText(),/02 \/ 02/);
   await p.locator('.at-photo').focus(); await p.keyboard.press('ArrowLeft'); await loaded(p);
   assert.match(await p.locator('.at-photo-controls').innerText(),/01 \/ 02/);
-  await p.locator('.at-compare').click();
-  assert.equal(await p.locator('.at-card').count(),0);
-  assert.equal(await p.locator('#acBtn').count(),1);
-  await p.locator('.at-compare').click(); await loaded(p);
+  assert.equal(await p.locator('.at-compare, .at-tools').count(),0);
+  assert.equal(await p.locator('.detail-top .at-language').count(),1);
   assert.match(await p.locator('.at-meta').innerText(),new RegExp(jacket));
 });
 
