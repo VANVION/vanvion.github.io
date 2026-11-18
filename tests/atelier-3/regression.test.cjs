@@ -6,6 +6,7 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 const root = path.resolve(__dirname, '../..');
 const preview = '/?design=atelier-3#p=PR-3001';
+const firstPhoto = require(path.join(root,'data/products.json')).find(p=>p.id==='PR-3001').image;
 let server, browser, base;
 const types = { '.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.json':'application/json', '.jpg':'image/jpeg', '.svg':'image/svg+xml', '.ttf':'font/ttf' };
 before(async () => {
@@ -80,7 +81,7 @@ test('PR-3001 ↔ PR-3003, sizes, RU/EN and unchanged contact routes',async t =>
   for (const id of ['PR-3003','PR-3001']) {
     await p.locator(`[data-variant="${id}"]`).click(); await loaded(p);
     assert.match(await p.locator('.at-meta').innerText(),new RegExp(id));
-    assert.match(await p.locator('.at-photo img').getAttribute('src'),new RegExp(id));
+    assert.equal(await p.locator('.at-photo img').getAttribute('src'),await p.evaluate(id=>PRODUCTS.find(x=>x.id===id).image,id));
     const links = await p.locator('.at-contact-links a').evaluateAll(a => a.map(x => x.href));
     const expected = await p.evaluate(() => orderLinks('')), wa = new URL(links[0]);
     assert.equal(wa.origin + wa.pathname,expected.wa.split('?')[0]);
@@ -105,7 +106,7 @@ test('first photo: loading → failure → working second photo keeps geometry',
   const p = await pageFor(t,null); await twoPhotos(p,false);
   let release, requested;
   const gate = new Promise(r => { release = r; }), started = new Promise(r => { requested = r; });
-  await p.route('**/PR-3001.jpg',async r => { requested(); await gate; await r.fulfill({status:404,body:''}); });
+  await p.route('**/'+firstPhoto,async r => { requested(); await gate; await r.fulfill({status:404,body:''}); });
   t.after(() => release());
   await p.goto(base+preview, {waitUntil:'domcontentloaded'}); await started;
   await p.waitForFunction(() => document.querySelector('.at-photo-stage')?.getAttribute('aria-busy') === 'true');
@@ -136,7 +137,7 @@ test('second photo: failure is stable, error is unique, recovery and variants wo
 });
 test('failed PR-3001 recovers via PR-3003 and fails cleanly on return',async t => {
   const p = await pageFor(t,null);
-  await p.route('**/PR-3001.jpg',r => r.fulfill({status:404,body:''}));
+  await p.route('**/'+firstPhoto,r => r.fulfill({status:404,body:''}));
   await p.goto(base+preview); await failed(p); const initial = await geometry(p);
   await p.locator('[data-variant="PR-3003"]').click(); await loaded(p); stable(initial,await geometry(p));
   await p.locator('[data-variant="PR-3001"]').click(); await failed(p); stable(initial,await geometry(p));

@@ -557,7 +557,7 @@
     "name_ru": "БРЮКИ 1 М93V",
     "name_en": "TROUSERS 1 М93V",
     "colors": "siyah",
-    "image": "images/PR-3001.jpg",
+    "image": "images/optimized/a258033c13c44a8aa86a0a870a46a95e_bananalab-pro_4K.jpg",
     "comp_ru": "ЛЁН 50% ВИСКОЗА 10% ЛАВСАН 40%",
     "comp_en": "LINEN 50% VISCOSE 10% POLYESTER 40%",
     "sil_ru": "СВОБОДНЫЙ, КУЛИСКА",
@@ -573,7 +573,8 @@
     "display_title_ru": "Брюки на кулиске",
     "display_title_en": "Drawstring trousers",
     "display_subtitle_ru": "1 м93v",
-    "display_subtitle_en": "1 m93v"
+    "display_subtitle_en": "1 m93v",
+    "image_original": "images/a258033c13c44a8aa86a0a870a46a95e_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3003",
@@ -581,7 +582,7 @@
     "name_ru": "БРЮКИ 5 М93V",
     "name_en": "TROUSERS 5 М93V",
     "colors": "laci",
-    "image": "images/PR-3003.jpg",
+    "image": "images/optimized/b8049ab18232461d903aeff12268be94_bananalab-pro_4K.jpg",
     "comp_ru": "ЛЁН 50% ВИСКОЗА 10% ЛАВСАН 40%",
     "comp_en": "LINEN 50% VISCOSE 10% POLYESTER 40%",
     "sil_ru": "СВОБОДНЫЙ, КУЛИСКА",
@@ -597,7 +598,8 @@
     "display_title_ru": "Брюки на кулиске",
     "display_title_en": "Drawstring trousers",
     "display_subtitle_ru": "5 м93v",
-    "display_subtitle_en": "5 m93v"
+    "display_subtitle_en": "5 m93v",
+    "image_original": "images/b8049ab18232461d903aeff12268be94_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3002",
