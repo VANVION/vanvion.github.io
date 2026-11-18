@@ -4514,5 +4514,35 @@
     "display_subtitle_ru": "3060 м98",
     "display_subtitle_en": "3060 m98",
     "image_original": "images/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg"
+  },
+  {
+    "id": "PODKOVA-3060",
+    "cat": "bryuki",
+    "name_ru": "БРЮКИ ПОДКОВА ТКАНЬ 3060",
+    "name_en": "BARREL-LEG TROUSERS FABRIC 3060",
+    "model": "ПОДКОВА",
+    "colors": "grey",
+    "image": "images/optimized/77b3748e9a25416aaaf1172fa15bae8c_bananalab-pro_4K.jpg",
+    "image_original": "images/77b3748e9a25416aaaf1172fa15bae8c_bananalab-pro_4K.jpg",
+    "display_title_ru": "Брюки «Подкова»",
+    "display_title_en": "Barrel-leg trousers",
+    "display_subtitle_ru": "3060 подкова",
+    "display_subtitle_en": "3060 podkova",
+    "sizes": "48, 50, 52"
+  },
+  {
+    "id": "PODKOVA-2097",
+    "cat": "bryuki",
+    "name_ru": "БРЮКИ ПОДКОВА ТКАНЬ 2097",
+    "name_en": "BARREL-LEG TROUSERS FABRIC 2097",
+    "model": "ПОДКОВА",
+    "colors": "brown",
+    "image": "images/optimized/c6df30751a58425a9fc4124632491b64_bananalab-pro_4K.jpg",
+    "image_original": "images/c6df30751a58425a9fc4124632491b64_bananalab-pro_4K.jpg",
+    "display_title_ru": "Брюки «Подкова»",
+    "display_title_en": "Barrel-leg trousers",
+    "display_subtitle_ru": "2097 подкова",
+    "display_subtitle_en": "2097 podkova",
+    "sizes": "48, 50, 52"
   }
 ]

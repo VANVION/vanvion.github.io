@@ -378,7 +378,7 @@ test('featured trousers lead All and Trousers without bypassing categories or se
   await p.locator('[data-cat="pidzhaki"]').click();
   assert(!(await models()).some(x=>['М97','М98'].includes(x)));
   await p.locator('[data-cat="bryuki"]').click();
-  await p.locator('#search').fill('3060');
+  await p.locator('#search').fill('PR-3005');
   await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
   assert.deepEqual(await models(),['М98']);
 });
