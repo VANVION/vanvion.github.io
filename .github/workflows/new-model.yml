@@ -104,6 +104,10 @@ jobs:
               for it in items:
                   if not it.get("new_since"):
                       it["new_since"] = today
+              label = (items[0].get("display_title_ru") or m).strip()
+              headline = label if label == m else "%s · %s" % (label, m)
+              fit = (items[0].get("sil_ru") or "").strip()
+              country = (items[0].get("country_ru") or "").strip()
               n = len(items)
               comp = (items[0].get("comp_ru") or "").strip()
               sizes = (items[0].get("sizes") or "").strip()
@@ -118,7 +122,7 @@ jobs:
               # фото всех расцветок (уникальные), максимум 10 для альбома Telegram
               images, seen_img = [], set()
               for it in items:
-                  im = (it.get("image") or "").strip()
+                  im = (it.get("social_image") or it.get("image") or "").strip()
                   if im and im not in seen_img:
                       seen_img.add(im); images.append(SITE + "/" + im)
               images = images[:10]
@@ -133,19 +137,27 @@ jobs:
                   nlines.append("🧵 Состав: %s" % fmt_comp(comp))
               if color_names:
                   nlines.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+              if fit:
+                  nlines.append("Силуэт: %s" % fit.capitalize())
+              if country:
+                  nlines.append("Производство: %s" % country.capitalize())
               if sizes:
                   nlines.append("📏 Размеры: %s" % sizes)
               news_text = "\n".join(nlines)
-              news.insert(0, {"date": today, "title": "Новинка — %s" % m, "model": m, "text": news_text})
+              news.insert(0, {"date": today, "title": "Новинка — %s" % headline, "model": m, "text": news_text})
 
               # --- подпись для Telegram (HTML, с переносами и отступами) ---
-              cap = ["🆕 <b>%s</b>" % esc_html(m), ""]
+              cap = ["🆕 <b>%s</b>" % esc_html(headline), ""]
               cap.append("Новинка в каталоге <b>VANVION</b>.")
               cap.append("")
               if comp:
                   cap.append("🧵 <b>Состав:</b> %s" % esc_html(fmt_comp(comp)))
               if color_names:
                   cap.append("🎨 <b>Цвета (%d):</b> %s" % (cols, esc_html(", ".join(color_names))))
+              if fit:
+                  cap.append("Силуэт: %s" % esc_html(fit.capitalize()))
+              if country:
+                  cap.append("Производство: %s" % esc_html(country.capitalize()))
               if sizes:
                   cap.append("📏 <b>Размеры:</b> %s" % esc_html(sizes))
               cap.append("")
@@ -154,26 +166,35 @@ jobs:
               caption = "\n".join(cap)
 
               # --- подпись для Instagram (без HTML; ссылки в тексте не кликабельны → «ссылка в профиле») ---
-              ig = ["🆕 %s" % m, "", "Новинка в каталоге VANVION — мужская классика оптом.", ""]
+              ig = ["🆕 %s" % headline, "", "Новинка в каталоге VANVION — мужская классика оптом.", ""]
               if comp:
                   ig.append("🧵 Состав: %s" % fmt_comp(comp))
               if color_names:
                   ig.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+              if fit:
+                  ig.append("Силуэт: %s" % fit.capitalize())
+              if country:
+                  ig.append("Производство: %s" % country.capitalize())
               if sizes:
                   ig.append("📏 Размеры: %s" % sizes)
               ig.append("")
               ig.append("🛍 Опт · ТЦ «Садовод», Москва")
               ig.append("🔗 Каталог и заказ — ссылка в профиле (vanvion.github.io)")
               ig.append("")
-              ig.append("#vanvion #опт #пиджаки #мужскаяодежда #оптом #садовод #мужскойкостюм #оптоваяодежда")
+              category_tag = "#брюки" if items[0].get("cat") == "bryuki" else "#пиджаки"
+              ig.append("#vanvion #опт %s #мужскаяодежда #оптом #садовод #оптоваяодежда" % category_tag)
               ig_caption = "\n".join(ig)
 
               # --- подпись для MAX (простой текст; URL кликается автоматически) ---
-              mx = ["🆕 %s — новинка VANVION" % m, ""]
+              mx = ["🆕 %s — новинка VANVION" % headline, ""]
               if comp:
                   mx.append("🧵 Состав: %s" % fmt_comp(comp))
               if color_names:
                   mx.append("🎨 Цвета (%d): %s" % (cols, ", ".join(color_names)))
+              if fit:
+                  mx.append("Силуэт: %s" % fit.capitalize())
+              if country:
+                  mx.append("Производство: %s" % country.capitalize())
               if sizes:
                   mx.append("📏 Размеры: %s" % sizes)
               mx.append("")
@@ -182,7 +203,7 @@ jobs:
               mx.append(card_url)
               max_caption = "\n".join(mx)
 
-              push_lines.append(m)
+              push_lines.append(headline)
               tg_items.append({"model": m, "caption": caption, "images": images,
                                "card_url": card_url, "ig_caption": ig_caption,
                                "max_caption": max_caption})
