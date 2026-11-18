@@ -4,7 +4,7 @@
   if (catalog && catalog !== 'atelier') return;
   document.body.classList.add('atelier-grid');
   const stylesheet = document.createElement('link');
-  stylesheet.rel = 'stylesheet'; stylesheet.href = 'experiments/atelier-grid/grid.css'; document.head.append(stylesheet);
+  stylesheet.rel = 'stylesheet'; stylesheet.href = 'experiments/atelier-grid/grid.css?v=m97-20261118-1'; document.head.append(stylesheet);
   const originalCard = modelCardHTML;
   const originalAttach = attachCardEvents;
   const originalSelect = selectTileColor;

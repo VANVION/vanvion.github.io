@@ -7,7 +7,7 @@
   const originalHash = openFromHash;
   const eligible = p => p && typeof p.id === 'string';
   const link = document.createElement('link');
-  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css'; document.head.append(link);
+  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css?v=m97-20261118-1'; document.head.append(link);
   const originalZoom = openZoom;
   openZoom = function(src) {
     originalZoom(src);
