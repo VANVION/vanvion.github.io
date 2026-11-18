@@ -7,7 +7,7 @@
   const originalHash = openFromHash;
   const eligible = p => p && typeof p.id === 'string';
   const link = document.createElement('link');
-  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css?v=m97-20261118-1'; document.head.append(link);
+  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css?v=photos-20261118-1'; document.head.append(link);
   const originalZoom = openZoom;
   openZoom = function(src) {
     originalZoom(src);
@@ -136,7 +136,8 @@
       }
     }
     controls.append(counter); show(0);
-    gallery.querySelector('.at-photo').onclick = () => { if (!swiped && ready) openZoom(photos[index]); swiped=false; };
+    const originals = new Map([[p.image,p.image_original],[p.image2,p.image2_original]]);
+    gallery.querySelector('.at-photo').onclick = () => { if (!swiped && ready) openZoom(originals.get(photos[index]) || photos[index]); swiped=false; };
     gallery.addEventListener('touchstart',e=>{e.stopPropagation();swiped=false;start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
     gallery.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
     gallery.addEventListener('touchend',e=>{e.stopPropagation();if(!start)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){swiped=true;show(index+(dx<0?1:-1));}start=null;},{passive:true});

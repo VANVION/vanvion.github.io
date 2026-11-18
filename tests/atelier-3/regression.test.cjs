@@ -105,7 +105,7 @@ test('first photo: loading → failure → working second photo keeps geometry',
   const p = await pageFor(t,null); await twoPhotos(p,false);
   let release, requested;
   const gate = new Promise(r => { release = r; }), started = new Promise(r => { requested = r; });
-  await p.route('**/images/PR-3001.jpg',async r => { requested(); await gate; await r.fulfill({status:404,body:''}); });
+  await p.route('**/PR-3001.jpg',async r => { requested(); await gate; await r.fulfill({status:404,body:''}); });
   t.after(() => release());
   await p.goto(base+preview, {waitUntil:'domcontentloaded'}); await started;
   await p.waitForFunction(() => document.querySelector('.at-photo-stage')?.getAttribute('aria-busy') === 'true');
@@ -136,7 +136,7 @@ test('second photo: failure is stable, error is unique, recovery and variants wo
 });
 test('failed PR-3001 recovers via PR-3003 and fails cleanly on return',async t => {
   const p = await pageFor(t,null);
-  await p.route('**/images/PR-3001.jpg',r => r.fulfill({status:404,body:''}));
+  await p.route('**/PR-3001.jpg',r => r.fulfill({status:404,body:''}));
   await p.goto(base+preview); await failed(p); const initial = await geometry(p);
   await p.locator('[data-variant="PR-3003"]').click(); await loaded(p); stable(initial,await geometry(p));
   await p.locator('[data-variant="PR-3001"]').click(); await failed(p); stable(initial,await geometry(p));
@@ -381,4 +381,18 @@ test('featured trousers lead All and Trousers without bypassing categories or se
   await p.locator('#search').fill('3060');
   await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
   assert.deepEqual(await models(),['М98']);
+});
+
+test('optimized M97 display photo loads before the full-resolution zoom photo', async t => {
+  const p=await pageFor(t,null);
+  const requested=[];p.on('request',r=>requested.push(new URL(r.url()).pathname));
+  await p.goto(base+'/#p=3041/8');await loaded(p);
+  const photo=await p.evaluate(()=>{const x=PRODUCTS.find(x=>x.id==='3041/8');return {display:x.image,original:x.image_original};});
+  assert(photo.display.startsWith('images/optimized/'));
+  assert(requested.includes('/'+photo.display));
+  assert(!requested.includes('/'+photo.original),'Original must not download before zoom');
+  await p.locator('.at-photo').click();await p.locator('#zoomBox.show').waitFor();
+  await p.waitForFunction(()=>{const i=document.querySelector('#zoomBox img');return i?.complete&&i.naturalWidth>0;});
+  assert.equal(await p.locator('#zoomBox img').getAttribute('src'),photo.original);
+  assert(requested.includes('/'+photo.original));
 });

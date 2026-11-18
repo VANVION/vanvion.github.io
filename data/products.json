@@ -701,7 +701,7 @@
     "name_ru": "БРЮКИ 5001/3 М98",
     "name_en": "TROUSERS 5001/3 М98",
     "colors": "laci",
-    "image": "images/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg",
+    "image": "images/optimized/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -717,7 +717,8 @@
     "display_title_ru": "Брюки свободного кроя",
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/3 м98",
-    "display_subtitle_en": "5001/3 m98"
+    "display_subtitle_en": "5001/3 m98",
+    "image_original": "images/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-4072",
@@ -1738,7 +1739,7 @@
     "name_ru": "ПИДЖАК MINAR EKS 03",
     "name_en": "JACKET MINAR EKS 03",
     "colors": "charcoal",
-    "image": "images/Palmiro_Rossi_MINAR-EKS_03_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MINAR-EKS_03_DROP6.jpg",
     "model": "MINAR EKS",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1754,8 +1755,10 @@
     "lined": true,
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "image2": "images/Palmiro_Rossi_MINAR-EKS_03_DROP6_detail.jpg",
-    "hit": true
+    "image2": "images/optimized/Palmiro_Rossi_MINAR-EKS_03_DROP6_detail.jpg",
+    "hit": true,
+    "image_original": "images/Palmiro_Rossi_MINAR-EKS_03_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MINAR-EKS_03_DROP6_detail.jpg"
   },
   {
     "id": "PR-4052",
@@ -1763,7 +1766,7 @@
     "name_ru": "ПИДЖАК MINAR EKS 04",
     "name_en": "JACKET MINAR EKS 04",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_MINAR-EKS_04_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MINAR-EKS_04_DROP6.jpg",
     "model": "MINAR EKS",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1779,8 +1782,10 @@
     "lined": true,
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "image2": "images/Palmiro_Rossi_MINAR-EKS_04_DROP6_detail.jpg",
-    "hit": true
+    "image2": "images/optimized/Palmiro_Rossi_MINAR-EKS_04_DROP6_detail.jpg",
+    "hit": true,
+    "image_original": "images/Palmiro_Rossi_MINAR-EKS_04_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MINAR-EKS_04_DROP6_detail.jpg"
   },
   {
     "id": "PR-4053",
@@ -1812,7 +1817,7 @@
     "name_ru": "ПИДЖАК MINAR EKS 07",
     "name_en": "JACKET MINAR EKS 07",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_MINAR-EKS_07_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MINAR-EKS_07_DROP6.jpg",
     "model": "MINAR EKS",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1828,8 +1833,10 @@
     "lined": true,
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
-    "image2": "images/Palmiro_Rossi_MINAR-EKS_07_DROP6_detail.jpg",
-    "hit": true
+    "image2": "images/optimized/Palmiro_Rossi_MINAR-EKS_07_DROP6_detail.jpg",
+    "hit": true,
+    "image_original": "images/Palmiro_Rossi_MINAR-EKS_07_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MINAR-EKS_07_DROP6_detail.jpg"
   },
   {
     "id": "PR-4063",
@@ -2619,7 +2626,7 @@
     "name_ru": "ПИДЖАК COTTON 533",
     "name_en": "JACKET COTTON 533",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_COTTON_533_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_COTTON_533_DROP6.jpg",
     "model": "COTTON",
     "comp_ru": "ХЛОПОК 100%",
     "comp_en": "COTTON 100%",
@@ -2634,7 +2641,8 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_COTTON_533_DROP6.jpg"
   },
   {
     "id": "PR-4115",
@@ -2642,7 +2650,7 @@
     "name_ru": "ПИДЖАК COTTON 545",
     "name_en": "JACKET COTTON 545",
     "colors": "alaci",
-    "image": "images/Palmiro_Rossi_COTTON_545_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_COTTON_545_DROP6.jpg",
     "model": "COTTON",
     "comp_ru": "ХЛОПОК 100%",
     "comp_en": "COTTON 100%",
@@ -2657,7 +2665,8 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_COTTON_545_DROP6.jpg"
   },
   {
     "id": "PR-4116",
@@ -2665,7 +2674,7 @@
     "name_ru": "ПИДЖАК COTTON 911",
     "name_en": "JACKET COTTON 911",
     "colors": "taba",
-    "image": "images/Palmiro_Rossi_COTTON_911_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_COTTON_911_DROP6.jpg",
     "model": "COTTON",
     "comp_ru": "ХЛОПОК 100%",
     "comp_en": "COTTON 100%",
@@ -2680,7 +2689,8 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_COTTON_911_DROP6.jpg"
   },
   {
     "id": "PR-4117",
@@ -2711,7 +2721,7 @@
     "name_ru": "ПИДЖАК COTTON 917",
     "name_en": "JACKET COTTON 917",
     "colors": "taba",
-    "image": "images/Palmiro_Rossi_COTTON_917_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_COTTON_917_DROP6.jpg",
     "model": "COTTON",
     "comp_ru": "ХЛОПОК 100%",
     "comp_en": "COTTON 100%",
@@ -2726,7 +2736,8 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_COTTON_917_DROP6.jpg"
   },
   {
     "id": "PR-4119",
@@ -2734,7 +2745,7 @@
     "name_ru": "ПИДЖАК COTTON 926",
     "name_en": "JACKET COTTON 926",
     "colors": "abej",
-    "image": "images/Palmiro_Rossi_COTTON_926_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_COTTON_926_DROP6.jpg",
     "model": "COTTON",
     "comp_ru": "ХЛОПОК 100%",
     "comp_en": "COTTON 100%",
@@ -2749,7 +2760,8 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_COTTON_926_DROP6.jpg"
   },
   {
     "id": "PR-4120",
@@ -3125,7 +3137,7 @@
     "name_ru": "ПИДЖАК GLADYO SIYAH",
     "name_en": "JACKET GLADYO SIYAH",
     "colors": "siyah",
-    "image": "images/PR-4200.jpg",
+    "image": "images/optimized/PR-4200.jpg",
     "model": "GLADYO",
     "lined": true,
     "comp_ru": "ШЕРСТЬ 100%",
@@ -3138,7 +3150,8 @@
     "btn_en": "DOUBLE-BREASTED",
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
-    "sizes": "НОРМА 50–58 · БАТАЛ 58–66"
+    "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
+    "image_original": "images/PR-4200.jpg"
   },
   {
     "id": "PR-4201",
@@ -3146,7 +3159,7 @@
     "name_ru": "ПИДЖАК GLADYO K.LACI",
     "name_en": "JACKET GLADYO K.LACI",
     "colors": "klaci",
-    "image": "images/PR-4201.jpg",
+    "image": "images/optimized/PR-4201.jpg",
     "model": "GLADYO",
     "lined": true,
     "comp_ru": "ШЕРСТЬ 100%",
@@ -3159,7 +3172,8 @@
     "btn_en": "DOUBLE-BREASTED",
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
-    "sizes": "НОРМА 50–58 · БАТАЛ 58–66"
+    "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
+    "image_original": "images/PR-4201.jpg"
   },
   {
     "id": "PR-4202",
@@ -3167,7 +3181,7 @@
     "name_ru": "ПИДЖАК GLADYO KAHVE",
     "name_en": "JACKET GLADYO KAHVE",
     "colors": "kahve",
-    "image": "images/PR-4202.jpg",
+    "image": "images/optimized/PR-4202.jpg",
     "model": "GLADYO",
     "lined": true,
     "comp_ru": "ШЕРСТЬ 100%",
@@ -3180,7 +3194,8 @@
     "btn_en": "DOUBLE-BREASTED",
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
-    "sizes": "НОРМА 50–58 · БАТАЛ 58–66"
+    "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
+    "image_original": "images/PR-4202.jpg"
   },
   {
     "id": "PR-4300",
@@ -3188,7 +3203,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI K.LACI",
     "name_en": "JACKET MILANO SONILI K.LACI",
     "colors": "klaci",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3203,11 +3218,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_K.LACI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4301",
@@ -3215,7 +3232,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI SIYAH",
     "name_en": "JACKET MILANO SONILI SIYAH",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3230,11 +3247,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_SIYAH_DROP6_detail.jpg"
   },
   {
     "id": "PR-4302",
@@ -3242,7 +3261,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI HAKI",
     "name_en": "JACKET MILANO SONILI HAKI",
     "colors": "haki",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3257,11 +3276,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_HAKI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4303",
@@ -3269,7 +3290,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI LACI",
     "name_en": "JACKET MILANO SONILI LACI",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3284,11 +3305,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_LACI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4304",
@@ -3296,7 +3319,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI VIZON",
     "name_en": "JACKET MILANO SONILI VIZON",
     "colors": "vizon",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3311,11 +3334,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_VIZON_DROP6_detail.jpg"
   },
   {
     "id": "PR-4305",
@@ -3323,7 +3348,7 @@
     "name_ru": "ПИДЖАК MILANO SONILI CAMEL",
     "name_en": "JACKET MILANO SONILI CAMEL",
     "colors": "camel",
-    "image": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 37% ЭЛАСТАН 3%",
     "comp_en": "COTTON 60% VISCOSE 37% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3338,11 +3363,13 @@
     "model": "MILANO SONILI",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-14"
+    "new_since": "2026-10-14",
+    "image_original": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MILANO-SONILI_CAMEL_DROP6_detail.jpg"
   },
   {
     "id": "PR-4310",
@@ -3350,7 +3377,7 @@
     "name_ru": "ПИДЖАК VIKING SIYAH",
     "name_en": "JACKET VIKING SIYAH",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_VIKING_SIYAH_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_VIKING_SIYAH_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3365,9 +3392,11 @@
     "model": "VIKING",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_VIKING_SIYAH_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_VIKING_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_VIKING_SIYAH_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_VIKING_SIYAH_DROP6_detail.jpg"
   },
   {
     "id": "PR-4311",
@@ -3375,7 +3404,7 @@
     "name_ru": "ПИДЖАК VIKING K.LACI",
     "name_en": "JACKET VIKING K.LACI",
     "colors": "klaci",
-    "image": "images/Palmiro_Rossi_VIKING_K.LACI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_VIKING_K.LACI_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3390,9 +3419,11 @@
     "model": "VIKING",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_VIKING_K.LACI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_VIKING_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_VIKING_K.LACI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_VIKING_K.LACI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4312",
@@ -3400,7 +3431,7 @@
     "name_ru": "ПИДЖАК VIKING BEJ",
     "name_en": "JACKET VIKING BEJ",
     "colors": "bej",
-    "image": "images/Palmiro_Rossi_VIKING_BEJ_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_VIKING_BEJ_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3415,9 +3446,11 @@
     "model": "VIKING",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_VIKING_BEJ_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_VIKING_BEJ_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_VIKING_BEJ_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_VIKING_BEJ_DROP6_detail.jpg"
   },
   {
     "id": "PR-4313",
@@ -3425,7 +3458,7 @@
     "name_ru": "ПИДЖАК VIKING KAHVE",
     "name_en": "JACKET VIKING KAHVE",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_VIKING_KAHVE_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_VIKING_KAHVE_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3440,9 +3473,11 @@
     "model": "VIKING",
     "lined": true,
     "hit": true,
-    "image2": "images/Palmiro_Rossi_VIKING_KAHVE_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_VIKING_KAHVE_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/Palmiro_Rossi_VIKING_KAHVE_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_VIKING_KAHVE_DROP6_detail.jpg"
   },
   {
     "id": "PR-4320",
@@ -3450,7 +3485,7 @@
     "name_ru": "ПИДЖАК KAZ AYAGI K.LACI",
     "name_en": "JACKET KAZ AYAGI K.LACI",
     "colors": "klaci",
-    "image": "images/vanvion_KAZ-AYAGI_klaci.jpg",
+    "image": "images/optimized/vanvion_KAZ-AYAGI_klaci.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3465,9 +3500,11 @@
     "model": "KAZ AYAGI",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_KAZ-AYAGI_klaci_2.jpg",
+    "image2": "images/optimized/vanvion_KAZ-AYAGI_klaci_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_KAZ-AYAGI_klaci.jpg",
+    "image2_original": "images/vanvion_KAZ-AYAGI_klaci_2.jpg"
   },
   {
     "id": "PR-4321",
@@ -3475,7 +3512,7 @@
     "name_ru": "ПИДЖАК KAZ AYAGI SIYAH",
     "name_en": "JACKET KAZ AYAGI SIYAH",
     "colors": "siyah",
-    "image": "images/vanvion_KAZ-AYAGI_siyah.jpg",
+    "image": "images/optimized/vanvion_KAZ-AYAGI_siyah.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3490,9 +3527,11 @@
     "model": "KAZ AYAGI",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_KAZ-AYAGI_siyah_2.jpg",
+    "image2": "images/optimized/vanvion_KAZ-AYAGI_siyah_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_KAZ-AYAGI_siyah.jpg",
+    "image2_original": "images/vanvion_KAZ-AYAGI_siyah_2.jpg"
   },
   {
     "id": "PR-4322",
@@ -3500,7 +3539,7 @@
     "name_ru": "ПИДЖАК KAZ AYAGI KAHVE",
     "name_en": "JACKET KAZ AYAGI KAHVE",
     "colors": "kahve",
-    "image": "images/vanvion_KAZ-AYAGI_kahve.jpg",
+    "image": "images/optimized/vanvion_KAZ-AYAGI_kahve.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3515,9 +3554,11 @@
     "model": "KAZ AYAGI",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_KAZ-AYAGI_kahve_2.jpg",
+    "image2": "images/optimized/vanvion_KAZ-AYAGI_kahve_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_KAZ-AYAGI_kahve.jpg",
+    "image2_original": "images/vanvion_KAZ-AYAGI_kahve_2.jpg"
   },
   {
     "id": "PR-4323",
@@ -3525,7 +3566,7 @@
     "name_ru": "ПИДЖАК KAZ AYAGI A.LACI",
     "name_en": "JACKET KAZ AYAGI A.LACI",
     "colors": "alaci",
-    "image": "images/vanvion_KAZ-AYAGI_alaci.jpg",
+    "image": "images/optimized/vanvion_KAZ-AYAGI_alaci.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3540,9 +3581,11 @@
     "model": "KAZ AYAGI",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_KAZ-AYAGI_alaci_2.jpg",
+    "image2": "images/optimized/vanvion_KAZ-AYAGI_alaci_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_KAZ-AYAGI_alaci.jpg",
+    "image2_original": "images/vanvion_KAZ-AYAGI_alaci_2.jpg"
   },
   {
     "id": "PR-4330",
@@ -3550,7 +3593,7 @@
     "name_ru": "ПИДЖАК SEDEF GRI",
     "name_en": "JACKET SEDEF GRI",
     "colors": "gri",
-    "image": "images/vanvion_SEDEF_gri.jpg",
+    "image": "images/optimized/vanvion_SEDEF_gri.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3565,9 +3608,11 @@
     "model": "SEDEF",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_SEDEF_gri_2.jpg",
+    "image2": "images/optimized/vanvion_SEDEF_gri_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_SEDEF_gri.jpg",
+    "image2_original": "images/vanvion_SEDEF_gri_2.jpg"
   },
   {
     "id": "PR-4331",
@@ -3575,7 +3620,7 @@
     "name_ru": "ПИДЖАК SEDEF BEJ",
     "name_en": "JACKET SEDEF BEJ",
     "colors": "bej",
-    "image": "images/vanvion_SEDEF_bej.jpg",
+    "image": "images/optimized/vanvion_SEDEF_bej.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3590,9 +3635,11 @@
     "model": "SEDEF",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_SEDEF_bej_2.jpg",
+    "image2": "images/optimized/vanvion_SEDEF_bej_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_SEDEF_bej.jpg",
+    "image2_original": "images/vanvion_SEDEF_bej_2.jpg"
   },
   {
     "id": "PR-4332",
@@ -3600,7 +3647,7 @@
     "name_ru": "ПИДЖАК SEDEF K.LACI",
     "name_en": "JACKET SEDEF K.LACI",
     "colors": "klaci",
-    "image": "images/vanvion_SEDEF_klaci.jpg",
+    "image": "images/optimized/vanvion_SEDEF_klaci.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3615,9 +3662,11 @@
     "model": "SEDEF",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_SEDEF_klaci_2.jpg",
+    "image2": "images/optimized/vanvion_SEDEF_klaci_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_SEDEF_klaci.jpg",
+    "image2_original": "images/vanvion_SEDEF_klaci_2.jpg"
   },
   {
     "id": "PR-4333",
@@ -3625,7 +3674,7 @@
     "name_ru": "ПИДЖАК SEDEF KAHVE",
     "name_en": "JACKET SEDEF KAHVE",
     "colors": "kahve",
-    "image": "images/vanvion_SEDEF_kahve.jpg",
+    "image": "images/optimized/vanvion_SEDEF_kahve.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3640,9 +3689,11 @@
     "model": "SEDEF",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_SEDEF_kahve_2.jpg",
+    "image2": "images/optimized/vanvion_SEDEF_kahve_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_SEDEF_kahve.jpg",
+    "image2_original": "images/vanvion_SEDEF_kahve_2.jpg"
   },
   {
     "id": "PR-4334",
@@ -3650,7 +3701,7 @@
     "name_ru": "ПИДЖАК SEDEF SIYAH",
     "name_en": "JACKET SEDEF SIYAH",
     "colors": "siyah",
-    "image": "images/vanvion_SEDEF_siyah.jpg",
+    "image": "images/optimized/vanvion_SEDEF_siyah.jpg",
     "comp_ru": "ПОЛИЭСТЕР 64% ВИСКОЗА 34% ЛАЙКРА 2%",
     "comp_en": "POLYESTER 64% VISCOSE 34% SPANDEX 2%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3665,9 +3716,11 @@
     "model": "SEDEF",
     "lined": true,
     "hit": true,
-    "image2": "images/vanvion_SEDEF_siyah_2.jpg",
+    "image2": "images/optimized/vanvion_SEDEF_siyah_2.jpg",
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/vanvion_SEDEF_siyah.jpg",
+    "image2_original": "images/vanvion_SEDEF_siyah_2.jpg"
   },
   {
     "id": "PR-4400",
@@ -3675,8 +3728,8 @@
     "name_ru": "ПИДЖАК SALINA EKS 01",
     "name_en": "JACKET SALINA EKS 01",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_SALINA-EKS_01_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_SALINA-EKS_01_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_SALINA-EKS_01_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_SALINA-EKS_01_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "SALINA EKS",
@@ -3693,7 +3746,9 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "isnew": true,
-    "new_since": "2026-10-06"
+    "new_since": "2026-10-06",
+    "image_original": "images/Palmiro_Rossi_SALINA-EKS_01_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_SALINA-EKS_01_DROP6_detail.jpg"
   },
   {
     "id": "PR-4401",
@@ -3701,8 +3756,8 @@
     "name_ru": "ПИДЖАК SALINA EKS 02",
     "name_en": "JACKET SALINA EKS 02",
     "colors": "antrasit",
-    "image": "images/Palmiro_Rossi_SALINA-EKS_02_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_SALINA-EKS_02_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_SALINA-EKS_02_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_SALINA-EKS_02_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "SALINA EKS",
@@ -3719,7 +3774,9 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "isnew": true,
-    "new_since": "2026-10-06"
+    "new_since": "2026-10-06",
+    "image_original": "images/Palmiro_Rossi_SALINA-EKS_02_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_SALINA-EKS_02_DROP6_detail.jpg"
   },
   {
     "id": "PR-4402",
@@ -3727,8 +3784,8 @@
     "name_ru": "ПИДЖАК SALINA EKS 03",
     "name_en": "JACKET SALINA EKS 03",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_SALINA-EKS_03_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_SALINA-EKS_03_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_SALINA-EKS_03_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_SALINA-EKS_03_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "SALINA EKS",
@@ -3745,7 +3802,9 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "isnew": true,
-    "new_since": "2026-10-06"
+    "new_since": "2026-10-06",
+    "image_original": "images/Palmiro_Rossi_SALINA-EKS_03_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_SALINA-EKS_03_DROP6_detail.jpg"
   },
   {
     "id": "PR-4403",
@@ -3753,8 +3812,8 @@
     "name_ru": "ПИДЖАК SALINA EKS 05",
     "name_en": "JACKET SALINA EKS 05",
     "colors": "taba",
-    "image": "images/Palmiro_Rossi_SALINA-EKS_05_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_SALINA-EKS_05_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_SALINA-EKS_05_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_SALINA-EKS_05_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "SALINA EKS",
@@ -3771,7 +3830,9 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "isnew": true,
-    "new_since": "2026-10-06"
+    "new_since": "2026-10-06",
+    "image_original": "images/Palmiro_Rossi_SALINA-EKS_05_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_SALINA-EKS_05_DROP6_detail.jpg"
   },
   {
     "id": "PR-4410",
@@ -3779,8 +3840,8 @@
     "name_ru": "ПИДЖАК MINAR EKS 02",
     "name_en": "JACKET MINAR EKS 02",
     "colors": "antrasit",
-    "image": "images/Palmiro_Rossi_MINAR-EKS_02_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_MINAR-EKS_02_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MINAR-EKS_02_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MINAR-EKS_02_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "MINAR EKS",
@@ -3796,7 +3857,9 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "hit": true
+    "hit": true,
+    "image_original": "images/Palmiro_Rossi_MINAR-EKS_02_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MINAR-EKS_02_DROP6_detail.jpg"
   },
   {
     "id": "PR-4411",
@@ -3804,8 +3867,8 @@
     "name_ru": "ПИДЖАК MINAR EKS 06",
     "name_en": "JACKET MINAR EKS 06",
     "colors": "grey",
-    "image": "images/Palmiro_Rossi_MINAR-EKS_06_DROP6.jpg",
-    "image2": "images/Palmiro_Rossi_MINAR-EKS_06_DROP6_detail.jpg",
+    "image": "images/optimized/Palmiro_Rossi_MINAR-EKS_06_DROP6.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_MINAR-EKS_06_DROP6_detail.jpg",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
     "model": "MINAR EKS",
@@ -3821,7 +3884,9 @@
     "country_en": "TURKEY",
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
-    "hit": true
+    "hit": true,
+    "image_original": "images/Palmiro_Rossi_MINAR-EKS_06_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_MINAR-EKS_06_DROP6_detail.jpg"
   },
   {
     "id": "PR-4412",
@@ -3829,7 +3894,7 @@
     "name_ru": "ПИДЖАК LOCATELLI KAHVE",
     "name_en": "JACKET LOCATELLI KAHVE",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3843,11 +3908,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "LOCATELLI",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-16"
+    "new_since": "2026-10-16",
+    "image_original": "images/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_LOCATELLI_KAHVE_DROP6_detail.jpg"
   },
   {
     "id": "PR-4413",
@@ -3855,7 +3922,7 @@
     "name_ru": "ПИДЖАК LOCATELLI SIYAH",
     "name_en": "JACKET LOCATELLI SIYAH",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3869,11 +3936,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "LOCATELLI",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-16"
+    "new_since": "2026-10-16",
+    "image_original": "images/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_LOCATELLI_SIYAH_DROP6_detail.jpg"
   },
   {
     "id": "PR-4414",
@@ -3881,7 +3950,7 @@
     "name_ru": "ПИДЖАК LOCATELLI GRI",
     "name_en": "JACKET LOCATELLI GRI",
     "colors": "gri",
-    "image": "images/Palmiro_Rossi_LOCATELLI_GRI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_LOCATELLI_GRI_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3895,11 +3964,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "LOCATELLI",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_LOCATELLI_GRI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_LOCATELLI_GRI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-16"
+    "new_since": "2026-10-16",
+    "image_original": "images/Palmiro_Rossi_LOCATELLI_GRI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_LOCATELLI_GRI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4415",
@@ -3907,7 +3978,7 @@
     "name_ru": "ПИДЖАК LOCATELLI K.LACI",
     "name_en": "JACKET LOCATELLI K.LACI",
     "colors": "klaci",
-    "image": "images/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3921,11 +3992,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "LOCATELLI",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-16"
+    "new_since": "2026-10-16",
+    "image_original": "images/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_LOCATELLI_K.LACI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4416",
@@ -3933,7 +4006,7 @@
     "name_ru": "ПИДЖАК LOCATELLI VIZON",
     "name_en": "JACKET LOCATELLI VIZON",
     "colors": "vizon",
-    "image": "images/Palmiro_Rossi_LOCATELLI_VIZON_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_LOCATELLI_VIZON_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3947,11 +4020,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "LOCATELLI",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_LOCATELLI_VIZON_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_LOCATELLI_VIZON_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-16"
+    "new_since": "2026-10-16",
+    "image_original": "images/Palmiro_Rossi_LOCATELLI_VIZON_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_LOCATELLI_VIZON_DROP6_detail.jpg"
   },
   {
     "id": "PR-4417",
@@ -3959,7 +4034,7 @@
     "name_ru": "ПИДЖАК KADIFE S.KAHVE",
     "name_en": "JACKET KADIFE S.KAHVE",
     "colors": "skahve",
-    "image": "images/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3973,11 +4048,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "KADIFE",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-20"
+    "new_since": "2026-10-20",
+    "image_original": "images/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_KADIFE_S.KAHVE_DROP6_detail.jpg"
   },
   {
     "id": "PR-4418",
@@ -3985,7 +4062,7 @@
     "name_ru": "ПИДЖАК KADIFE K.LACI",
     "name_en": "JACKET KADIFE K.LACI",
     "colors": "klaci",
-    "image": "images/Palmiro_Rossi_KADIFE_K.LACI_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_KADIFE_K.LACI_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -3999,11 +4076,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "KADIFE",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_KADIFE_K.LACI_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_KADIFE_K.LACI_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-20"
+    "new_since": "2026-10-20",
+    "image_original": "images/Palmiro_Rossi_KADIFE_K.LACI_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_KADIFE_K.LACI_DROP6_detail.jpg"
   },
   {
     "id": "PR-4419",
@@ -4011,7 +4090,7 @@
     "name_ru": "ПИДЖАК KADIFE KAHVE",
     "name_en": "JACKET KADIFE KAHVE",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_KADIFE_KAHVE_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_KADIFE_KAHVE_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4025,11 +4104,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "KADIFE",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_KADIFE_KAHVE_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_KADIFE_KAHVE_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-20"
+    "new_since": "2026-10-20",
+    "image_original": "images/Palmiro_Rossi_KADIFE_KAHVE_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_KADIFE_KAHVE_DROP6_detail.jpg"
   },
   {
     "id": "PR-4420",
@@ -4037,7 +4118,7 @@
     "name_ru": "ПИДЖАК KADIFE SIYAH",
     "name_en": "JACKET KADIFE SIYAH",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_KADIFE_SIYAH_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_KADIFE_SIYAH_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 80% ВИСКОЗА 17% ЭЛАСТАН 3%",
     "comp_en": "WOOL 80% VISCOSE 17% ELASTANE 3%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4051,11 +4132,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "KADIFE",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_KADIFE_SIYAH_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_KADIFE_SIYAH_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-20"
+    "new_since": "2026-10-20",
+    "image_original": "images/Palmiro_Rossi_KADIFE_SIYAH_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_KADIFE_SIYAH_DROP6_detail.jpg"
   },
   {
     "id": "PR-4421",
@@ -4063,7 +4146,7 @@
     "name_ru": "ПИДЖАК OSCAR 01",
     "name_en": "JACKET OSCAR 01",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_OSCAR_01_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_01_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4077,11 +4160,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_01_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_01_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_01_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_01_DROP6_detail.jpg"
   },
   {
     "id": "PR-4422",
@@ -4089,7 +4174,7 @@
     "name_ru": "ПИДЖАК OSCAR 02",
     "name_en": "JACKET OSCAR 02",
     "colors": "klaci",
-    "image": "images/Palmiro_Rossi_OSCAR_02_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_02_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4103,11 +4188,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_02_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_02_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_02_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_02_DROP6_detail.jpg"
   },
   {
     "id": "PR-4423",
@@ -4115,7 +4202,7 @@
     "name_ru": "ПИДЖАК OSCAR 03",
     "name_en": "JACKET OSCAR 03",
     "colors": "kahve",
-    "image": "images/Palmiro_Rossi_OSCAR_03_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_03_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4129,11 +4216,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_03_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_03_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_03_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_03_DROP6_detail.jpg"
   },
   {
     "id": "PR-4424",
@@ -4141,7 +4230,7 @@
     "name_ru": "ПИДЖАК OSCAR 04",
     "name_en": "JACKET OSCAR 04",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_OSCAR_04_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_04_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4155,11 +4244,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_04_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_04_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_04_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_04_DROP6_detail.jpg"
   },
   {
     "id": "PR-4425",
@@ -4167,7 +4258,7 @@
     "name_ru": "ПИДЖАК OSCAR 08",
     "name_en": "JACKET OSCAR 08",
     "colors": "brown",
-    "image": "images/Palmiro_Rossi_OSCAR_08_DROP6_v2.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_08_DROP6_v2.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4181,11 +4272,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_08_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_08_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_08_DROP6_v2.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_08_DROP6_detail.jpg"
   },
   {
     "id": "PR-4426",
@@ -4193,7 +4286,7 @@
     "name_ru": "ПИДЖАК OSCAR 09",
     "name_en": "JACKET OSCAR 09",
     "colors": "skahve",
-    "image": "images/Palmiro_Rossi_OSCAR_09_DROP6_v2.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_09_DROP6_v2.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4207,11 +4300,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_09_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_09_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_09_DROP6_v2.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_09_DROP6_detail.jpg"
   },
   {
     "id": "PR-4427",
@@ -4219,7 +4314,7 @@
     "name_ru": "ПИДЖАК OSCAR 11",
     "name_en": "JACKET OSCAR 11",
     "colors": "ekru",
-    "image": "images/Palmiro_Rossi_OSCAR_11_DROP6.jpg",
+    "image": "images/optimized/Palmiro_Rossi_OSCAR_11_DROP6.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4233,11 +4328,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/Palmiro_Rossi_OSCAR_11_DROP6_detail.jpg",
+    "image2": "images/optimized/Palmiro_Rossi_OSCAR_11_DROP6_detail.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
-    "new_since": "2026-10-27"
+    "new_since": "2026-10-27",
+    "image_original": "images/Palmiro_Rossi_OSCAR_11_DROP6.jpg",
+    "image2_original": "images/Palmiro_Rossi_OSCAR_11_DROP6_detail.jpg"
   },
   {
     "id": "3041/8",
@@ -4245,7 +4342,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/8 М97",
     "name_en": "CORDUROY TROUSERS 3041/8 M97",
     "colors": "brown",
-    "image": "images/04159d085e72414294cc9ac367d66e56_bananalab-pro_4K.jpg",
+    "image": "images/optimized/04159d085e72414294cc9ac367d66e56_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4262,7 +4359,8 @@
     "display_subtitle_en": "3041/8 m97",
     "isnew": false,
     "new_since": "2026-11-18",
-    "social_image": "images/social/m97-brown.jpg"
+    "social_image": "images/social/m97-brown.jpg",
+    "image_original": "images/04159d085e72414294cc9ac367d66e56_bananalab-pro_4K.jpg"
   },
   {
     "id": "3041/6",
@@ -4270,7 +4368,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/6 М97",
     "name_en": "CORDUROY TROUSERS 3041/6 M97",
     "colors": "navy",
-    "image": "images/727ae3b82ffc4c988109c9ec3fac7edc_bananalab-pro_4K.jpg",
+    "image": "images/optimized/727ae3b82ffc4c988109c9ec3fac7edc_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4287,7 +4385,8 @@
     "display_subtitle_en": "3041/6 m97",
     "isnew": false,
     "new_since": "2026-11-18",
-    "social_image": "images/social/m97-navy.jpg"
+    "social_image": "images/social/m97-navy.jpg",
+    "image_original": "images/727ae3b82ffc4c988109c9ec3fac7edc_bananalab-pro_4K.jpg"
   },
   {
     "id": "3041/5",
@@ -4295,7 +4394,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/5 М97",
     "name_en": "CORDUROY TROUSERS 3041/5 M97",
     "colors": "green",
-    "image": "images/4647cc2b9f1a4fcb912b763e57cf6ce9_bananalab-pro_4K.jpg",
+    "image": "images/optimized/4647cc2b9f1a4fcb912b763e57cf6ce9_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4312,7 +4411,8 @@
     "display_subtitle_en": "3041/5 m97",
     "isnew": false,
     "new_since": "2026-11-18",
-    "social_image": "images/social/m97-green.jpg"
+    "social_image": "images/social/m97-green.jpg",
+    "image_original": "images/4647cc2b9f1a4fcb912b763e57cf6ce9_bananalab-pro_4K.jpg"
   },
   {
     "id": "3041/2",
@@ -4320,7 +4420,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/2 М97",
     "name_en": "CORDUROY TROUSERS 3041/2 M97",
     "colors": "black",
-    "image": "images/0bfe1bbf47944a8cbc7f6ce8cb17af33_bananalab-pro_4K.jpg",
+    "image": "images/optimized/0bfe1bbf47944a8cbc7f6ce8cb17af33_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4337,7 +4437,8 @@
     "display_subtitle_en": "3041/2 m97",
     "isnew": false,
     "new_since": "2026-11-18",
-    "social_image": "images/social/m97-black.jpg"
+    "social_image": "images/social/m97-black.jpg",
+    "image_original": "images/0bfe1bbf47944a8cbc7f6ce8cb17af33_bananalab-pro_4K.jpg"
   },
   {
     "id": "5001/2",
@@ -4345,7 +4446,7 @@
     "name_ru": "БРЮКИ 5001/2 М98",
     "name_en": "TROUSERS 5001/2 M98",
     "colors": "black",
-    "image": "images/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg",
+    "image": "images/optimized/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4361,7 +4462,8 @@
     "display_title_ru": "Брюки свободного кроя",
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/2 м98",
-    "display_subtitle_en": "5001/2 m98"
+    "display_subtitle_en": "5001/2 m98",
+    "image_original": "images/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg"
   },
   {
     "id": "5001/8",
@@ -4369,7 +4471,7 @@
     "name_ru": "БРЮКИ 5001/8 М98",
     "name_en": "TROUSERS 5001/8 M98",
     "colors": "terracotta",
-    "image": "images/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg",
+    "image": "images/optimized/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4385,7 +4487,8 @@
     "display_title_ru": "Брюки свободного кроя",
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/8 м98",
-    "display_subtitle_en": "5001/8 m98"
+    "display_subtitle_en": "5001/8 m98",
+    "image_original": "images/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg"
   },
   {
     "id": "3060",
@@ -4393,7 +4496,7 @@
     "name_ru": "БРЮКИ 3060 М98",
     "name_en": "TROUSERS 3060 M98",
     "colors": "grey",
-    "image": "images/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg",
+    "image": "images/optimized/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4409,6 +4512,7 @@
     "display_title_ru": "Брюки свободного кроя",
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "3060 м98",
-    "display_subtitle_en": "3060 m98"
+    "display_subtitle_en": "3060 m98",
+    "image_original": "images/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg"
   }
 ]
