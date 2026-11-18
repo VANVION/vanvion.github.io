@@ -69,3 +69,5 @@
 @media(min-width:768px) and (max-width:999px){.at-info{padding:40px 64px 64px}.at-card{--at-photo-height:68svh}.at-caption{padding:16px 64px}.at-dock{padding-left:64px;padding-right:64px}}
 @media(min-width:1000px){.at-card #detailContent{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);column-gap:clamp(40px,5vw,80px);padding:0 48px 64px}.at-gallery{position:sticky;top:76px;align-self:start}.at-card{--at-photo-height:min(78vh,900px)}.at-caption{padding:16px 0}.at-info{padding:4px 0 0}.at-heading{padding-bottom:32px}.at-heading h1{font-size:clamp(72px,7vw,104px)}.at-dock{display:none}.at-info section{padding:28px 0}.at-info .at-contact{padding-bottom:0}}
 @media(prefers-reduced-motion:reduce){.at-card,.at-card *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+.at-card .at-model-reference{text-transform:none;font-size:14px}

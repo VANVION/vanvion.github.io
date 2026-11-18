@@ -25,7 +25,7 @@
   const sectionTitle = (n, title) => '<h2 class="at-section-title"><span>' + n + '</span>' + esc(title) + '</h2>';
   // A shared model is only a candidate: all supported characteristics must match.
   function variants(p) {
-    const keys = ['cat','model','sizes','comp_ru','comp_en','sil_ru','sil_en','lin_ru','lin_en','lined','btn_ru','btn_en','country_ru','country_en','ros_ru','ros_en'];
+    const keys = ['cat','model','sizes','fabric_ru','fabric_en','comp_ru','comp_en','sil_ru','sil_en','lin_ru','lin_en','lined','btn_ru','btn_en','country_ru','country_en','ros_ru','ros_en'];
     if (!p.model || !p.model.trim()) return [p];
     return modelVariants(p).filter(x => keys.every(k => x[k] === p[k]));
   }
@@ -52,6 +52,7 @@
     const hasValue = value => value && !/^[\s—–-]+$/.test(value);
     const lining = specVal(p.lin_ru,p.lin_en);
     const specs = [
+      [L('Фактура ткани','Fabric texture'),specVal(p.fabric_ru,p.fabric_en)],
       [L('Состав','Composition'),specVal(p.comp_ru,p.comp_en)],
       [L('Силуэт','Fit'),specVal(p.sil_ru,p.sil_en)],
       [L('Рост','Height'),specVal(p.ros_ru,p.ros_en)],
@@ -63,7 +64,7 @@
     const contacts = orderLinks(L('Здравствуйте! Интересует ','Hello! I am interested in ') + getName(p) + ', ' + L('артикул ','article ') + p.id + (colorName ? ', ' + colorName : ''));
     const photos = [...new Set([p.image,p.image2].filter(Boolean))];
     $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button><span class="at-photo-error" role="status" aria-live="polite" hidden></span>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
-      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(p.model || getName(p)) + '</h1><p class="at-product-name">' + esc(getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
+      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(specVal(p.display_title_ru,p.display_title_en) || p.model || getName(p)) + '</h1><p class="at-product-name' + (p.display_subtitle_ru ? ' at-model-reference' : '') + '">' + esc(specVal(p.display_subtitle_ru,p.display_subtitle_en) || getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
       '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span>' + esc(colorName) + '</span></div></section>' +
       (p.sizes ? '<section class="at-sizes">' + sectionTitle('03',L('Размерный ряд','Size range')) + '<p>' + esc(trSpec(p.sizes)) + '</p></section>' : '') +
       (specs.length ? '<section class="at-specs">' + sectionTitle('04',L('В деталях','In detail')) + '<dl>' + rows + '</dl></section>' : '') +

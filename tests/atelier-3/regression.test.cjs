@@ -173,7 +173,7 @@ test('all real products render correct data in RU/EN at 320/390/1440px', async t
           const sizes=detail.querySelector('.at-sizes p');
           const image=detail.querySelector('.at-photo img');
           const link=detail.querySelector('.at-primary');
-          if(!detail.classList.contains('at-card') || heading?.textContent !== (product.model || getName(product))) failures.push(product.id+': heading');
+          if(!detail.classList.contains('at-card') || heading?.textContent !== (specVal(product.display_title_ru,product.display_title_en) || product.model || getName(product))) failures.push(product.id+': heading');
           if(product.sizes && sizes?.textContent !== trSpec(product.sizes)) failures.push(product.id+': sizes');
           if(product.image && image?.getAttribute('src') !== product.image) failures.push(product.id+': image');
           if(!new URL(link.href).searchParams.get('text').includes(product.id)) failures.push(product.id+': order context');
@@ -241,6 +241,8 @@ test('default ATELIER grid: variants, pack cart action and detail navigation', a
   assert.match(await p.locator('.ag-open').first().getAttribute('aria-label'),/^Open /);
   await p.locator('#search').fill('PR-3001');
   await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
+  // content-visibility:auto defers text layout until the filtered card enters the viewport.
+  await p.locator('.ag-category').scrollIntoViewIfNeeded();
   assert.equal(await p.locator('.ag-category').innerText(),'TROUSERS');
 });
 
@@ -326,4 +328,41 @@ test('classic navigation fallback and responsive ATELIER in RU/EN',async t=>{
       assert(sizes.every(h=>h>=44),'Category controls need 44px targets');
     }
   }
+});
+
+test('M97: corduroy title, article subtitle and four orderable colour variants', async t => {
+  const p = await pageFor(t, '/');
+  await p.locator('.card').first().waitFor();
+  await p.locator('#search').fill('3041');
+  await p.waitForFunction(() => document.querySelectorAll('.card').length === 1);
+  const colours = { '3041/8':'brown', '3041/6':'navy', '3041/5':'green', '3041/2':'black' };
+  for (const [id, colour] of Object.entries(colours)) {
+    const card = p.locator('.card');
+    // Keyboard activation also works when the existing floating widgets overlap a swatch.
+    await card.locator(`[data-goto="${id}"]`).focus();
+    await card.locator(`[data-goto="${id}"]`).press('Enter');
+    assert.equal(await card.locator('.ag-open').innerText(), 'Вельветовые брюки');
+    assert.equal(await card.locator('.ag-fit').innerText(), 'Оверсайз');
+    assert.equal(await card.locator('.ag-article').innerText(), `${id} м97`);
+    await card.locator('.ag-open').click();
+    await loaded(p);
+    assert.equal(await p.locator('.at-heading h1').innerText(), 'Вельветовые брюки');
+    assert.equal(await p.locator('.at-product-name').innerText(), `${id} м97`);
+    assert.equal(await p.locator('[data-variant]').count(), 4);
+    assert.match(await p.locator('.at-sizes').innerText(), /46–56/);
+    assert.match(await p.locator('.at-specs').innerText(), /ВЕЛЬВЕТ/);
+    assert.match(await p.locator('.at-specs').innerText(), /ОВЕРСАЙЗ/);
+    assert.match(await p.locator('.at-specs').innerText(), /РОССИЯ/);
+    assert.equal(await p.evaluate(id => PRODUCTS.find(x => x.id === id).colors, id), colour);
+    assert((new URL(await p.locator('.at-primary').getAttribute('href'))).searchParams.get('text').includes(id));
+    await p.locator('#backBtn').click();
+    await p.waitForFunction(() => !document.getElementById('detail').classList.contains('open'));
+  }
+  await p.locator('.card-pack').first().click();
+  assert.equal(await p.evaluate(() => CART[0].id), '3041/2');
+  await p.locator('.ag-open').click(); await loaded(p);
+  await p.locator('.at-language').click(); await loaded(p);
+  assert.equal(await p.locator('.at-heading h1').innerText(), 'Corduroy trousers');
+  assert.equal(await p.locator('.at-product-name').innerText(), '3041/2 m97');
+  assert.match(await p.locator('.at-specs').innerText(), /CORDUROY/);
 });
