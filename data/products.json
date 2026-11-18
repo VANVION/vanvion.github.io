@@ -569,7 +569,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М93V"
+    "model": "М93V",
+    "display_title_ru": "Брюки на кулиске",
+    "display_title_en": "Drawstring trousers",
+    "display_subtitle_ru": "1 м93v",
+    "display_subtitle_en": "1 m93v"
   },
   {
     "id": "PR-3003",
@@ -589,7 +593,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М93V"
+    "model": "М93V",
+    "display_title_ru": "Брюки на кулиске",
+    "display_title_en": "Drawstring trousers",
+    "display_subtitle_ru": "5 м93v",
+    "display_subtitle_en": "5 m93v"
   },
   {
     "id": "PR-3002",
@@ -609,7 +617,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М107"
+    "model": "М107",
+    "display_title_ru": "Широкие брюки со встречными защипами",
+    "display_title_en": "Wide-leg trousers with inverted pleats",
+    "display_subtitle_ru": "1005 м107",
+    "display_subtitle_en": "1005 m107"
   },
   {
     "id": "PR-3004",
@@ -629,7 +641,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М107"
+    "model": "М107",
+    "display_title_ru": "Широкие брюки со встречными защипами",
+    "display_title_en": "Wide-leg trousers with inverted pleats",
+    "display_subtitle_ru": "5001/3 м107",
+    "display_subtitle_en": "5001/3 m107"
   },
   {
     "id": "PR-3006",
@@ -649,7 +665,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М107"
+    "model": "М107",
+    "display_title_ru": "Широкие брюки со встречными защипами",
+    "display_title_en": "Wide-leg trousers with inverted pleats",
+    "display_subtitle_ru": "7072/15 м107",
+    "display_subtitle_en": "7072/15 m107"
   },
   {
     "id": "PR-3007",
@@ -669,7 +689,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М107"
+    "model": "М107",
+    "display_title_ru": "Широкие брюки со встречными защипами",
+    "display_title_en": "Wide-leg trousers with inverted pleats",
+    "display_subtitle_ru": "780 м107",
+    "display_subtitle_en": "780 m107"
   },
   {
     "id": "PR-3005",
@@ -677,7 +701,7 @@
     "name_ru": "БРЮКИ 5001/3 М98",
     "name_en": "TROUSERS 5001/3 М98",
     "colors": "laci",
-    "image": "images/PR-3005.jpg",
+    "image": "images/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -689,7 +713,11 @@
     "country_ru": "ТУРЦИЯ",
     "country_en": "TURKEY",
     "sizes": "46–54",
-    "model": "М98"
+    "model": "М98",
+    "display_title_ru": "Брюки свободного кроя",
+    "display_title_en": "Relaxed-fit trousers",
+    "display_subtitle_ru": "5001/3 м98",
+    "display_subtitle_en": "5001/3 m98"
   },
   {
     "id": "PR-4072",
@@ -4298,5 +4326,77 @@
     "display_title_en": "Corduroy trousers",
     "display_subtitle_ru": "3041/2 м97",
     "display_subtitle_en": "3041/2 m97"
+  },
+  {
+    "id": "5001/2",
+    "cat": "bryuki",
+    "name_ru": "БРЮКИ 5001/2 М98",
+    "name_en": "TROUSERS 5001/2 M98",
+    "colors": "black",
+    "image": "images/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg",
+    "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
+    "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
+    "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
+    "sil_en": "WIDE LEG",
+    "lin_ru": "БЕЗ ПОДКЛАДКИ",
+    "lin_en": "UNLINED",
+    "btn_ru": "ПУГОВИЦА · МОЛНИЯ",
+    "btn_en": "BUTTON · ZIP",
+    "country_ru": "ТУРЦИЯ",
+    "country_en": "TURKEY",
+    "sizes": "46–54",
+    "model": "М98",
+    "display_title_ru": "Брюки свободного кроя",
+    "display_title_en": "Relaxed-fit trousers",
+    "display_subtitle_ru": "5001/2 м98",
+    "display_subtitle_en": "5001/2 m98"
+  },
+  {
+    "id": "5001/8",
+    "cat": "bryuki",
+    "name_ru": "БРЮКИ 5001/8 М98",
+    "name_en": "TROUSERS 5001/8 M98",
+    "colors": "terracotta",
+    "image": "images/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg",
+    "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
+    "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
+    "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
+    "sil_en": "WIDE LEG",
+    "lin_ru": "БЕЗ ПОДКЛАДКИ",
+    "lin_en": "UNLINED",
+    "btn_ru": "ПУГОВИЦА · МОЛНИЯ",
+    "btn_en": "BUTTON · ZIP",
+    "country_ru": "ТУРЦИЯ",
+    "country_en": "TURKEY",
+    "sizes": "46–54",
+    "model": "М98",
+    "display_title_ru": "Брюки свободного кроя",
+    "display_title_en": "Relaxed-fit trousers",
+    "display_subtitle_ru": "5001/8 м98",
+    "display_subtitle_en": "5001/8 m98"
+  },
+  {
+    "id": "3060",
+    "cat": "bryuki",
+    "name_ru": "БРЮКИ 3060 М98",
+    "name_en": "TROUSERS 3060 M98",
+    "colors": "grey",
+    "image": "images/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg",
+    "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
+    "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
+    "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
+    "sil_en": "WIDE LEG",
+    "lin_ru": "БЕЗ ПОДКЛАДКИ",
+    "lin_en": "UNLINED",
+    "btn_ru": "ПУГОВИЦА · МОЛНИЯ",
+    "btn_en": "BUTTON · ZIP",
+    "country_ru": "ТУРЦИЯ",
+    "country_en": "TURKEY",
+    "sizes": "46–54",
+    "model": "М98",
+    "display_title_ru": "Брюки свободного кроя",
+    "display_title_en": "Relaxed-fit trousers",
+    "display_subtitle_ru": "3060 м98",
+    "display_subtitle_en": "3060 m98"
   }
 ]
