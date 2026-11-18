@@ -605,7 +605,7 @@
     "name_ru": "БРЮКИ 1005 М107",
     "name_en": "TROUSERS 1005 М107",
     "colors": "siyah",
-    "image": "images/PR-3002.jpg",
+    "image": "images/optimized/a8f5fc40a7c04e7cad5900e2bc7d80d6_bananalab-pro_4K.jpg",
     "comp_ru": "ПОЛИЭСТЕР 75% ВИСКОЗА 20% ЭЛАСТАН 5%",
     "comp_en": "POLYESTER 75% VISCOSE 20% ELASTANE 5%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -621,7 +621,8 @@
     "display_title_ru": "Широкие брюки со встречными защипами",
     "display_title_en": "Wide-leg trousers with inverted pleats",
     "display_subtitle_ru": "1005 м107",
-    "display_subtitle_en": "1005 m107"
+    "display_subtitle_en": "1005 m107",
+    "image_original": "images/a8f5fc40a7c04e7cad5900e2bc7d80d6_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3004",
@@ -629,7 +630,7 @@
     "name_ru": "БРЮКИ 5001/3 М107",
     "name_en": "TROUSERS 5001/3 М107",
     "colors": "laci",
-    "image": "images/PR-3004.jpg",
+    "image": "images/optimized/96bad4848a4243e19c291fbbde8b7a43_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -645,7 +646,8 @@
     "display_title_ru": "Широкие брюки со встречными защипами",
     "display_title_en": "Wide-leg trousers with inverted pleats",
     "display_subtitle_ru": "5001/3 м107",
-    "display_subtitle_en": "5001/3 m107"
+    "display_subtitle_en": "5001/3 m107",
+    "image_original": "images/96bad4848a4243e19c291fbbde8b7a43_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3006",
@@ -653,7 +655,7 @@
     "name_ru": "БРЮКИ 7072/15 М107",
     "name_en": "TROUSERS 7072/15 М107",
     "colors": "brown",
-    "image": "images/PR-3006.jpg",
+    "image": "images/optimized/9f341e313af74627ba8a21071a46d35d_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -669,7 +671,8 @@
     "display_title_ru": "Широкие брюки со встречными защипами",
     "display_title_en": "Wide-leg trousers with inverted pleats",
     "display_subtitle_ru": "7072/15 м107",
-    "display_subtitle_en": "7072/15 m107"
+    "display_subtitle_en": "7072/15 m107",
+    "image_original": "images/9f341e313af74627ba8a21071a46d35d_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3007",
@@ -677,7 +680,7 @@
     "name_ru": "БРЮКИ 780 М107",
     "name_en": "TROUSERS 780 М107",
     "colors": "bej",
-    "image": "images/PR-3007.jpg",
+    "image": "images/optimized/955034790e9543b6b5cef5af20e1f4c9_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -693,7 +696,8 @@
     "display_title_ru": "Широкие брюки со встречными защипами",
     "display_title_en": "Wide-leg trousers with inverted pleats",
     "display_subtitle_ru": "780 м107",
-    "display_subtitle_en": "780 m107"
+    "display_subtitle_en": "780 m107",
+    "image_original": "images/955034790e9543b6b5cef5af20e1f4c9_bananalab-pro_4K.jpg"
   },
   {
     "id": "PR-3005",
