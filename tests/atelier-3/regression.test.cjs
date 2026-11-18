@@ -225,7 +225,8 @@ test('default ATELIER grid: variants, pack cart action and detail navigation', a
   const dot=card.locator('.mdot:not(.active)').first();
   const id=await dot.getAttribute('data-goto'); await dot.click();
   assert.equal(await card.getAttribute('data-id'),id);
-  assert.equal(await card.locator('.ag-article').innerText(),id);
+  const subtitle = await p.evaluate(id => { const x=PRODUCTS.find(x=>x.id===id);return specVal(x.display_subtitle_ru,x.display_subtitle_en)||id; },id);
+  assert.equal(await card.locator('.ag-article').innerText(),subtitle);
   assert.equal(await card.locator('.mdot.active').getAttribute('aria-pressed'),'true');
   const expected=await p.evaluate(id=>PRODUCTS.find(x=>x.id===id),id);
   assert.equal(await card.locator('.card-img img').getAttribute('src'),expected.image);
@@ -365,4 +366,19 @@ test('M97: corduroy title, article subtitle and four orderable colour variants',
   assert.equal(await p.locator('.at-heading h1').innerText(), 'Corduroy trousers');
   assert.equal(await p.locator('.at-product-name').innerText(), '3041/2 m97');
   assert.match(await p.locator('.at-specs').innerText(), /CORDUROY/);
+});
+
+
+test('featured trousers lead All and Trousers without bypassing categories or search', async t => {
+  const p=await pageFor(t,'/');await p.locator('.card').first().waitFor();
+  const models=()=>p.locator('.card').evaluateAll(cards=>cards.map(c=>PRODUCTS.find(x=>x.id===c.dataset.id).model));
+  assert.deepEqual((await models()).slice(0,2),['М97','М98']);
+  await p.locator('[data-cat="bryuki"]').click();
+  assert.deepEqual((await models()).slice(0,2),['М97','М98']);
+  await p.locator('[data-cat="pidzhaki"]').click();
+  assert(!(await models()).some(x=>['М97','М98'].includes(x)));
+  await p.locator('[data-cat="bryuki"]').click();
+  await p.locator('#search').fill('3060');
+  await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
+  assert.deepEqual(await models(),['М98']);
 });
