@@ -7,7 +7,7 @@
   const originalHash = openFromHash;
   const eligible = p => p && typeof p.id === 'string';
   const link = document.createElement('link');
-  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css?v=photos-20261118-1'; document.head.append(link);
+  link.rel = 'stylesheet'; link.href = 'experiments/atelier-3/card.css?v=colours-20261119-1'; document.head.append(link);
   const originalZoom = openZoom;
   openZoom = function(src) {
     originalZoom(src);
@@ -23,12 +23,20 @@
   });
   const arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg>';
   const sectionTitle = (n, title) => '<h2 class="at-section-title"><span>' + n + '</span>' + esc(title) + '</h2>';
-  // A shared model is only a candidate: all supported characteristics must match.
+  // Colours belong to a model/category; each article retains its own specifications.
+  const variantSpecKeys = ['sizes','fabric_ru','fabric_en','comp_ru','comp_en','sil_ru','sil_en','lin_ru','lin_en','lined','btn_ru','btn_en','country_ru','country_en','ros_ru','ros_en'];
   function variants(p) {
-    const keys = ['cat','model','sizes','fabric_ru','fabric_en','comp_ru','comp_en','sil_ru','sil_en','lin_ru','lin_en','lined','btn_ru','btn_en','country_ru','country_en','ros_ru','ros_en'];
     if (!p.model || !p.model.trim()) return [p];
-    return modelVariants(p).filter(x => keys.every(k => x[k] === p[k]));
+    return modelVariants(p).filter(x => x.cat === p.cat);
   }
+  const mobileLayout = matchMedia('(max-width:999px)');
+  function placeColours() {
+    const colours = document.querySelector('.at-card .at-colors');
+    if (!colours) return;
+    if (mobileLayout.matches) document.querySelector('.at-gallery .at-caption').before(colours);
+    else document.querySelector('.at-heading').after(colours);
+  }
+  mobileLayout.addEventListener('change',placeColours);
   openDetail = function(id, card, opts) {
     const p = PRODUCTS.find(x => x.id === id);
     $('detail').classList.remove('at-card');
@@ -44,7 +52,9 @@
     $('detailArt').textContent = 'VANVION / ATELIER';
     const selectedColor = colorList(p.colors)[0];
     const colorName = selectedColor ? PALETTE[selectedColor][LANG] : '';
-    const choices = variants(p).map(x => {
+    const colourVariants = variants(p);
+    const differingSpecs = colourVariants.some(x => variantSpecKeys.some(k => x[k] !== p[k]));
+    const choices = colourVariants.map(x => {
       const c = colorList(x.colors)[0];
       const label = c ? PALETTE[c][LANG] : x.id;
       return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + x.id) + '"><span style="--swatch:' + (c ? PALETTE[c].hex : '#cccccc') + '"></span></button>';
@@ -65,7 +75,8 @@
     const photos = [...new Set([p.image,p.image2].filter(Boolean))];
     $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button><span class="at-photo-error" role="status" aria-live="polite" hidden></span>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
       '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(specVal(p.display_title_ru,p.display_title_en) || p.model || getName(p)) + '</h1><p class="at-product-name' + (p.display_subtitle_ru ? ' at-model-reference' : '') + '">' + esc(specVal(p.display_subtitle_ru,p.display_subtitle_en) || getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
-      '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span>' + esc(colorName) + '</span></div></section>' +
+      '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span aria-live="polite">' + esc(colorName) + '</span></div></section>' +
+      (differingSpecs ? '<p class="at-variant-note">' + L('Характеристики могут отличаться в зависимости от цвета. Ниже — данные выбранного артикула.','Specifications may vary by colour. Details below are for the selected article.') + '</p>' : '') +
       (p.sizes ? '<section class="at-sizes">' + sectionTitle('03',L('Размерный ряд','Size range')) + '<p>' + esc(trSpec(p.sizes)) + '</p></section>' : '') +
       (specs.length ? '<section class="at-specs">' + sectionTitle('04',L('В деталях','In detail')) + '<dl>' + rows + '</dl></section>' : '') +
       '<section class="at-notes">' + sectionTitle('05',L('Оптовым клиентам','For wholesale clients')) + '<p>' + L('Наличие, стоимость и условия поставки уточнит менеджер. В WhatsApp подготовим сообщение с моделью, артикулом и цветом. Telegram и MAX откроют контакт менеджера — укажите данные товара в сообщении.','Your manager will confirm availability, pricing and delivery terms. WhatsApp includes a prepared message with the model, article and colour. Telegram and MAX open the manager’s contact — include the product details in your message.') + '</p></section>' +
@@ -77,10 +88,22 @@
       $('atelierContact').querySelector('a').focus({preventScroll:true});
     };
     $('detailContent').append(dock);
+    placeColours();
+    const swatches = document.querySelector('.at-swatches');
+    for (const type of ['touchstart','touchmove','touchend','touchcancel']) {
+      swatches.addEventListener(type,event=>event.stopPropagation(),{passive:true});
+    }
     $('detailContent').querySelectorAll('[data-variant]').forEach(button => button.onclick = () => {
-      if (button.dataset.variant !== id) openDetail(button.dataset.variant,null,{noAnim:true,replace:true});
+      if (button.dataset.variant === id) return;
+      const variantView = {top:$('detail').scrollTop,left:document.querySelector('.at-swatches').scrollLeft};
+      openDetail(button.dataset.variant,null,{noAnim:true,replace:true,variantView});
     });
     initGallery(photos,p);
+    if (opts?.variantView) {
+      $('detail').scrollTop = opts.variantView.top;
+      document.querySelector('.at-swatches').scrollLeft = opts.variantView.left;
+      document.querySelector('[data-variant][aria-pressed=true]')?.focus({preventScroll:true});
+    }
   };
   function initGallery(photos,p) {
     const gallery = document.querySelector('.at-gallery');
@@ -138,11 +161,11 @@
     controls.append(counter); show(0);
     const originals = new Map([[p.image,p.image_original],[p.image2,p.image2_original]]);
     gallery.querySelector('.at-photo').onclick = () => { if (!swiped && ready) openZoom(originals.get(photos[index]) || photos[index]); swiped=false; };
-    gallery.addEventListener('touchstart',e=>{e.stopPropagation();swiped=false;start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
-    gallery.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
-    gallery.addEventListener('touchend',e=>{e.stopPropagation();if(!start)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){swiped=true;show(index+(dx<0?1:-1));}start=null;},{passive:true});
-    gallery.addEventListener('touchcancel',()=>{start=null;swiped=false;},{passive:true});
-    gallery.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.stopPropagation();e.preventDefault();show(index+(e.key==='ArrowRight'?1:-1));}});
+    stage.addEventListener('touchstart',e=>{e.stopPropagation();swiped=false;start=e.touches.length===1?{x:e.touches[0].clientX,y:e.touches[0].clientY}:null;},{passive:true});
+    stage.addEventListener('touchmove',e=>e.stopPropagation(),{passive:true});
+    stage.addEventListener('touchend',e=>{e.stopPropagation();if(!start)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){swiped=true;show(index+(dx<0?1:-1));}start=null;},{passive:true});
+    stage.addEventListener('touchcancel',()=>{start=null;swiped=false;},{passive:true});
+    stage.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.stopPropagation();e.preventDefault();show(index+(e.key==='ArrowRight'?1:-1));}});
     // Keep the existing zoom overlay while restoring focus to the invoking photo.
     const originalClose = closeZoom;
     if (!closeZoom.atelier) {

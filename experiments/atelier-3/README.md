@@ -32,7 +32,7 @@ The preview reuses PRODUCTS, getName, localised specification helpers, PALETTE, 
 
 The stabilized view covers every product in the existing catalogue (179 records at validation: 7 trousers and 172 jackets). ATELIER is enabled by default following explicit user approval; entering the catalogue does not automatically open a product.
 
-Colour choices reuse the existing modelVariants grouping and additionally require exact matches for category, model, composition, fit, construction, lining, country, height and sizes. A product with no model is shown on its own. Same model names with different characteristics are not presented as interchangeable variants. Product JSON and photos are unchanged. Real second photographs use image2; no fictitious views or thumbnails are created. Sizes, including НОРМА/БАТАЛ, retain their existing formats.
+Colour choices reuse the existing modelVariants grouping within the same category. A product with no model is shown on its own. Differences in composition, fit, lining or sizes do not hide colours: selecting another article refreshes its photo, specifications, sizes and order context. A note explains when specifications differ within a model. Product JSON and photos are unchanged. Real second photographs use image2; no fictitious views or thumbnails are created. Sizes, including НОРМА/БАТАЛ, retain their existing formats.
 
 WhatsApp uses the existing destination with localised model/article/colour text. Telegram and MAX keep the existing contact destinations and do not receive prefilled product details. The RU/EN interface now states this explicitly; users must include those details in Telegram/MAX messages themselves. Contact addresses and routing have not changed.
 
@@ -79,3 +79,9 @@ The 3.1 run passed nine tests. The all-products extension additionally checks ev
 Native Telegram Mini App behavior, actual iPhone safe-area rendering, real touch devices, live AI chat, push SDKs and real outbound messaging were not exercised. Full accessibility and performance audits are outside this stabilization pass. External SDK domains and the public Pages URL are restricted in this environment. Local viewport checks do not establish real-device behavior. No production messages were sent and public deployment status must be checked independently of local tests.
 
 All-product acceptance screenshots and the current test transcript are stored outside the checkout in `/workspace/artifacts/atelier-all-cards/`. Default activation has explicit user approval. Future changes and publication require authorization for their scope.
+
+## Colour selection update — 19 November 2026
+
+On viewports below 1000 px, the single colour selector sits directly under the photograph, before its caption. Swatches scroll horizontally for large colour ranges. Selecting a colour preserves the detail scroll position, horizontal swatch position and keyboard focus. On desktop, the selector stays in the information column. Resizing moves the same control rather than duplicating buttons. Photo swipe gestures are scoped to the photo stage, so scrolling the colour strip cannot change the gallery photo or dismiss the detail.
+
+The catalogue audit covered all 188 articles in 40 model/category groups. The previous specification-equality check hid colours in M107, BAGGY-70, MINAR EKS, ADA and KAZ AYAGI; their original article data is preserved. Regression checks select every article in RU/EN, verify the complete colour set and article-specific details, and exercise mobile geometry and long colour strips.

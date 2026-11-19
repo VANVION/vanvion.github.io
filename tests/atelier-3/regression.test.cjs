@@ -181,7 +181,9 @@ test('all real products render correct data in RU/EN at 320/390/1440px', async t
           if([...detail.querySelectorAll('.at-specs dd')].some(el=>/^[\s—–-]+$/.test(el.textContent))) failures.push(product.id+': empty specification');
           if(detail.scrollWidth>detail.clientWidth) failures.push(product.id+': overflow');
           const group=[...detail.querySelectorAll('[data-variant]')].map(el=>PRODUCTS.find(x=>x.id===el.dataset.variant));
-          if(group.some(x=>x.cat!==product.cat || x.model!==product.model || x.sizes!==product.sizes || x.comp_ru!==product.comp_ru)) failures.push(product.id+': incompatible variant');
+          const expected=PRODUCTS.filter(x=>x.cat===product.cat && x.model && x.model.trim().toLowerCase()===product.model?.trim().toLowerCase()).map(x=>x.id).sort();
+          if(group.some(x=>x.cat!==product.cat || x.model.trim().toLowerCase()!==product.model.trim().toLowerCase())) failures.push(product.id+': unrelated variant');
+          if(JSON.stringify(group.map(x=>x.id).sort())!==JSON.stringify(expected)) failures.push(product.id+': missing colours');
         }
         return failures;
       },{lang});
@@ -396,4 +398,82 @@ test('optimized M97 display photo loads before the full-resolution zoom photo', 
   await p.waitForFunction(()=>{const i=document.querySelector('#zoomBox img');return i?.complete&&i.naturalWidth>0;});
   assert.equal(await p.locator('#zoomBox img').getAttribute('src'),photo.original);
   assert(requested.includes('/'+photo.original));
+});
+
+test('every model colour can be selected with its own photo, specs, sizes and order article',async t=>{
+  const p=await pageFor(t);await loaded(p);
+  for(const lang of ['ru','en']) {
+    const result=await p.evaluate(lang=>{
+      setLang(lang);
+      const groups=new Map(),failures=[];
+      for(const x of PRODUCTS){const key=x.cat+'|'+x.model.trim().toLowerCase();if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x);}
+      let checked=0;
+      for(const group of groups.values()){
+        openDetail(group[0].id,null,{noAnim:true,fromHash:true});
+        for(const x of group){
+          const button=[...document.querySelectorAll('[data-variant]')].find(b=>b.dataset.variant===x.id);
+          if(!button){failures.push(x.id+': missing colour');continue;}
+          button.click();checked++;
+          if(currentDetailId!==x.id)failures.push(x.id+': selected article');
+          if(document.querySelector('.at-photo img')?.getAttribute('src')!==x.image)failures.push(x.id+': photo');
+          const specs=document.querySelector('.at-specs')?.textContent||'';
+          for(const field of ['comp','sil','country']){
+            const expected=specVal(x[field+'_ru'],x[field+'_en']);
+            if(expected && !specs.includes(expected))failures.push(x.id+': '+field);
+          }
+          if(x.sizes && document.querySelector('.at-sizes p')?.textContent!==trSpec(x.sizes))failures.push(x.id+': sizes');
+          if(!new URL(document.querySelector('.at-primary').href).searchParams.get('text').includes(x.id))failures.push(x.id+': order article');
+          const selected=[...document.querySelectorAll('[data-variant][aria-pressed=true]')];
+          if(selected.length!==1||selected[0].dataset.variant!==x.id)failures.push(x.id+': selection state');
+        }
+      }
+      return {checked,products:PRODUCTS.length,models:groups.size,failures};
+    },lang);
+    assert.equal(result.checked,result.products);assert.deepEqual(result.failures,[],lang);
+    t.diagnostic(`${lang}: selected all ${result.checked} articles across ${result.models} models`);
+  }
+});
+
+for(const [width,height] of [[320,568],[390,844],[768,1024],[1440,900]]) test(`M107 colour changes keep photo and controls together at ${width}x${height}`,async t=>{
+  const p=await pageFor(t,'/#p=PR-3002',width);await p.setViewportSize({width,height});await loaded(p);
+  const state=()=>p.evaluate(()=>{
+    const stage=document.querySelector('.at-photo-stage').getBoundingClientRect();
+    const colours=document.querySelector('.at-colors').getBoundingClientRect();
+    const dock=document.querySelector('.at-dock').getBoundingClientRect();
+    return {top:document.getElementById('detail').scrollTop,stageTop:stage.top,stageBottom:stage.bottom,coloursTop:colours.top,coloursBottom:colours.bottom,dockTop:dock.top,mobile:matchMedia('(max-width:999px)').matches};
+  });
+  const before=await state();assert.equal(await p.locator('[data-variant]').count(),4);
+  if(before.mobile){assert(before.stageTop>=0);assert(before.coloursTop>=before.stageBottom);assert(before.coloursBottom<before.dockTop);}
+  for(const id of ['PR-3007','PR-3004','PR-3006','PR-3002']){
+    await p.locator(`[data-variant="${id}"]`).click();await loaded(p);
+    const after=await state();assert(Math.abs(after.top-before.top)<2);assert(Math.abs(after.stageTop-before.stageTop)<2);
+    assert.equal(await p.locator('[data-variant][aria-pressed=true]').getAttribute('data-variant'),id);
+    assert.equal(await p.locator('.at-photo img').getAttribute('src'),await p.evaluate(id=>PRODUCTS.find(x=>x.id===id).image,id));
+    assert.equal(await p.locator('.at-swatch:focus').getAttribute('data-variant'),id);
+    if(before.mobile)assert(after.coloursBottom<after.dockTop);
+  }
+  assert.equal(await p.locator('.at-variant-note').count(),1);
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+});
+
+test('many-colour strip preserves horizontal position, ignores gallery swipes and relocates on resize',async t=>{
+  const p=await pageFor(t,'/',390);await p.setViewportSize({width:390,height:844});await p.locator('.card').first().waitFor();
+  const group=await p.evaluate(()=>groupByModel(PRODUCTS).find(g=>g.length>10).map(x=>x.id));assert(group.length>10);
+  await p.evaluate(id=>openDetail(id,null,{noAnim:true,fromHash:true}),group[0]);await loaded(p);
+  const last=p.locator('[data-variant]').last();await last.scrollIntoViewIfNeeded();
+  const left=await p.locator('.at-swatches').evaluate(e=>e.scrollLeft);assert(left>0);
+  await last.click();await loaded(p);
+  assert(Math.abs(await p.locator('.at-swatches').evaluate(e=>e.scrollLeft)-left)<2);
+  const photo=await p.locator('.at-photo img').getAttribute('src');
+  await p.locator('.at-swatches').evaluate(e=>{
+    const point=(x)=>({identifier:1,target:e,clientX:x,clientY:20});
+    e.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[new Touch(point(250))]}));
+    e.dispatchEvent(new TouchEvent('touchend',{bubbles:true,changedTouches:[new Touch(point(50))]}));
+  });
+  assert.equal(await p.locator('.at-photo img').getAttribute('src'),photo);
+  await p.setViewportSize({width:1440,height:900});
+  await p.waitForFunction(()=>document.querySelector('.at-info .at-colors'));
+  await p.setViewportSize({width:390,height:844});
+  await p.waitForFunction(()=>document.querySelector('.at-gallery .at-colors'));
+  assert.equal(await p.locator('.at-colors').count(),1);
 });
