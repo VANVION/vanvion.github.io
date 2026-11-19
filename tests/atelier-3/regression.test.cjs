@@ -517,3 +517,39 @@ test('dark grey M98 uses supplier article 3060 and remains distinct from grey 30
  const cart=await p.evaluate(()=>{cartAdd('5001/8','plain',1);cartAdd('3060','plain',1);return {items:CART.length,message:cartMessage()};});
  assert.equal(cart.items,2);assert(!cart.message.includes('5001/8'));assert(cart.message.includes('ТЁМНО-СЕРЫЙ')&&cart.message.includes('СЕРЫЙ'));
 });
+
+test('native two-finger photo zoom persists, pans, clamps and survives a fast reopen',async t=>{
+ const p=await pageFor(t,'/#p=3041/8',390);await p.setViewportSize({width:390,height:844});await loaded(p);
+ const cdp=await p.context().newCDPSession(p);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
+ await p.locator('.at-photo').click();await p.locator('#zoomBox.show').waitFor();
+ await p.waitForFunction(()=>document.querySelector('#zoomBox img')?.naturalWidth>0);
+ const matrix=()=>p.locator('#zoomBox img').evaluate(i=>{const m=new DOMMatrix(getComputedStyle(i).transform);return {scale:m.a,x:m.m41,y:m.m42};});
+ const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(([x,y],i)=>({x,y,id:i+1,radiusX:3,radiusY:3,force:1}))});
+ await touch('touchStart',[[155,420],[235,420]]);await touch('touchMove',[[115,420],[275,420]]);await touch('touchEnd',[]);
+ const zoomed=await matrix();assert(zoomed.scale>1.8&&zoomed.scale<2.2);
+ assert.equal(await p.locator('#zoomBox.show').count(),1);
+ await touch('touchStart',[[195,420]]);await touch('touchMove',[[225,455]]);await touch('touchEnd',[]);
+ const panned=await matrix();assert(panned.x>zoomed.x+20);assert(panned.y>zoomed.y+20);assert.equal(panned.scale,zoomed.scale);
+ await touch('touchStart',[[115,420],[275,420]]);await touch('touchMove',[[175,420],[215,420]]);await touch('touchEnd',[]);
+ assert.equal((await matrix()).scale,1);
+ await p.locator('#zoomBox img').dispatchEvent('click');
+ assert.equal(await p.locator('#zoomBox.show').count(),1,'Synthetic click after a pinch must not close the photo');
+ await touch('touchStart',[[185,420],[205,420]]);await touch('touchMove',[[95,420],[295,420]]);await touch('touchEnd',[]);
+ assert.equal((await matrix()).scale,4);
+ await p.locator('#zoomClose').click();assert.equal(await p.locator('#zoomBox.show').count(),0);
+ await p.evaluate(()=>openZoom(PRODUCTS.find(x=>x.id===currentDetailId).image_original));
+ await p.locator('#zoomBox.show').waitFor();await p.waitForTimeout(350);
+ assert.equal(await p.locator('#zoomBox img').count(),1,'An old close timer must not remove a newly opened image');
+ assert.equal((await matrix()).scale,1);
+ await p.keyboard.press('Escape');assert.equal(await p.locator('#zoomBox.show').count(),0);
+});
+
+test('trackpad pinch wheel zooms only inside the photo viewer',async t=>{
+ const p=await pageFor(t);await loaded(p);await p.locator('.at-photo').click();await p.locator('#zoomBox.show').waitFor();
+ await p.waitForFunction(()=>document.querySelector('#zoomBox img')?.naturalWidth>0);
+ const state=await p.locator('#zoomBox').evaluate(e=>{
+  const wheel=new WheelEvent('wheel',{ctrlKey:true,deltaY:-70,clientX:195,clientY:420,bubbles:true,cancelable:true});
+  e.dispatchEvent(wheel);return {prevented:wheel.defaultPrevented,scale:new DOMMatrix(getComputedStyle(e.querySelector('img')).transform).a};
+ });
+ assert(state.prevented);assert(state.scale>1.9&&state.scale<2.1);
+});

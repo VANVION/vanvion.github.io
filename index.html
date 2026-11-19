@@ -1458,7 +1458,9 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   pointer-events: none;
   transition: opacity 0.28s var(--ease);
   cursor: zoom-out;
-  overflow: auto;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 .zoombox.show { opacity: 1; pointer-events: auto; }
 .zoombox img {
@@ -1471,6 +1473,8 @@ button { font-family: var(--font); text-transform: uppercase; cursor: pointer; b
   transition: transform 0.32s var(--spring);
 }
 .zoombox.show img { transform: scale(1); }
+.zoombox img.zoom-interactive { max-height:calc(100svh - 80px);transform-origin:center;transition:none;user-select:none;-webkit-user-select:none;will-change:transform; }
+.zoom-help { position:absolute;bottom:max(12px,env(safe-area-inset-bottom));left:16px;right:16px;color:#fff;text-align:center;font-size:12px;text-transform:none;pointer-events:none;margin:0; }
 .zoombox-close {
   position: fixed;
   top: calc(16px + env(safe-area-inset-top));
@@ -2876,21 +2880,94 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'ArrowLeft') { e.preventDefault(); navigateDetail(-1); }
 });
 
-/* ---------- fullscreen zoom lightbox (клик/тап по фото) ---------- */
+/* ---------- fullscreen photo viewer: persistent pinch zoom and pan ---------- */
+let zoomCleanup = () => {};
+let zoomCloseTimer;
 function openZoom(src) {
   if (!src) return;
   const zb = $('zoomBox');
-  zb.innerHTML = '<img src="' + esc(src) + '" alt="">' +
-    '<button class="zoombox-close" id="zoomClose" aria-label="Закрыть">&#10005;</button>';
-  requestAnimationFrame(() => zb.classList.add('show'));
-  zb.onclick = () => closeZoom();
+  clearTimeout(zoomCloseTimer);
+  zoomCleanup();
+  zb.innerHTML = '<img class="zoom-interactive" src="' + esc(src) + '" alt="' + L('Фотография изделия','Product photograph') + '" draggable="false">' +
+    '<p class="zoom-help"></p><button class="zoombox-close" id="zoomClose" aria-label="' + L('Закрыть фотографию','Close photograph') + '">&#10005;</button>';
+  const photo = zb.querySelector('img');
+  const help = zb.querySelector('.zoom-help');
+  const controller = new AbortController();
+  const signal = controller.signal;
+  let scale = 1, x = 0, y = 0, gesture = null, lastGestureAt = -Infinity;
+  const clamp = (v,min,max) => Math.max(min,Math.min(max,v));
+  const distance = t => Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
+  const midpoint = t => ({x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2});
+  function render() {
+    const maxX = Math.max(0,(photo.offsetWidth*scale-zb.clientWidth)/2);
+    const maxY = Math.max(0,(photo.offsetHeight*scale-zb.clientHeight)/2);
+    x = clamp(x,-maxX,maxX); y = clamp(y,-maxY,maxY);
+    photo.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0) scale(' + scale + ')';
+    const hint = scale > 1 ? L('Двигайте фото одним пальцем','Drag the photo with one finger') : L('Разведите два пальца, чтобы увеличить','Spread two fingers to zoom');
+    if (help.textContent !== hint) help.textContent = hint;
+  }
+  function begin(touches) {
+    if (touches.length >= 2) {
+      gesture = {kind:'pinch',distance:Math.max(1,distance(touches)),scale,x,y,mid:midpoint(touches)};
+    } else if (touches.length === 1 && scale > 1) {
+      gesture = {kind:'pan',x,y,startX:touches[0].clientX,startY:touches[0].clientY};
+    } else gesture = null;
+  }
+  function zoomAt(next,cx,cy,baseScale=scale,baseX=x,baseY=y,originX=cx,originY=cy) {
+    const r = zb.getBoundingClientRect();
+    const centerX = r.left+r.width/2, centerY = r.top+r.height/2;
+    scale = clamp(next,1,4);
+    x = cx-centerX-(originX-centerX-baseX)*(scale/baseScale);
+    y = cy-centerY-(originY-centerY-baseY)*(scale/baseScale);
+    render();
+  }
+  zb.addEventListener('touchstart',e=>{
+    if (e.target.closest('button')) return;
+    begin(e.touches);
+    if (gesture) { e.preventDefault(); lastGestureAt=performance.now(); }
+  },{passive:false,signal});
+  zb.addEventListener('touchmove',e=>{
+    if (!gesture) return;
+    e.preventDefault(); e.stopPropagation(); lastGestureAt=performance.now();
+    if (gesture.kind === 'pinch' && e.touches.length >= 2) {
+      const mid = midpoint(e.touches);
+      zoomAt(gesture.scale*distance(e.touches)/gesture.distance,mid.x,mid.y,gesture.scale,gesture.x,gesture.y,gesture.mid.x,gesture.mid.y);
+    } else if (gesture.kind === 'pan' && e.touches.length === 1) {
+      x = gesture.x+e.touches[0].clientX-gesture.startX;
+      y = gesture.y+e.touches[0].clientY-gesture.startY;
+      render();
+    }
+  },{passive:false,signal});
+  zb.addEventListener('touchend',e=>{
+    if (!gesture) return;
+    e.preventDefault(); lastGestureAt=performance.now();
+    begin(e.touches);
+  },{passive:false,signal});
+  zb.addEventListener('touchcancel',()=>{gesture=null;lastGestureAt=performance.now();},{signal});
+  // Trackpad pinch gestures are reported as Ctrl+wheel in desktop browsers.
+  zb.addEventListener('wheel',e=>{
+    if (!e.ctrlKey) return;
+    e.preventDefault(); lastGestureAt=performance.now();
+    zoomAt(scale*Math.exp(-e.deltaY*.01),e.clientX,e.clientY);
+  },{passive:false,signal});
+  photo.addEventListener('load',render,{signal});
+  window.addEventListener('resize',render,{signal});
+  $('zoomClose').onclick = e => {e.stopPropagation();closeZoom();};
+  zb.onclick = e => {
+    if (performance.now()-lastGestureAt < 600 || gesture) return;
+    if (e.target === zb || (e.target === photo && scale === 1)) closeZoom();
+  };
+  zoomCleanup = () => {controller.abort();zb.onclick=null;};
+  render();
+  requestAnimationFrame(() => {if (photo.isConnected) zb.classList.add('show');});
   haptic('light');
 }
 function closeZoom() {
   const zb = $('zoomBox');
   if (!zb.classList.contains('show')) return;
+  zoomCleanup();
   zb.classList.remove('show');
-  setTimeout(() => { zb.innerHTML = ''; }, 280);
+  zoomCloseTimer = setTimeout(() => { zb.innerHTML = ''; }, 280);
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
 

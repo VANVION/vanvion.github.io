@@ -85,3 +85,9 @@ All-product acceptance screenshots and the current test transcript are stored ou
 On viewports below 1000 px, the single colour selector sits directly under the photograph, before its caption. Swatches scroll horizontally for large colour ranges. Selecting a colour preserves the detail scroll position, horizontal swatch position and keyboard focus. On desktop, the selector stays in the information column. Resizing moves the same control rather than duplicating buttons. Photo swipe gestures are scoped to the photo stage, so scrolling the colour strip cannot change the gallery photo or dismiss the detail.
 
 The catalogue audit covered all 188 articles in 40 model/category groups. The previous specification-equality check hid colours in M107, BAGGY-70, MINAR EKS, ADA and KAZ AYAGI; their original article data is preserved. Regression checks select every article in RU/EN, verify the complete colour set and article-specific details, and exercise mobile geometry and long colour strips.
+
+## Fullscreen photo gestures
+
+Tap a loaded product photo to open its full-resolution image. Spread two fingers to zoom from 1× to 4×; the scale stays in place after release. Drag with one finger to inspect the enlarged image, or pinch inward to return to 1×. The close button and Escape close the viewer and return focus to the product photo. Trackpad Ctrl+wheel pinch is also supported inside the viewer. Gestures do not scale the catalogue page. Reopening starts at 1× and cancels the previous close timer.
+
+Browser checks exercise native Chromium touch input for pinch, pan, min/max scale, synthetic-click suppression and rapid reopening, alongside the existing keyboard and original-image loading checks.
