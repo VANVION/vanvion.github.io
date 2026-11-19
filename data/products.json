@@ -1469,7 +1469,7 @@
     "name_ru": "ПИДЖАК JOLLY 02",
     "name_en": "JACKET JOLLY 02",
     "colors": "laci",
-    "image": "images/Palmiro_Rossi_SEDEF_SIYAH_DROP6.jpg",
+    "image": "images/optimized/photo_15@27-10-2026_11-36-43.jpg",
     "model": "JOLLY",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1484,7 +1484,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_15@27-10-2026_11-36-43.jpg",
+    "image2": "images/optimized/photo_16@27-10-2026_11-36-43.jpg",
+    "image2_original": "images/photo_16@27-10-2026_11-36-43.jpg"
   },
   {
     "id": "PR-4026",
@@ -1492,7 +1495,7 @@
     "name_ru": "ПИДЖАК JOLLY 03",
     "name_en": "JACKET JOLLY 03",
     "colors": "taba",
-    "image": "images/Palmiro_Rossi_JOLLY_03_DROP6.jpg",
+    "image": "images/optimized/photo_21@27-10-2026_11-36-44.jpg",
     "model": "JOLLY",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1507,7 +1510,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_21@27-10-2026_11-36-44.jpg",
+    "image2": "images/optimized/photo_22@27-10-2026_11-36-44.jpg",
+    "image2_original": "images/photo_22@27-10-2026_11-36-44.jpg"
   },
   {
     "id": "PR-4022",
@@ -1515,7 +1521,7 @@
     "name_ru": "ПИДЖАК JOLLY 04",
     "name_en": "JACKET JOLLY 04",
     "colors": "grey",
-    "image": "images/Palmiro_Rossi_GIO-SMART_08_DROP4.jpg",
+    "image": "images/optimized/photo_19@27-10-2026_11-36-43.jpg",
     "model": "JOLLY",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1530,7 +1536,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_19@27-10-2026_11-36-43.jpg",
+    "image2": "images/optimized/photo_20@27-10-2026_11-36-43.jpg",
+    "image2_original": "images/photo_20@27-10-2026_11-36-43.jpg"
   },
   {
     "id": "PR-4027",
@@ -1538,7 +1547,7 @@
     "name_ru": "ПИДЖАК JOLLY SIYAH",
     "name_en": "JACKET JOLLY SIYAH",
     "colors": "siyah",
-    "image": "images/Palmiro_Rossi_JOLLY_04_DROP6.jpg",
+    "image": "images/optimized/photo_23@27-10-2026_11-36-44.jpg",
     "model": "JOLLY",
     "comp_ru": "ХЛОПОК 60% ВИСКОЗА 20% ЛАЙКРА 20%",
     "comp_en": "COTTON 60% VISCOSE 20% SPANDEX 20%",
@@ -1553,7 +1562,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_23@27-10-2026_11-36-44.jpg",
+    "image2": "images/optimized/photo_24@27-10-2026_11-36-44.jpg",
+    "image2_original": "images/photo_24@27-10-2026_11-36-44.jpg"
   },
   {
     "id": "PR-4040",
@@ -2403,7 +2415,7 @@
     "name_ru": "ПИДЖАК B.SIRTI 02",
     "name_en": "JACKET B.SIRTI 02",
     "colors": "antrasit",
-    "image": "images/Palmiro_Rossi_B.SIRTI_02_DROP6.jpg",
+    "image": "images/optimized/photo_31@27-10-2026_11-55-45.jpg",
     "model": "B.SIRTI",
     "comp_ru": "ХЛОПОК 60% ЛАЙКРА 20% ВИСКОЗА 20%",
     "comp_en": "COTTON 60% SPANDEX 20% VISCOSE 20%",
@@ -2418,7 +2430,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_31@27-10-2026_11-55-45.jpg",
+    "image2": "images/optimized/photo_32@27-10-2026_11-55-45.jpg",
+    "image2_original": "images/photo_32@27-10-2026_11-55-45.jpg"
   },
   {
     "id": "PR-4101",
@@ -2449,7 +2464,7 @@
     "name_ru": "ПИДЖАК B.SIRTI 05",
     "name_en": "JACKET B.SIRTI 05",
     "colors": "antrasit",
-    "image": "images/Palmiro_Rossi_B.SIRTI_05_DROP6.jpg",
+    "image": "images/optimized/photo_29@27-10-2026_11-55-20.jpg",
     "model": "B.SIRTI",
     "comp_ru": "ХЛОПОК 60% ЛАЙКРА 20% ВИСКОЗА 20%",
     "comp_en": "COTTON 60% SPANDEX 20% VISCOSE 20%",
@@ -2464,7 +2479,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_29@27-10-2026_11-55-20.jpg",
+    "image2": "images/optimized/photo_30@27-10-2026_11-55-20.jpg",
+    "image2_original": "images/photo_30@27-10-2026_11-55-20.jpg"
   },
   {
     "id": "PR-4103",
@@ -2472,7 +2490,7 @@
     "name_ru": "ПИДЖАК B.SIRTI 06",
     "name_en": "JACKET B.SIRTI 06",
     "colors": "taba",
-    "image": "images/Palmiro_Rossi_B.SIRTI_06_DROP6.jpg",
+    "image": "images/optimized/photo_27@27-10-2026_11-55-20.jpg",
     "model": "B.SIRTI",
     "comp_ru": "ХЛОПОК 60% ЛАЙКРА 20% ВИСКОЗА 20%",
     "comp_en": "COTTON 60% SPANDEX 20% VISCOSE 20%",
@@ -2487,7 +2505,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_27@27-10-2026_11-55-20.jpg",
+    "image2": "images/optimized/photo_28@27-10-2026_11-55-20.jpg",
+    "image2_original": "images/photo_28@27-10-2026_11-55-20.jpg"
   },
   {
     "id": "PR-4104",
@@ -2495,7 +2516,7 @@
     "name_ru": "ПИДЖАК B.SIRTI 07",
     "name_en": "JACKET B.SIRTI 07",
     "colors": "abej",
-    "image": "images/Palmiro_Rossi_B.SIRTI_07_DROP6.jpg",
+    "image": "images/optimized/photo_35@27-10-2026_11-55-45.jpg",
     "model": "B.SIRTI",
     "comp_ru": "ХЛОПОК 60% ЛАЙКРА 20% ВИСКОЗА 20%",
     "comp_en": "COTTON 60% SPANDEX 20% VISCOSE 20%",
@@ -2510,7 +2531,10 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "lined": true,
     "ros_ru": "DROP 6",
-    "ros_en": "DROP 6"
+    "ros_en": "DROP 6",
+    "image_original": "images/photo_35@27-10-2026_11-55-45.jpg",
+    "image2": "images/optimized/photo_36@27-10-2026_11-55-45.jpg",
+    "image2_original": "images/photo_36@27-10-2026_11-55-45.jpg"
   },
   {
     "id": "PR-4105",
@@ -4153,7 +4177,7 @@
     "name_ru": "ПИДЖАК OSCAR 01",
     "name_en": "JACKET OSCAR 01",
     "colors": "siyah",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_01_DROP6.jpg",
+    "image": "images/optimized/photo_9@27-10-2026_11-03-12.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4167,13 +4191,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_01_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_10@27-10-2026_11-03-12.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_01_DROP6.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_01_DROP6_detail.jpg"
+    "image_original": "images/photo_9@27-10-2026_11-03-12.jpg",
+    "image2_original": "images/photo_10@27-10-2026_11-03-12.jpg"
   },
   {
     "id": "PR-4422",
@@ -4181,7 +4205,7 @@
     "name_ru": "ПИДЖАК OSCAR 02",
     "name_en": "JACKET OSCAR 02",
     "colors": "klaci",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_02_DROP6.jpg",
+    "image": "images/optimized/photo_13@27-10-2026_11-03-12.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4195,13 +4219,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_02_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_14@27-10-2026_11-03-12.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_02_DROP6.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_02_DROP6_detail.jpg"
+    "image_original": "images/photo_13@27-10-2026_11-03-12.jpg",
+    "image2_original": "images/photo_14@27-10-2026_11-03-12.jpg"
   },
   {
     "id": "PR-4423",
@@ -4209,7 +4233,7 @@
     "name_ru": "ПИДЖАК OSCAR 03",
     "name_en": "JACKET OSCAR 03",
     "colors": "kahve",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_03_DROP6.jpg",
+    "image": "images/optimized/photo_11@27-10-2026_11-03-12.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4223,13 +4247,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_03_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_12@27-10-2026_11-03-12.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_03_DROP6.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_03_DROP6_detail.jpg"
+    "image_original": "images/photo_11@27-10-2026_11-03-12.jpg",
+    "image2_original": "images/photo_12@27-10-2026_11-03-12.jpg"
   },
   {
     "id": "PR-4424",
@@ -4237,7 +4261,7 @@
     "name_ru": "ПИДЖАК OSCAR 04",
     "name_en": "JACKET OSCAR 04",
     "colors": "laci",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_04_DROP6.jpg",
+    "image": "images/optimized/photo_5@27-10-2026_10-57-57.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4251,13 +4275,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_04_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_6@27-10-2026_10-57-57.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_04_DROP6.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_04_DROP6_detail.jpg"
+    "image_original": "images/photo_5@27-10-2026_10-57-57.jpg",
+    "image2_original": "images/photo_6@27-10-2026_10-57-57.jpg"
   },
   {
     "id": "PR-4425",
@@ -4265,7 +4289,7 @@
     "name_ru": "ПИДЖАК OSCAR 08",
     "name_en": "JACKET OSCAR 08",
     "colors": "brown",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_08_DROP6_v2.jpg",
+    "image": "images/optimized/photo_3@27-10-2026_10-57-56.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4279,13 +4303,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_08_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_4@27-10-2026_10-57-57.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_08_DROP6_v2.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_08_DROP6_detail.jpg"
+    "image_original": "images/photo_3@27-10-2026_10-57-56.jpg",
+    "image2_original": "images/photo_4@27-10-2026_10-57-57.jpg"
   },
   {
     "id": "PR-4426",
@@ -4293,7 +4317,7 @@
     "name_ru": "ПИДЖАК OSCAR 09",
     "name_en": "JACKET OSCAR 09",
     "colors": "skahve",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_09_DROP6_v2.jpg",
+    "image": "images/optimized/photo_1@27-10-2026_10-57-56.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4307,13 +4331,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_09_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_2@27-10-2026_10-57-56.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_09_DROP6_v2.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_09_DROP6_detail.jpg"
+    "image_original": "images/photo_1@27-10-2026_10-57-56.jpg",
+    "image2_original": "images/photo_2@27-10-2026_10-57-56.jpg"
   },
   {
     "id": "PR-4427",
@@ -4321,7 +4345,7 @@
     "name_ru": "ПИДЖАК OSCAR 11",
     "name_en": "JACKET OSCAR 11",
     "colors": "ekru",
-    "image": "images/optimized/Palmiro_Rossi_OSCAR_11_DROP6.jpg",
+    "image": "images/optimized/photo_7@27-10-2026_11-03-12.jpg",
     "comp_ru": "ШЕРСТЬ 100%",
     "comp_en": "WOOL 100%",
     "sil_ru": "ОБЫЧНЫЙ",
@@ -4335,13 +4359,13 @@
     "sizes": "НОРМА 50–58 · БАТАЛ 58–66",
     "model": "OSCAR",
     "lined": true,
-    "image2": "images/optimized/Palmiro_Rossi_OSCAR_11_DROP6_detail.jpg",
+    "image2": "images/optimized/photo_8@27-10-2026_11-03-12.jpg",
     "ros_ru": "DROP 6",
     "ros_en": "DROP 6",
     "isnew": true,
     "new_since": "2026-10-27",
-    "image_original": "images/Palmiro_Rossi_OSCAR_11_DROP6.jpg",
-    "image2_original": "images/Palmiro_Rossi_OSCAR_11_DROP6_detail.jpg"
+    "image_original": "images/photo_7@27-10-2026_11-03-12.jpg",
+    "image2_original": "images/photo_8@27-10-2026_11-03-12.jpg"
   },
   {
     "id": "3041/8",
