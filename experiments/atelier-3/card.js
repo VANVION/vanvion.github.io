@@ -57,7 +57,7 @@
     const choices = colourVariants.map(x => {
       const c = colorList(x.colors)[0];
       const label = c ? PALETTE[c][LANG] : x.id;
-      return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + x.id) + '"><span style="--swatch:' + swatchHex(x) + '"></span></button>';
+      return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + articleOf(x)) + '"><span style="--swatch:' + swatchHex(x) + '"></span></button>';
     }).join('');
     const hasValue = value => value && !/^[\s—–-]+$/.test(value);
     const lining = specVal(p.lin_ru,p.lin_en);
@@ -71,10 +71,10 @@
       [L('Производство','Made in'),specVal(p.country_ru,p.country_en)]
     ].filter(([,v]) => hasValue(v));
     const rows = specs.map(([k,v]) => '<div><dt>' + esc(k) + '</dt><dd>' + esc(v) + '</dd></div>').join('');
-    const contacts = orderLinks(L('Здравствуйте! Интересует ','Hello! I am interested in ') + getName(p) + ', ' + L('артикул ','article ') + p.id + (colorName ? ', ' + colorName : ''));
+    const contacts = orderLinks(L('Здравствуйте! Интересует ','Hello! I am interested in ') + getName(p) + ', ' + L('артикул ','article ') + articleOf(p) + (colorName ? ', ' + colorName : ''));
     const photos = [...new Set([p.image,p.image2].filter(Boolean))];
     $('detailContent').innerHTML = '<div class="at-gallery" aria-label="' + L('Фотографии изделия','Product photographs') + '"><div class="at-photo-stage">' + (photos.length ? '<button class="at-photo" aria-label="' + L('Увеличить фотографию','Enlarge photograph') + '"><img alt="' + esc(getName(p)) + '"><span class="at-expand">' + arrow + '</span></button><span class="at-photo-error" role="status" aria-live="polite" hidden></span>' : '<p class="at-no-photo">' + L('Фото пока нет','Photograph unavailable') + '</p>') + '</div><div class="at-caption"><span>' + L('01 / Изделие','01 / The garment') + '</span><div class="at-photo-controls"></div></div></div>' +
-      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(specVal(p.display_title_ru,p.display_title_en) || p.model || getName(p)) + '</h1><p class="at-product-name' + (p.display_subtitle_ru ? ' at-model-reference' : '') + '">' + esc(specVal(p.display_subtitle_ru,p.display_subtitle_en) || getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(p.id) + '</span></div></header>' +
+      '<div class="at-info"><header class="at-heading"><div class="at-eyebrow">' + esc(t().cat[p.cat] || p.cat || '') + (isNewActive(p) ? ' <span class="at-new">NEW</span>' : '') + '</div><h1>' + esc(specVal(p.display_title_ru,p.display_title_en) || p.model || getName(p)) + '</h1><p class="at-product-name' + (p.display_subtitle_ru ? ' at-model-reference' : '') + '">' + esc(specVal(p.display_subtitle_ru,p.display_subtitle_en) || getName(p)) + '</p><div class="at-meta"><span>' + L('Артикул','Article') + '</span><span>' + esc(articleOf(p)) + '</span></div></header>' +
       '<section class="at-colors">' + sectionTitle('02',L('Цвет изделия','Colour')) + '<div class="at-color-choice"><div class="at-swatches">' + choices + '</div><span aria-live="polite">' + esc(colorName) + '</span></div></section>' +
       (differingSpecs ? '<p class="at-variant-note">' + L('Характеристики могут отличаться в зависимости от цвета. Ниже — данные выбранного артикула.','Specifications may vary by colour. Details below are for the selected article.') + '</p>' : '') +
       (p.sizes ? '<section class="at-sizes">' + sectionTitle('03',L('Размерный ряд','Size range')) + '<p>' + esc(trSpec(p.sizes)) + '</p></section>' : '') +
@@ -82,7 +82,7 @@
       '<section class="at-notes">' + sectionTitle('05',L('Оптовым клиентам','For wholesale clients')) + '<p>' + L('Наличие, стоимость и условия поставки уточнит менеджер. В WhatsApp подготовим сообщение с моделью, артикулом и цветом. Telegram и MAX откроют контакт менеджера — укажите данные товара в сообщении.','Your manager will confirm availability, pricing and delivery terms. WhatsApp includes a prepared message with the model, article and colour. Telegram and MAX open the manager’s contact — include the product details in your message.') + '</p></section>' +
       '<section class="at-contact" id="atelierContact"><span class="at-contact-label">' + L('Обсудим ваш заказ','Let’s discuss your order') + '</span><h2>' + L('На связи.<br>По делу.','A direct line.<br>A considered choice.') + '</h2><div class="at-contact-links"><a class="at-primary" href="' + esc(contacts.wa) + '" target="_blank" rel="noopener"><span>' + L('Написать в WhatsApp','Message on WhatsApp') + '</span>' + arrow + '</a><div><a href="' + esc(contacts.tg) + '" target="_blank" rel="noopener">Telegram ' + arrow + '</a><a href="' + esc(contacts.max) + '" target="_blank" rel="noopener">MAX ' + arrow + '</a></div></div></section></div>';
     const dock = document.createElement('div'); dock.className = 'at-dock';
-    dock.innerHTML = '<div><span>' + esc(p.model || getName(p)) + '</span><small>' + esc(p.id) + '</small></div><button>' + L('Связаться с менеджером','Contact your manager') + arrow + '</button>';
+    dock.innerHTML = '<div><span>' + esc(p.model || getName(p)) + '</span><small>' + esc(articleOf(p)) + '</small></div><button>' + L('Связаться с менеджером','Contact your manager') + arrow + '</button>';
     dock.querySelector('button').onclick = () => {
       $('atelierContact').scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
       $('atelierContact').querySelector('a').focus({preventScroll:true});

@@ -4349,7 +4349,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/8 М97",
     "name_en": "CORDUROY TROUSERS 3041/8 M97",
     "colors": "brown",
-    "image": "images/optimized/04159d085e72414294cc9ac367d66e56_bananalab-pro_4K.jpg",
+    "image": "images/optimized/d58986fe82d340f59a892f2d214b32ae_img_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4367,7 +4367,7 @@
     "isnew": false,
     "new_since": "2026-11-18",
     "social_image": "images/social/m97-brown.jpg",
-    "image_original": "images/04159d085e72414294cc9ac367d66e56_bananalab-pro_4K.jpg"
+    "image_original": "images/d58986fe82d340f59a892f2d214b32ae_img_4K.jpg"
   },
   {
     "id": "3041/6",
@@ -4375,7 +4375,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/6 М97",
     "name_en": "CORDUROY TROUSERS 3041/6 M97",
     "colors": "navy",
-    "image": "images/optimized/727ae3b82ffc4c988109c9ec3fac7edc_bananalab-pro_4K.jpg",
+    "image": "images/optimized/5a620ed260424f93af48d2c116dc4c7f_img_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4393,7 +4393,7 @@
     "isnew": false,
     "new_since": "2026-11-18",
     "social_image": "images/social/m97-navy.jpg",
-    "image_original": "images/727ae3b82ffc4c988109c9ec3fac7edc_bananalab-pro_4K.jpg"
+    "image_original": "images/5a620ed260424f93af48d2c116dc4c7f_img_4K.jpg"
   },
   {
     "id": "3041/5",
@@ -4401,7 +4401,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/5 М97",
     "name_en": "CORDUROY TROUSERS 3041/5 M97",
     "colors": "green",
-    "image": "images/optimized/4647cc2b9f1a4fcb912b763e57cf6ce9_bananalab-pro_4K.jpg",
+    "image": "images/optimized/8693a1cc92c7438b9421df01293cf719_img_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4419,7 +4419,7 @@
     "isnew": false,
     "new_since": "2026-11-18",
     "social_image": "images/social/m97-green.jpg",
-    "image_original": "images/4647cc2b9f1a4fcb912b763e57cf6ce9_bananalab-pro_4K.jpg"
+    "image_original": "images/8693a1cc92c7438b9421df01293cf719_img_4K.jpg"
   },
   {
     "id": "3041/2",
@@ -4427,7 +4427,7 @@
     "name_ru": "ВЕЛЬВЕТОВЫЕ БРЮКИ 3041/2 М97",
     "name_en": "CORDUROY TROUSERS 3041/2 M97",
     "colors": "black",
-    "image": "images/optimized/0bfe1bbf47944a8cbc7f6ce8cb17af33_bananalab-pro_4K.jpg",
+    "image": "images/optimized/0f5755971ea34332816855a530f217cc_img_4K.jpg",
     "comp_ru": "ХЛОПОК 30% ВИСКОЗА 40% ПОЛИЭСТЕР 25% ЛАЙКРА 5%",
     "comp_en": "COTTON 30% VISCOSE 40% POLYESTER 25% LYCRA 5%",
     "fabric_ru": "ВЕЛЬВЕТ",
@@ -4445,7 +4445,7 @@
     "isnew": false,
     "new_since": "2026-11-18",
     "social_image": "images/social/m97-black.jpg",
-    "image_original": "images/0bfe1bbf47944a8cbc7f6ce8cb17af33_bananalab-pro_4K.jpg"
+    "image_original": "images/0f5755971ea34332816855a530f217cc_img_4K.jpg"
   },
   {
     "id": "5001/2",
@@ -4476,9 +4476,9 @@
   {
     "id": "5001/8",
     "cat": "bryuki",
-    "name_ru": "БРЮКИ 5001/8 М98",
-    "name_en": "TROUSERS 5001/8 M98",
-    "colors": "terracotta",
+    "name_ru": "БРЮКИ 3060 М98",
+    "name_en": "TROUSERS 3060 M98",
+    "colors": "darkgrey",
     "image": "images/optimized/dd9e0bba980549409351e7a17a5e85fc_img_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
@@ -4494,10 +4494,11 @@
     "model": "М98",
     "display_title_ru": "Брюки свободного кроя",
     "display_title_en": "Relaxed-fit trousers",
-    "display_subtitle_ru": "5001/8 м98",
-    "display_subtitle_en": "5001/8 m98",
+    "display_subtitle_ru": "3060 м98",
+    "display_subtitle_en": "3060 m98",
     "image_original": "images/dd9e0bba980549409351e7a17a5e85fc_img_4K.jpg",
-    "swatch_hex": "#4e3e49"
+    "swatch_hex": "#4e3e49",
+    "article": "3060"
   },
   {
     "id": "3060",

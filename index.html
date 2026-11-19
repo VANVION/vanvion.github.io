@@ -1646,6 +1646,7 @@ const PALETTE = {
   camel: { hex: '#c2935a', ru: 'КЭМЕЛ', en: 'CAMEL', tr: 'CAMEL', az: 'DƏVƏ RƏNGİ' },
   beige: { hex: '#d4c4a8', ru: 'БЕЖЕВЫЙ', en: 'BEIGE', tr: 'BEJ', az: 'BEJ' },
   grey: { hex: '#9a9a98', ru: 'СЕРЫЙ', en: 'GREY', tr: 'GRİ', az: 'BOZ' },
+  darkgrey: { hex: '#4e3e49', ru: 'ТЁМНО-СЕРЫЙ', en: 'DARK GREY', tr: 'KOYU GRİ', az: 'TÜND BOZ' },
   brown: { hex: '#6b4226', ru: 'КОРИЧНЕВЫЙ', en: 'BROWN', tr: 'KAHVERENGİ', az: 'QƏHVƏYİ' },
   green: { hex: '#2d3d2e', ru: 'ЗЕЛЁНЫЙ', en: 'GREEN', tr: 'YEŞİL', az: 'YAŞIL' },
   lightgrey: { hex: '#c8c6c2', ru: 'СВЕТЛО-СЕРЫЙ', en: 'LIGHT GREY', tr: 'AÇIK GRİ', az: 'AÇIQ BOZ' },
@@ -1691,7 +1692,7 @@ const FAMILIES = {
 /* к какому основному семейству относится каждый оттенок */
 const FAMILY_OF = {
   charcoal:'grey', navy:'blue', black:'black', camel:'brown', beige:'beige',
-  grey:'grey', brown:'brown', green:'green', lightgrey:'grey', burgundy:'red',
+  grey:'grey', darkgrey:'grey', brown:'brown', green:'green', lightgrey:'grey', burgundy:'red',
   sand:'beige', slate:'grey', taba:'brown', terracotta:'red', kiremit:'red', kkiremit:'red',
   kahve:'brown', antrasit:'grey', yesil:'green', murdum:'purple', laci:'blue',
   klaci:'blue', siyah:'black', haki:'green', alaci:'blue', c295:'grey',
@@ -2208,7 +2209,7 @@ function renderHero() {
             '<div class="swiper-slide" data-id="' + esc(p.id) + '">' +
               '<img src="' + esc(p.image) + '" alt="" onerror="this.style.display=\'none\'">' +
               '<div class="hero-info">' +
-                '<div class="hero-kicker">' + esc(p.id) + '</div>' +
+                '<div class="hero-kicker">' + esc(articleOf(p)) + '</div>' +
                 '<div class="hero-title">' + esc(getName(p)) + '</div>' +
                 '<span class="hero-cta">' + t().view + ' &#8594;</span>' +
               '</div>' +
@@ -2343,7 +2344,7 @@ function selectTileColor(el, gid) {
 function openQuickLook(id) {
   const p = PRODUCTS.find(x => x.id === id);
   if (!p || !p.image) return;
-  $('ql').innerHTML = '<img src="' + esc(p.image) + '" alt=""><div class="ql-id">' + esc(p.id) + ' · ' + esc(getName(p)) + '</div>';
+  $('ql').innerHTML = '<img src="' + esc(p.image) + '" alt=""><div class="ql-id">' + esc(articleOf(p)) + ' · ' + esc(getName(p)) + '</div>';
   $('ql').classList.add('show');
 }
 function closeQuickLook() {
@@ -2427,6 +2428,8 @@ function renderColorBar() {
 }
 
 /* An article may specify its photographed shade without changing the shared colour family. */
+function articleOf(p) { return p.article || p.id; }
+
 function swatchHex(p) {
   if (/^#[0-9a-f]{6}$/i.test(p.swatch_hex || '')) return p.swatch_hex;
   const c = colorList(p.colors)[0];
@@ -2450,7 +2453,7 @@ function cardHTML(p) {
   return '<div class="card" data-id="' + esc(p.id) + '">' +
     '<div class="card-press">' +
       '<div class="card-img">' + imgHTML(p, true) +
-        '<span class="art-tag">' + esc(p.id) + '</span>' +
+        '<span class="art-tag">' + esc(articleOf(p)) + '</span>' +
       '</div>' +
       '<div class="card-info">' +
         '<div class="card-name">' + esc(getName(p)) + '</div>' +
@@ -2605,7 +2608,7 @@ function openDetail(id, cardEl, opts) {
 
   setAccent(p);
 
-  $('detailArt').textContent = p.id;
+  $('detailArt').textContent = articleOf(p);
   $('detailContent').innerHTML =
     '<div class="detail-img' + (p.image2 ? ' duo' : '') + '" id="detailImg">' + imgHTML(p) +
       (p.image2 ? '<img src="' + esc(p.image2) + '" alt="" data-fade decoding="async" onerror="this.style.display=\'none\'">' : '') +
@@ -3024,7 +3027,7 @@ function setupZoom() {
 
 /* ---------- кнопки заказа в карточке + окно контактов ---------- */
 function orderHTML(p) {
-  const l = orderLinks('Здравствуйте! Интересует ' + getName(p) + ', арт. ' + p.id);
+  const l = orderLinks('Здравствуйте! Интересует ' + getName(p) + ', арт. ' + articleOf(p));
   const label = L('ЗАКАЗАТЬ · УЗНАТЬ ЦЕНУ', 'ORDER · GET PRICE');
   return '<div class="order-label">' + label + '</div>' +
     '<div class="order-btns">' +
@@ -3368,7 +3371,7 @@ function renderCart() {
       const c = colorList(p.colors)[0];
       const col = c && PALETTE[c] ? PALETTE[c][LANG] : '';
       const tl = typeLabel(ci.type);
-      const sub = esc(col) + ' · ' + esc(p.id) + (tl ? ' · <b>' + tl + '</b>' : '');
+      const sub = esc(col) + ' · ' + esc(articleOf(p)) + (tl ? ' · <b>' + tl + '</b>' : '');
       return '<div class="cart-item">' +
         '<img src="' + esc(p.image) + '" alt="" loading="lazy">' +
         '<div class="cart-item-info">' +
@@ -3425,7 +3428,7 @@ function cartMessage() {
     const tl = ci.type === 'norma' ? 'НОРМА' : ci.type === 'batal' ? 'БАТАЛ' : '';
     const nm = p.name_ru || p.name_en || p.model || '';
     const packs = ci.qty + ' ' + plural(ci.qty, 'пачка', 'пачки', 'пачек');
-    lines.push((i + 1) + '. ' + nm + ' (' + col + ', арт. ' + p.id + ')' + (tl ? ' — ' + tl : ' —') + ' ' + packs);
+    lines.push((i + 1) + '. ' + nm + ' (' + col + ', арт. ' + articleOf(p) + ')' + (tl ? ' — ' + tl : ' —') + ' ' + packs);
   });
   lines.push('');
   lines.push('Итого: ' + CART.length + ' ' + plural(CART.length, 'позиция', 'позиции', 'позиций') + ', ' + cartPacks() + ' ' + plural(cartPacks(), 'пачка', 'пачки', 'пачек'));
@@ -3596,7 +3599,7 @@ function newsProductId(n) {
 }
 
 async function shareProduct(p) {
-  const text = 'VANVION · ' + p.id + ' · ' + getName(p);
+  const text = 'VANVION · ' + articleOf(p) + ' · ' + getName(p);
   const url = location.href;
   if (navigator.share) {
     try { await navigator.share({ title: 'VANVION', text: text, url: url }); return; }
@@ -3851,7 +3854,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="experiments/modern-tailoring/card.js"></script>
-<script src="experiments/atelier-3/card.js?v=swatches-20261119-1"></script>
+<script src="experiments/atelier-3/card.js?v=articles-20261119-2"></script>
 <script src="experiments/atelier-grid/grid.js?v=m97-20261118-1"></script>
 <script src="experiments/atelier-navigation/navigation.js"></script>
 </body>

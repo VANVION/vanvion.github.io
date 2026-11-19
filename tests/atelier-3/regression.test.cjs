@@ -177,7 +177,7 @@ test('all real products render correct data in RU/EN at 320/390/1440px', async t
           if(!detail.classList.contains('at-card') || heading?.textContent !== (specVal(product.display_title_ru,product.display_title_en) || product.model || getName(product))) failures.push(product.id+': heading');
           if(product.sizes && sizes?.textContent !== trSpec(product.sizes)) failures.push(product.id+': sizes');
           if(product.image && image?.getAttribute('src') !== product.image) failures.push(product.id+': image');
-          if(!new URL(link.href).searchParams.get('text').includes(product.id)) failures.push(product.id+': order context');
+          if(!new URL(link.href).searchParams.get('text').includes(articleOf(product))) failures.push(product.id+': order context');
           if([...detail.querySelectorAll('.at-specs dd')].some(el=>/^[\s—–-]+$/.test(el.textContent))) failures.push(product.id+': empty specification');
           if(detail.scrollWidth>detail.clientWidth) failures.push(product.id+': overflow');
           const group=[...detail.querySelectorAll('[data-variant]')].map(el=>PRODUCTS.find(x=>x.id===el.dataset.variant));
@@ -422,7 +422,7 @@ test('every model colour can be selected with its own photo, specs, sizes and or
             if(expected && !specs.includes(expected))failures.push(x.id+': '+field);
           }
           if(x.sizes && document.querySelector('.at-sizes p')?.textContent!==trSpec(x.sizes))failures.push(x.id+': sizes');
-          if(!new URL(document.querySelector('.at-primary').href).searchParams.get('text').includes(x.id))failures.push(x.id+': order article');
+          if(!new URL(document.querySelector('.at-primary').href).searchParams.get('text').includes(articleOf(x)))failures.push(x.id+': order article');
           const selected=[...document.querySelectorAll('[data-variant][aria-pressed=true]')];
           if(selected.length!==1||selected[0].dataset.variant!==x.id)failures.push(x.id+': selection state');
         }
@@ -500,4 +500,20 @@ test('M98 photographed shades match in catalogue, detail and quick add without r
   await p.evaluate(()=>openDetail('PR-3001',null,{noAnim:true,fromHash:true}));await loaded(p);
   const fallback=await p.evaluate(()=>PALETTE[colorList(PRODUCTS.find(x=>x.id==='PR-3001').colors)[0]].hex);
   assert.equal(await p.locator('[data-variant="PR-3001"] span').evaluate(e=>getComputedStyle(e).backgroundColor),rgb(fallback));
+});
+
+test('dark grey M98 uses supplier article 3060 and remains distinct from grey 3060',async t=>{
+ const p=await pageFor(t,'/#p=5001/8');await loaded(p);
+ assert.equal(await p.locator('.at-product-name').innerText(),'3060 м98');
+ assert.equal(await p.locator('.at-meta span').last().innerText(),'3060');
+ assert.equal(await p.locator('.at-color-choice>span').innerText(),'ТЁМНО-СЕРЫЙ');
+ const darkPhoto=await p.locator('.at-photo img').getAttribute('src');
+ const message=new URL(await p.locator('.at-primary').getAttribute('href')).searchParams.get('text');
+ assert(message.includes('3060')&&!message.includes('5001/8'));
+ await p.locator('[data-variant="3060"]').click();await loaded(p);
+ assert.equal(await p.locator('.at-color-choice>span').innerText(),'СЕРЫЙ');
+ assert.notEqual(await p.locator('.at-photo img').getAttribute('src'),darkPhoto);
+ assert.equal(await p.locator('[data-variant]').count(),4);
+ const cart=await p.evaluate(()=>{cartAdd('5001/8','plain',1);cartAdd('3060','plain',1);return {items:CART.length,message:cartMessage()};});
+ assert.equal(cart.items,2);assert(!cart.message.includes('5001/8'));assert(cart.message.includes('ТЁМНО-СЕРЫЙ')&&cart.message.includes('СЕРЫЙ'));
 });
