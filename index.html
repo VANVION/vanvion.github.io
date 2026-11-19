@@ -2426,6 +2426,13 @@ function renderColorBar() {
   if (r) r.onclick = () => { haptic('light'); COLOR = ''; render(); };
 }
 
+/* An article may specify its photographed shade without changing the shared colour family. */
+function swatchHex(p) {
+  if (/^#[0-9a-f]{6}$/i.test(p.swatch_hex || '')) return p.swatch_hex;
+  const c = colorList(p.colors)[0];
+  return c ? PALETTE[c].hex : '#cccccc';
+}
+
 function dotHTML(c) {
   return '<span class="dot" style="background:' + PALETTE[c].hex + '"></span>';
 }
@@ -2438,7 +2445,7 @@ function imgHTML(p, lazy) {
 
 function cardHTML(p) {
   const c = colorList(p.colors)[0];
-  const colorHex = c ? PALETTE[c].hex : '#cccccc';
+  const colorHex = swatchHex(p);
   const colorName = c ? PALETTE[c][LANG] : '';
   return '<div class="card" data-id="' + esc(p.id) + '">' +
     '<div class="card-press">' +
@@ -2493,7 +2500,7 @@ function modelCardHTML(group) {
   const rep = COLOR ? group[0] : variants[hashStr(modelKey(group[0])) % n];
   const dots = variants.map(v => {
     const c = colorList(v.colors)[0];
-    const hex = c ? PALETTE[c].hex : '#cccccc';
+    const hex = swatchHex(v);
     const label = c ? PALETTE[c][LANG] : v.id;
     return '<button class="mdot' + (v.id === rep.id ? ' active' : '') + '" data-goto="' + esc(v.id) +
            '" style="background:' + hex + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"></button>';
@@ -2582,7 +2589,7 @@ function openDetail(id, cardEl, opts) {
   const variants = modelVariants(p);
   const swatches = variants.map(x => {
     const c = colorList(x.colors)[0];
-    const hex = c ? PALETTE[c].hex : '#cccccc';
+    const hex = swatchHex(x);
     const label = c ? PALETTE[c][LANG] : x.id;
     return '<button class="cv' + (x.id === p.id ? ' active' : '') + '" data-goto="' + esc(x.id) + '" aria-label="' + esc(label) + '">' +
              '<span class="cv-dot" style="background:' + hex + '"></span>' +
@@ -3320,7 +3327,7 @@ function renderQuickAdd() {
   const variants = modelVariants(p);
   const dots = variants.map(v => {
     const c = colorList(v.colors)[0];
-    const hex = c ? PALETTE[c].hex : '#cccccc';
+    const hex = swatchHex(v);
     const label = c ? PALETTE[c][LANG] : v.id;
     return '<button class="qa-dot' + (v.id === p.id ? ' active' : '') + '" data-qc="' + esc(v.id) + '" style="background:' + hex + '" title="' + esc(label) + '" aria-label="' + esc(label) + '"></button>';
   }).join('');
@@ -3844,7 +3851,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 <script src="experiments/modern-tailoring/card.js"></script>
-<script src="experiments/atelier-3/card.js?v=colours-20261119-1"></script>
+<script src="experiments/atelier-3/card.js?v=swatches-20261119-1"></script>
 <script src="experiments/atelier-grid/grid.js?v=m97-20261118-1"></script>
 <script src="experiments/atelier-navigation/navigation.js"></script>
 </body>

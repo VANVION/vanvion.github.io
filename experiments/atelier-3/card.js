@@ -57,7 +57,7 @@
     const choices = colourVariants.map(x => {
       const c = colorList(x.colors)[0];
       const label = c ? PALETTE[c][LANG] : x.id;
-      return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + x.id) + '"><span style="--swatch:' + (c ? PALETTE[c].hex : '#cccccc') + '"></span></button>';
+      return '<button class="at-swatch" data-variant="' + esc(x.id) + '" aria-pressed="' + (x.id === id) + '" aria-label="' + esc(label + ' · ' + x.id) + '"><span style="--swatch:' + swatchHex(x) + '"></span></button>';
     }).join('');
     const hasValue = value => value && !/^[\s—–-]+$/.test(value);
     const lining = specVal(p.lin_ru,p.lin_en);

@@ -707,7 +707,7 @@
     "name_ru": "БРЮКИ 5001/3 М98",
     "name_en": "TROUSERS 5001/3 М98",
     "colors": "laci",
-    "image": "images/optimized/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg",
+    "image": "images/optimized/edcd48812d204e4fb594bd5affd8dc22_img_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -724,7 +724,8 @@
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/3 м98",
     "display_subtitle_en": "5001/3 m98",
-    "image_original": "images/342f85f3daf8484cbc34baaf5058859b_bananalab-pro_4K.jpg"
+    "image_original": "images/edcd48812d204e4fb594bd5affd8dc22_img_4K.jpg",
+    "swatch_hex": "#302b42"
   },
   {
     "id": "PR-4072",
@@ -4452,7 +4453,7 @@
     "name_ru": "БРЮКИ 5001/2 М98",
     "name_en": "TROUSERS 5001/2 M98",
     "colors": "black",
-    "image": "images/optimized/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg",
+    "image": "images/optimized/a81b9f42e81b4167928947946ee39fc4_img_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4469,7 +4470,8 @@
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/2 м98",
     "display_subtitle_en": "5001/2 m98",
-    "image_original": "images/019ffd9c15854536a2328baec45ef980_bananalab-pro_4K.jpg"
+    "image_original": "images/a81b9f42e81b4167928947946ee39fc4_img_4K.jpg",
+    "swatch_hex": "#211e21"
   },
   {
     "id": "5001/8",
@@ -4477,7 +4479,7 @@
     "name_ru": "БРЮКИ 5001/8 М98",
     "name_en": "TROUSERS 5001/8 M98",
     "colors": "terracotta",
-    "image": "images/optimized/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg",
+    "image": "images/optimized/dd9e0bba980549409351e7a17a5e85fc_img_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4494,7 +4496,8 @@
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "5001/8 м98",
     "display_subtitle_en": "5001/8 m98",
-    "image_original": "images/19b3b03d53f641acb03c3686ccf0612c_bananalab-pro_4K.jpg"
+    "image_original": "images/dd9e0bba980549409351e7a17a5e85fc_img_4K.jpg",
+    "swatch_hex": "#4e3e49"
   },
   {
     "id": "3060",
@@ -4502,7 +4505,7 @@
     "name_ru": "БРЮКИ 3060 М98",
     "name_en": "TROUSERS 3060 M98",
     "colors": "grey",
-    "image": "images/optimized/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg",
+    "image": "images/optimized/ac2b09b37e1343c69d0992cfa4890211_bananalab-pro_4K.jpg",
     "comp_ru": "ХЛОПОК 10% ПОЛИЭСТЕР 55% ВИСКОЗА 35%",
     "comp_en": "COTTON 10% POLYESTER 55% VISCOSE 35%",
     "sil_ru": "ШИРОКИЙ СВОБОДНЫЙ",
@@ -4519,7 +4522,8 @@
     "display_title_en": "Relaxed-fit trousers",
     "display_subtitle_ru": "3060 м98",
     "display_subtitle_en": "3060 m98",
-    "image_original": "images/c916743bc5a544b788601ff41103f7ec_bananalab-pro_4K.jpg"
+    "image_original": "images/ac2b09b37e1343c69d0992cfa4890211_bananalab-pro_4K.jpg",
+    "swatch_hex": "#7a6f75"
   },
   {
     "id": "PODKOVA-3060",

@@ -477,3 +477,27 @@ test('many-colour strip preserves horizontal position, ignores gallery swipes an
   await p.waitForFunction(()=>document.querySelector('.at-gallery .at-colors'));
   assert.equal(await p.locator('.at-colors').count(),1);
 });
+
+test('M98 photographed shades match in catalogue, detail and quick add without recolouring other models',async t=>{
+  const p=await pageFor(t,'/',390);await p.locator('.card').first().waitFor();
+  await p.locator('#search').fill('М98');await p.waitForFunction(()=>document.querySelectorAll('.card').length===1);
+  const variants=await p.evaluate(()=>PRODUCTS.filter(x=>x.model==='М98').map(x=>({id:x.id,hex:x.swatch_hex,image:x.image})));
+  assert.equal(variants.length,4);
+  const rgb=hex=>'rgb('+[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)).join(', ')+')';
+  for(const v of variants){
+    assert.match(v.hex,/^#[0-9a-f]{6}$/i);
+    assert.equal(await p.locator(`[data-goto="${v.id}"]`).evaluate(e=>getComputedStyle(e,'::before').backgroundColor),rgb(v.hex));
+  }
+  await p.locator('.ag-open').click();await loaded(p);
+  for(const v of variants){
+    assert.equal(await p.locator(`[data-variant="${v.id}"] span`).evaluate(e=>getComputedStyle(e).backgroundColor),rgb(v.hex));
+    await p.locator(`[data-variant="${v.id}"]`).click();await loaded(p);
+    assert.equal(await p.locator('.at-photo img').getAttribute('src'),v.image);
+    await p.evaluate(()=>openQuickAdd(currentDetailId));
+    assert.equal(await p.locator(`[data-qc="${v.id}"]`).evaluate(e=>getComputedStyle(e).backgroundColor),rgb(v.hex));
+    await p.evaluate(()=>closeQuickAdd());
+  }
+  await p.evaluate(()=>openDetail('PR-3001',null,{noAnim:true,fromHash:true}));await loaded(p);
+  const fallback=await p.evaluate(()=>PALETTE[colorList(PRODUCTS.find(x=>x.id==='PR-3001').colors)[0]].hex);
+  assert.equal(await p.locator('[data-variant="PR-3001"] span').evaluate(e=>getComputedStyle(e).backgroundColor),rgb(fallback));
+});
