@@ -4668,8 +4668,8 @@
     "color_code": "SIYAH",
     "colors": "siyah",
     "swatch_hex": "#676967",
-    "comp_ru": "СОСТАВ УТОЧНЯЕТСЯ",
-    "comp_en": "COMPOSITION TO BE CONFIRMED",
+    "comp_ru": "УТОЧНЯЕТСЯ",
+    "comp_en": "TO BE CONFIRMED",
     "sil_ru": "ОБЫЧНЫЙ",
     "sil_en": "REGULAR",
     "country_ru": "ТУРЦИЯ",
@@ -4682,7 +4682,10 @@
     "image": "images/optimized/photo_37@09-11-2026_10-00-32.jpg",
     "image_original": "images/photo_37@09-11-2026_10-00-32.jpg",
     "image2": "images/optimized/photo_38@09-11-2026_10-00-32.jpg",
-    "image2_original": "images/photo_38@09-11-2026_10-00-32.jpg"
+    "image2_original": "images/photo_38@09-11-2026_10-00-32.jpg",
+    "isnew": true,
+    "new_since": "2026-11-19",
+    "social_image": "images/social/suslu-jakar-siyah.jpg"
   },
   {
     "id": "SUSLU-JAKAR-K-LACI",
@@ -4694,8 +4697,8 @@
     "color_code": "K.LACI",
     "colors": "klaci",
     "swatch_hex": "#637082",
-    "comp_ru": "СОСТАВ УТОЧНЯЕТСЯ",
-    "comp_en": "COMPOSITION TO BE CONFIRMED",
+    "comp_ru": "УТОЧНЯЕТСЯ",
+    "comp_en": "TO BE CONFIRMED",
     "sil_ru": "ОБЫЧНЫЙ",
     "sil_en": "REGULAR",
     "country_ru": "ТУРЦИЯ",
@@ -4708,7 +4711,10 @@
     "image": "images/optimized/photo_39@09-11-2026_10-00-32.jpg",
     "image_original": "images/photo_39@09-11-2026_10-00-32.jpg",
     "image2": "images/optimized/photo_40@09-11-2026_10-00-32.jpg",
-    "image2_original": "images/photo_40@09-11-2026_10-00-32.jpg"
+    "image2_original": "images/photo_40@09-11-2026_10-00-32.jpg",
+    "isnew": true,
+    "new_since": "2026-11-19",
+    "social_image": "images/social/suslu-jakar-klaci.jpg"
   },
   {
     "id": "SUSLU-JAKAR-KAHVE",
@@ -4720,8 +4726,8 @@
     "color_code": "KAHVE",
     "colors": "kahve",
     "swatch_hex": "#82786e",
-    "comp_ru": "СОСТАВ УТОЧНЯЕТСЯ",
-    "comp_en": "COMPOSITION TO BE CONFIRMED",
+    "comp_ru": "УТОЧНЯЕТСЯ",
+    "comp_en": "TO BE CONFIRMED",
     "sil_ru": "ОБЫЧНЫЙ",
     "sil_en": "REGULAR",
     "country_ru": "ТУРЦИЯ",
@@ -4734,7 +4740,10 @@
     "image": "images/optimized/photo_41@09-11-2026_10-00-32.jpg",
     "image_original": "images/photo_41@09-11-2026_10-00-32.jpg",
     "image2": "images/optimized/photo_42@09-11-2026_10-00-32.jpg",
-    "image2_original": "images/photo_42@09-11-2026_10-00-32.jpg"
+    "image2_original": "images/photo_42@09-11-2026_10-00-32.jpg",
+    "isnew": true,
+    "new_since": "2026-11-19",
+    "social_image": "images/social/suslu-jakar-kahve.jpg"
   },
   {
     "id": "SUSLU-JAKAR-A-LACI",
@@ -4746,8 +4755,8 @@
     "color_code": "A.LACI",
     "colors": "alaci",
     "swatch_hex": "#7a96b0",
-    "comp_ru": "СОСТАВ УТОЧНЯЕТСЯ",
-    "comp_en": "COMPOSITION TO BE CONFIRMED",
+    "comp_ru": "УТОЧНЯЕТСЯ",
+    "comp_en": "TO BE CONFIRMED",
     "sil_ru": "ОБЫЧНЫЙ",
     "sil_en": "REGULAR",
     "country_ru": "ТУРЦИЯ",
@@ -4760,7 +4769,10 @@
     "image": "images/optimized/photo_43@09-11-2026_10-00-32.jpg",
     "image_original": "images/photo_43@09-11-2026_10-00-32.jpg",
     "image2": "images/optimized/photo_44@09-11-2026_10-00-32.jpg",
-    "image2_original": "images/photo_44@09-11-2026_10-00-32.jpg"
+    "image2_original": "images/photo_44@09-11-2026_10-00-32.jpg",
+    "isnew": true,
+    "new_since": "2026-11-19",
+    "social_image": "images/social/suslu-jakar-alaci.jpg"
   },
   {
     "id": "LUCA-536",
